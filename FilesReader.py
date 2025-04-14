@@ -12,6 +12,12 @@ EM0580107PData = []
 EM0660047PData = []
 EM0660045PData = []
 
+#FM
+FM05000102Data = []
+
+#CSB
+CSB6400802Data = []
+
 class filesReader():
     global EM0580106PData
     global EM0660046PData
@@ -476,7 +482,142 @@ class filesReader():
             file.replace('', np.nan, inplace=True)  
 
     def ReadFmFiles(self):
+        self.readingYear = self.readingYearStored
+
+        while True:
+            try:
+                vt1Directory = (fr'\\192.168.2.19\quality control\{str(self.readingYear)}')
+
+                for d in os.listdir(vt1Directory):
+                    if "supplier" in d.lower():
+                        vt1Directory = os.path.join(vt1Directory, d)
+                        for d in os.listdir(vt1Directory):
+                            if "inspection standard" in d.lower():
+                                vt1Directory = os.path.join(vt1Directory, d)
+                                for d in os.listdir(vt1Directory):
+                                    if "receiving inspection record" in d.lower():
+                                        vt1Directory = os.path.join(vt1Directory, d)
+
+
+
+                                        # GETTING FM05000102 FILES
+                                        try:
+                                            for d in os.listdir(vt1Directory):
+                                                if "cronics" in d.lower():
+                                                    directory = os.path.join(vt1Directory, d)
+
+                                                    #Finding A Folder That Contains New Trend
+                                                    for d in os.listdir(directory):
+                                                        if 'new trend' in d.lower():
+                                                            directory = os.path.join(directory, d)
+                                                            print(f"Updated vt1Directory: {directory}")
+                                                            break
+
+                                                    os.chdir(directory)
+
+                                                    files = glob.glob('*FM05000102*.xlsm')
+
+                                                    for f in files:
+                                                        print(f'File Readed {f}')
+                                                        workbook = CalamineWorkbook.from_path(f)
+
+                                                        fmData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
+                                                        fmData = pd.DataFrame(fmData)
+                                                        fmData = fmData.replace(r'\s+', '', regex=True)
+                                                        
+                                                        print(f"FM FINDED IN {self.readingYear} NEW TREND")
+                                                        FM05000102Data.append(fmData)
+                                        except:
+                                            print("NO DATA FOUND IN CRONICS")
+            except:
+                pass
+
+            if self.readingYear > 2021:
+                self.readingYear -= 1
+            else:
+                # self.fileFinishedReading = True
+                break
+
+        #REPLACING BLANK VALUES WITH N/A
+        for file in FM05000102Data:
+            file.replace('', np.nan, inplace=True)
+
+    def ReadDfbFiles(self):
         pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def ReadCsbFiles(self):
+        self.readingYear = self.readingYearStored
+
+        while True:
+            try:
+                vt1Directory = (fr'\\192.168.2.19\quality control\{str(self.readingYear)}')
+                
+                for d in os.listdir(vt1Directory):
+                    if "supplier" in d.lower():
+                        vt1Directory = os.path.join(vt1Directory, d)
+                        for d in os.listdir(vt1Directory):
+                            if "inspection standard" in d.lower():
+                                vt1Directory = os.path.join(vt1Directory, d)
+                                for d in os.listdir(vt1Directory):
+                                    if "receiving inspection record" in d.lower():
+                                        vt1Directory = os.path.join(vt1Directory, d)
+
+                                        #GETTING CSB6400802 FILES
+                                        try:
+                                            for d in os.listdir(vt1Directory):
+                                                if "cronics" in d.lower():
+                                                    directory = os.path.join(vt1Directory, d)
+
+                                                    #Finding A Folder That Contains New Trend
+                                                    for d in os.listdir(directory):
+                                                        if 'new trend' in d.lower():
+                                                            directory = os.path.join(directory, d)
+                                                            print(f"Updated vt1Directory: {directory}")
+                                                            break
+
+                                                    os.chdir(directory)
+
+                                                    files = glob.glob('*CSB6400802*.xlsm')
+
+                                                    for f in files:
+                                                        print(f'File Readed {f}')
+                                                        workbook = CalamineWorkbook.from_path(f)
+
+                                                        csbData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
+                                                        csbData = pd.DataFrame(csbData)
+                                                        csbData = csbData.replace(r'\s+', '', regex=True)
+                                                        
+                                                        print(f"CSB FINDED IN {self.readingYear} NEW TREND")
+                                                        CSB6400802Data.append(csbData)
+                                        except:
+                                            print("NO DATA FOUND IN CRONICS")
+
+            except:
+                pass
+
+            if self.readingYear > 2021:
+                self.readingYear -= 1
+            else:
+                # self.fileFinishedReading = True
+                break
+
+        #REPLACING BLANK VALUES WITH N/A
+        for file in CSB6400802Data:
+            file.replace('', np.nan, inplace=True)
 
 #%%
 # filesreader = filesReader()
@@ -496,4 +637,16 @@ class filesReader():
 # print(len(EM0660047PData))
 # print(len(EM0660045PData))
 
+#%%
+# filesreader = filesReader()
+# filesreader.readingYearStored = 2025
+# filesreader.ReadFmFiles()
+
+# print(len(FM05000102Data))
+# %%
+# filesreader = filesReader()
+# filesreader.readingYearStored = 2025
+# filesreader.ReadCsbFiles()
+
+# print(len(CSB6400802Data))
 #%%

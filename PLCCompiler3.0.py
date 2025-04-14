@@ -14,12 +14,15 @@ from Rdb import rDB
 from Csb import cSB
 
 #%%
-DateAndTimeManager.GetDateToday()
+# DateAndTimeManager.GetDateToday()
 
-filesreader = filesReader()
-filesreader.readingYearStored = DateAndTimeManager.yearNow
-filesreader.ReadEm2pFiles()
-filesreader.ReadEm3pFiles()
+# filesreader = filesReader()
+# filesreader.readingYearStored = DateAndTimeManager.yearNow
+# filesreader.ReadEm2pFiles()
+# filesreader.ReadEm3pFiles()
+# filesreader.ReadFmFiles()
+
+# filesreader.ReadCsbFiles()
 
 # em2p = em2P()
 # em2p.GettingData("EM0580106P", "CAT-4J15DI")
@@ -27,8 +30,14 @@ filesreader.ReadEm3pFiles()
 # em2p.GettingData("EM0660046P", "FC6030-1F18GT")
 # em2p.GettingData("EM0580106P", "CAT-4J15DI")
 
-em3p = em3P()
-em3p.GettingData("EM0580107P", "CAT-5A07DI")
+# em3p = em3P()
+# em3p.GettingData("EM0580107P", "CAT-5A07DI")
+
+# fm = fM()
+# fm.GettingData("FM05000102-00A", "112524A-40")
+
+# csb = cSB()
+# csb.GettingData("CSB6400802", "012225A")
 
 # %%
 #Variables 
@@ -1049,102 +1058,45 @@ def CompileCsv():
     except IndexError:
         pass
 
-    # Getting Frame Inspection Data
-    # QualityControlDataManager.GettingEM6P(tempDfVt1["Process 1 Material 1 Lot Number"].values)
-    # QualityControlDataManager.GettingEM7P(tempDfVt1["Process 1 Material 2 Lot Number"].values)
-    # QualityControlDataManager.GettingFM(tempDfVt1["Process 1 Material 4 Lot Number"].values)
-    # QualityControlDataManager.GettingCSB6400802(tempDfVt3["Process 3 Material 2 Lot Number"].values)
-
-    # QualityControlDataManager.ReadDFBSnap(tempDfVt2["Process 2 Material 3 Lot Number"].values[0])
-    # QualityControlDataManager.ReadDFB6600600()
-    # QualityControlDataManager.GettingDFB6600600()
-
-    # QualityControlDataManager.ReadRDB5200200CheckSheet(tempDfVt2["Process 2 Material 2 Lot Number"].values[0])
-    # QualityControlDataManager.ReadRDB5200200()
-    # QualityControlDataManager.GettingRDB5200200()
-
     #GETTING DATE TODAY
     DateAndTimeManager.GetDateToday()
 
     # GETTING EM2P INSPECTION DATA
     em2p = em2P()
-    # em2p.readingYear = int(DateAndTimeManager.yearNow)
-    # em2p.ReadExcel(tempDfVt1["Process 1 Em2p"].values)
     em2p.GettingData(tempDfVt1["Process 1 Em2p"].values, tempDfVt1["Process 1 Em2p Lot No"].values)
 
     #GETTING EM3P INSPECTION DATA
     em3p = em3P()
-    # em3p.readingYear = int(DateAndTimeManager.yearNow)
-    # em3p.ReadExcel(tempDfVt1["Process 1 Em3p"].values)
     em3p.GettingData(tempDfVt1["Process 1 Em3p"].values, tempDfVt1["Process 1 Em3p Lot No"].values)
 
     #GETTING FM INSPECTION DATA
     fm = fM()
-    fm.readingYear = int(DateAndTimeManager.yearNow)
-    fm.ReadExcel(tempDfVt1["Process 1 Frame"].values)
-    fm.GettingData(tempDfVt1["Process 1 Frame Lot No"].values)
+    fm.GettingData(tempDfVt1["Process 1 Frame"].values, tempDfVt1["Process 1 Frame Lot No"].values)
 
     #GETTING DFB INSPECTION DATA
     dfb = dFB()
     dfb.readingYear = int(DateAndTimeManager.yearNow)
-    dfb.ReadDfbSnap(tempDfVt2["Process 2 Df Blk Lot No"].values[0])
-    dfb.ReadDFB6600600()
-    dfb.ReadExcel()
-    dfb.GettingData()
-
-    #GETTING TENSILE FOR DFB
-    tensile = Tensile()
-    tensile.readingYear = int(DateAndTimeManager.yearNow)
-    tensile.ReadExcel()
-    tensile.GettingData(dfb.dfbLotNumber2[:-3])
-
-    #GETTING RDB INSPECTION DATA
-    rdb = rDB()
-    rdb.readingYear = int(DateAndTimeManager.yearNow)
-    rdb.ReadCheckSheet(tempDfVt2["Process 2 Rod Blk Lot No"].values[0], tempDfVt2["Process 2 Rod Blk"].values)
-    rdb.ReadRDB5200200()
-    rdb.GettingData()
-
-    #GETTING CSB INSPECTION DATA
-    csb = cSB()
-    csb.readingYear = int(DateAndTimeManager.yearNow)
-    csb.ReadExcel(tempDfVt3["Process 3 Casing Block"].values)
-    csb.GettingData(tempDfVt3["Process 3 Casing Block Lot No"].values)
-
-    # #GETTING QC EM2P
-    # em2p = em2P()
-    # em2p.readingYear = int(DateAndTimeManager.yearNow)
-
-    # em2p.ReadExcel(tempDfVt1["Process 1 Em2p"].values)
-    # em2p.GettingData(tempDfVt1["Process 1 Em2p Lot No"].values)
-
-    # #GETTING QC EM3P
-    # em3p = em3P()
-    # em3p.readingYear = int(DateAndTimeManager.yearNow)
-
-    # em3p.ReadExcel(tempDfVt1["Process 1 Em3p"].values)
-    # em3p.GettingData(tempDfVt1["Process 1 Em3p Lot No"].values)
-
-    # #GETTING QC FM
-    # fm = fM()
-    # fm.readingYear = int(DateAndTimeManager.yearNow)
-
-    # #GETTING QC DFB
-    # dfb = dFB()
-    # dfb.readingYear = int(DateAndTimeManager.yearNow)
-
-    # print(f"{tempDfVt2["Process 2 Df Blk Lot No"].values}_______________________________________")
-
     # dfb.ReadDfbSnap(tempDfVt2["Process 2 Df Blk Lot No"].values[0])
     # dfb.ReadDFB6600600()
     # dfb.ReadExcel()
     # dfb.GettingData()
 
-    # #GETTING QC TENSILE FOR DFB
-    # tensile = Tensile()
-    # tensile.readingYear = int(DateAndTimeManager.yearNow)
+    #GETTING TENSILE FOR DFB
+    tensile = Tensile()
+    tensile.readingYear = int(DateAndTimeManager.yearNow)
     # tensile.ReadExcel()
     # tensile.GettingData(dfb.dfbLotNumber2[:-3])
+
+    #GETTING RDB INSPECTION DATA
+    rdb = rDB()
+    rdb.readingYear = int(DateAndTimeManager.yearNow)
+    # rdb.ReadCheckSheet(tempDfVt2["Process 2 Rod Blk Lot No"].values[0], tempDfVt2["Process 2 Rod Blk"].values)
+    # rdb.ReadRDB5200200()
+    # rdb.GettingData()
+
+    #GETTING CSB INSPECTION DATA
+    csb = cSB()
+    csb.GettingData(tempDfVt3["Process 3 Casing Block"].values, tempDfVt3["Process 3 Casing Block Lot No"].values)
 
     excelData = {
         "DATE": tempdfPi["DATE"].values,
@@ -1237,68 +1189,68 @@ def CompileCsv():
         "Process 2 M4x40 Screw Lot No": tempDfVt2["Process 2 M4x40 Screw Lot No"].values,
         "Process 2 Rod Blk": tempDfVt2["Process 2 Rod Blk"].values,
         "Process 2 Rod Blk Lot No": tempDfVt2["Process 2 Rod Blk Lot No"].values,
-        "Process 2 Rod Blk Tesla 1 Average Data": rdb.rdbTeslaTotalAverage1,
-        "Process 2 Rod Blk Tesla 2 Average Data": rdb.rdbTeslaTotalAverage2,
-        "Process 2 Rod Blk Tesla 3 Average Data": rdb.rdbTeslaTotalAverage3,
-        "Process 2 Rod Blk Tesla 4 Average Data": rdb.rdbTeslaTotalAverage4,
-        "Process 2 Rod Blk Tesla 1 Minimum Data": rdb.rdbTeslaTotalMinimum1,
-        "Process 2 Rod Blk Tesla 2 Minimum Data": rdb.rdbTeslaTotalMinimum2,
-        "Process 2 Rod Blk Tesla 3 Minimum Data": rdb.rdbTeslaTotalMinimum3,
-        "Process 2 Rod Blk Tesla 4 Minimum Data": rdb.rdbTeslaTotalMinimum4,
-        "Process 2 Rod Blk Tesla 1 Maximum Data": rdb.rdbTeslaTotalMaximum1,
-        "Process 2 Rod Blk Tesla 2 Maximum Data": rdb.rdbTeslaTotalMaximum2,
-        "Process 2 Rod Blk Tesla 3 Maximum Data": rdb.rdbTeslaTotalMaximum3,
-        "Process 2 Rod Blk Tesla 4 Maximum Data": rdb.rdbTeslaTotalMaximum4,
-        "Process 2 Rod Blk Inspection 1 Average Data": rdb.rdbTotalAverage1,
-        "Process 2 Rod Blk Inspection 2 Average Data": rdb.rdbTotalAverage2,
-        "Process 2 Rod Blk Inspection 3 Average Data": rdb.rdbTotalAverage3,
-        "Process 2 Rod Blk Inspection 4 Average Data": rdb.rdbTotalAverage4,
-        "Process 2 Rod Blk Inspection 5 Average Data": rdb.rdbTotalAverage5,
-        "Process 2 Rod Blk Inspection 6 Average Data": rdb.rdbTotalAverage6,
-        "Process 2 Rod Blk Inspection 7 Average Data": rdb.rdbTotalAverage7,
-        "Process 2 Rod Blk Inspection 8 Average Data": rdb.rdbTotalAverage8,
-        "Process 2 Rod Blk Inspection 9 Average Data": rdb.rdbTotalAverage9,
-        "Process 2 Rod Blk Inspection 1 Minimum Data": rdb.rdbTotalMinimum1,
-        "Process 2 Rod Blk Inspection 2 Minimum Data": rdb.rdbTotalMinimum2,
-        "Process 2 Rod Blk Inspection 3 Minimum Data": rdb.rdbTotalMinimum3,
-        "Process 2 Rod Blk Inspection 4 Minimum Data": rdb.rdbTotalMinimum4,
-        "Process 2 Rod Blk Inspection 5 Minimum Data": rdb.rdbTotalMinimum5,
-        "Process 2 Rod Blk Inspection 6 Minimum Data": rdb.rdbTotalMinimum6,
-        "Process 2 Rod Blk Inspection 7 Minimum Data": rdb.rdbTotalMinimum7,
-        "Process 2 Rod Blk Inspection 8 Minimum Data": rdb.rdbTotalMinimum8,
-        "Process 2 Rod Blk Inspection 9 Minimum Data": rdb.rdbTotalMinimum9,
-        "Process 2 Rod Blk Inspection 1 Maximum Data": rdb.rdbTotalMaximum1,
-        "Process 2 Rod Blk Inspection 2 Maximum Data": rdb.rdbTotalMaximum2,
-        "Process 2 Rod Blk Inspection 3 Maximum Data": rdb.rdbTotalMaximum3,
-        "Process 2 Rod Blk Inspection 4 Maximum Data": rdb.rdbTotalMaximum4,
-        "Process 2 Rod Blk Inspection 5 Maximum Data": rdb.rdbTotalMaximum5,
-        "Process 2 Rod Blk Inspection 6 Maximum Data": rdb.rdbTotalMaximum6,
-        "Process 2 Rod Blk Inspection 7 Maximum Data": rdb.rdbTotalMaximum7,
-        "Process 2 Rod Blk Inspection 8 Maximum Data": rdb.rdbTotalMaximum8,
-        "Process 2 Rod Blk Inspection 9 Maximum Data": rdb.rdbTotalMaximum9,
+        # "Process 2 Rod Blk Tesla 1 Average Data": rdb.rdbTeslaTotalAverage1,
+        # "Process 2 Rod Blk Tesla 2 Average Data": rdb.rdbTeslaTotalAverage2,
+        # "Process 2 Rod Blk Tesla 3 Average Data": rdb.rdbTeslaTotalAverage3,
+        # "Process 2 Rod Blk Tesla 4 Average Data": rdb.rdbTeslaTotalAverage4,
+        # "Process 2 Rod Blk Tesla 1 Minimum Data": rdb.rdbTeslaTotalMinimum1,
+        # "Process 2 Rod Blk Tesla 2 Minimum Data": rdb.rdbTeslaTotalMinimum2,
+        # "Process 2 Rod Blk Tesla 3 Minimum Data": rdb.rdbTeslaTotalMinimum3,
+        # "Process 2 Rod Blk Tesla 4 Minimum Data": rdb.rdbTeslaTotalMinimum4,
+        # "Process 2 Rod Blk Tesla 1 Maximum Data": rdb.rdbTeslaTotalMaximum1,
+        # "Process 2 Rod Blk Tesla 2 Maximum Data": rdb.rdbTeslaTotalMaximum2,
+        # "Process 2 Rod Blk Tesla 3 Maximum Data": rdb.rdbTeslaTotalMaximum3,
+        # "Process 2 Rod Blk Tesla 4 Maximum Data": rdb.rdbTeslaTotalMaximum4,
+        # "Process 2 Rod Blk Inspection 1 Average Data": rdb.rdbTotalAverage1,
+        # "Process 2 Rod Blk Inspection 2 Average Data": rdb.rdbTotalAverage2,
+        # "Process 2 Rod Blk Inspection 3 Average Data": rdb.rdbTotalAverage3,
+        # "Process 2 Rod Blk Inspection 4 Average Data": rdb.rdbTotalAverage4,
+        # "Process 2 Rod Blk Inspection 5 Average Data": rdb.rdbTotalAverage5,
+        # "Process 2 Rod Blk Inspection 6 Average Data": rdb.rdbTotalAverage6,
+        # "Process 2 Rod Blk Inspection 7 Average Data": rdb.rdbTotalAverage7,
+        # "Process 2 Rod Blk Inspection 8 Average Data": rdb.rdbTotalAverage8,
+        # "Process 2 Rod Blk Inspection 9 Average Data": rdb.rdbTotalAverage9,
+        # "Process 2 Rod Blk Inspection 1 Minimum Data": rdb.rdbTotalMinimum1,
+        # "Process 2 Rod Blk Inspection 2 Minimum Data": rdb.rdbTotalMinimum2,
+        # "Process 2 Rod Blk Inspection 3 Minimum Data": rdb.rdbTotalMinimum3,
+        # "Process 2 Rod Blk Inspection 4 Minimum Data": rdb.rdbTotalMinimum4,
+        # "Process 2 Rod Blk Inspection 5 Minimum Data": rdb.rdbTotalMinimum5,
+        # "Process 2 Rod Blk Inspection 6 Minimum Data": rdb.rdbTotalMinimum6,
+        # "Process 2 Rod Blk Inspection 7 Minimum Data": rdb.rdbTotalMinimum7,
+        # "Process 2 Rod Blk Inspection 8 Minimum Data": rdb.rdbTotalMinimum8,
+        # "Process 2 Rod Blk Inspection 9 Minimum Data": rdb.rdbTotalMinimum9,
+        # "Process 2 Rod Blk Inspection 1 Maximum Data": rdb.rdbTotalMaximum1,
+        # "Process 2 Rod Blk Inspection 2 Maximum Data": rdb.rdbTotalMaximum2,
+        # "Process 2 Rod Blk Inspection 3 Maximum Data": rdb.rdbTotalMaximum3,
+        # "Process 2 Rod Blk Inspection 4 Maximum Data": rdb.rdbTotalMaximum4,
+        # "Process 2 Rod Blk Inspection 5 Maximum Data": rdb.rdbTotalMaximum5,
+        # "Process 2 Rod Blk Inspection 6 Maximum Data": rdb.rdbTotalMaximum6,
+        # "Process 2 Rod Blk Inspection 7 Maximum Data": rdb.rdbTotalMaximum7,
+        # "Process 2 Rod Blk Inspection 8 Maximum Data": rdb.rdbTotalMaximum8,
+        # "Process 2 Rod Blk Inspection 9 Maximum Data": rdb.rdbTotalMaximum9,
         "Process 2 Df Blk": tempDfVt2["Process 2 Df Blk"].values,
         "Process 2 Df Blk Lot No": tempDfVt2["Process 2 Df Blk Lot No"].values,
-        "Process 2 Df Blk Inspection 1 Average Data": dfb.totalAverage1,
-        "Process 2 Df Blk Inspection 2 Average Data": dfb.totalAverage2,
-        "Process 2 Df Blk Inspection 3 Average Data": dfb.totalAverage3,
-        "Process 2 Df Blk Inspection 4 Average Data": dfb.totalAverage4,
-        "Process 2 Df Blk Inspection 1 Minimum Data": dfb.totalMinimum1,
-        "Process 2 Df Blk Inspection 2 Minimum Data": dfb.totalMinimum2,
-        "Process 2 Df Blk Inspection 3 Minimum Data": dfb.totalMinimum3,
-        "Process 2 Df Blk Inspection 4 Minimum Data": dfb.totalMinimum4,
-        "Process 2 Df Blk Inspection 1 Maximum Data": dfb.totalMaximum1,
-        "Process 2 Df Blk Inspection 2 Maximum Data": dfb.totalMaximum2,
-        "Process 2 Df Blk Inspection 3 Maximum Data": dfb.totalMaximum3,
-        "Process 2 Df Blk Inspection 4 Maximum Data": dfb.totalMaximum4,
-        "Process 2 Df Blk Tensile Rate Of Change Average" : tensile.rateOfChangeTotalAverage,
-        "Process 2 Df Blk Tensile Rate Of Change Minimum" : tensile.rateOfChangeTotalMinimum,
-        "Process 2 Df Blk Tensile Rate Of Change Maximum" : tensile.rateOfChangeTotalMaximum,
-        "Process 2 Df Blk Tensile Start Force Average" : tensile.startForceTotalAverage,
-        "Process 2 Df Blk Tensile Start Force Minimum" : tensile.startForceTotalMinimum,
-        "Process 2 Df Blk Tensile Start Force Maximum" : tensile.startForceTotalMaximum,
-        "Process 2 Df Blk Tensile Terminating Force Average" : tensile.terminatingForceTotalAverage,
-        "Process 2 Df Blk Tensile Terminating Force Minimum" : tensile.terminatingForceTotalMinimum,
-        "Process 2 Df Blk Tensile Terminating Force Maximum" : tensile.terminatingForceTotalMaximum,
+        # "Process 2 Df Blk Inspection 1 Average Data": dfb.totalAverage1,
+        # "Process 2 Df Blk Inspection 2 Average Data": dfb.totalAverage2,
+        # "Process 2 Df Blk Inspection 3 Average Data": dfb.totalAverage3,
+        # "Process 2 Df Blk Inspection 4 Average Data": dfb.totalAverage4,
+        # "Process 2 Df Blk Inspection 1 Minimum Data": dfb.totalMinimum1,
+        # "Process 2 Df Blk Inspection 2 Minimum Data": dfb.totalMinimum2,
+        # "Process 2 Df Blk Inspection 3 Minimum Data": dfb.totalMinimum3,
+        # "Process 2 Df Blk Inspection 4 Minimum Data": dfb.totalMinimum4,
+        # "Process 2 Df Blk Inspection 1 Maximum Data": dfb.totalMaximum1,
+        # "Process 2 Df Blk Inspection 2 Maximum Data": dfb.totalMaximum2,
+        # "Process 2 Df Blk Inspection 3 Maximum Data": dfb.totalMaximum3,
+        # "Process 2 Df Blk Inspection 4 Maximum Data": dfb.totalMaximum4,
+        # "Process 2 Df Blk Tensile Rate Of Change Average" : tensile.rateOfChangeTotalAverage,
+        # "Process 2 Df Blk Tensile Rate Of Change Minimum" : tensile.rateOfChangeTotalMinimum,
+        # "Process 2 Df Blk Tensile Rate Of Change Maximum" : tensile.rateOfChangeTotalMaximum,
+        # "Process 2 Df Blk Tensile Start Force Average" : tensile.startForceTotalAverage,
+        # "Process 2 Df Blk Tensile Start Force Minimum" : tensile.startForceTotalMinimum,
+        # "Process 2 Df Blk Tensile Start Force Maximum" : tensile.startForceTotalMaximum,
+        # "Process 2 Df Blk Tensile Terminating Force Average" : tensile.terminatingForceTotalAverage,
+        # "Process 2 Df Blk Tensile Terminating Force Minimum" : tensile.terminatingForceTotalMinimum,
+        # "Process 2 Df Blk Tensile Terminating Force Maximum" : tensile.terminatingForceTotalMaximum,
         "Process 2 Df Ring": tempDfVt2["Process 2 Df Ring"].values,
         "Process 2 Df Ring Lot No": tempDfVt2["Process 2 Df Ring Lot No"].values,
         "Process 2 Washer": tempDfVt2["Process 2 Washer"].values,
@@ -4117,6 +4069,9 @@ def start():
     filesreader.readingYearStored = DateAndTimeManager.yearNow
     filesreader.ReadEm2pFiles()
     filesreader.ReadEm3pFiles()
+    filesreader.ReadFmFiles()
+    
+    filesreader.ReadCsbFiles()
 
     try:
         #Checking If There's Master Pump Data

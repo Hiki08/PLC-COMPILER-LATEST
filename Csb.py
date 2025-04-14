@@ -1,6 +1,7 @@
 #%%
 from Imports import *
 import DateAndTimeManager
+from FilesReader import *
 
 #%%
 class cSB():
@@ -19,66 +20,11 @@ class cSB():
 
     def __init__(self):
         pass
-    def ReadExcel(self, itemCode):
-        self.csbItemCode = itemCode
+    
+    def GettingData(self, itemCode, lotNumber):
+        if itemCode == "CSB6400802":
+            self.fileList = CSB6400802Data
 
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', None)
-
-        while not self.fileFinishedReading:
-            try:
-                vt1Directory = (fr'\\192.168.2.19\quality control\{str(self.readingYear)}')
-                
-                for d in os.listdir(vt1Directory):
-                    if "supplier" in d.lower():
-                        vt1Directory = os.path.join(vt1Directory, d)
-                        for d in os.listdir(vt1Directory):
-                            if "inspection standard" in d.lower():
-                                vt1Directory = os.path.join(vt1Directory, d)
-                                for d in os.listdir(vt1Directory):
-                                    if "receiving inspection record" in d.lower():
-                                        vt1Directory = os.path.join(vt1Directory, d)
-
-                                        #CHECKING THE ITEM CODE
-                                        if itemCode == "CSB6400802":
-                                            try:
-                                                for d in os.listdir(vt1Directory):
-                                                    if "cronics" in d.lower():
-                                                        directory = os.path.join(vt1Directory, d)
-
-                                                        #Finding A Folder That Contains New Trend
-                                                        for d in os.listdir(directory):
-                                                            if 'new trend' in d.lower():
-                                                                directory = os.path.join(directory, d)
-                                                                print(f"Updated vt1Directory: {directory}")
-                                                                break
-
-                                                        os.chdir(directory)
-
-                                                        files = glob.glob('*CSB6400802*.xlsm')
-
-                                                        for f in files:
-                                                            print(f'File Readed {f}')
-                                                            workbook = CalamineWorkbook.from_path(f)
-
-                                                            self.csbData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                            self.csbData = pd.DataFrame(self.csbData)
-                                                            self.csbData = self.csbData.replace(r'\s+', '', regex=True)
-                                                            
-                                                            print(f"CSB FINDED IN {self.readingYear} NEW TREND")
-                                                            self.fileList.append(self.csbData)
-                                            except:
-                                                print("NO DATA FOUND IN CRONICS")
-
-            except:
-                pass
-            
-            if self.readingYear > 2021:
-                self.readingYear -= 1
-            else:
-                self.fileFinishedReading = True   
-
-    def GettingData(self, lotNumber):
         for fileNum in range(len(self.fileList)):
             self.totalAverage1 = []
 
@@ -113,7 +59,7 @@ class cSB():
                     inspectionData = self.fileList[fileNum].iloc[max(0, lotNumberRow[a]):min(len(self.fileList[fileNum]), lotNumberRow[a] + 10), self.fileList[fileNum].columns.get_loc(lotNumberColumn[a]):self.fileList[fileNum].columns.get_loc(lotNumberColumn[a]) + 5]
 
                     #CHECKING THE ITEM CODE
-                    if self.csbItemCode == "CSB6400802":
+                    if itemCode == "CSB6400802":
                         average1 = inspectionData.iloc[3].mean()
 
                         minimum1 = inspectionData.iloc[3].min()
@@ -126,7 +72,7 @@ class cSB():
 
                         self.totalMaximum1.append(maximum1)
                 
-                if self.csbItemCode == "CSB6400802":
+                if itemCode == "CSB6400802":
                     self.totalAverage1 = statistics.mean(self.totalAverage1)
 
                     self.totalMinimum1 = min(self.totalMinimum1)

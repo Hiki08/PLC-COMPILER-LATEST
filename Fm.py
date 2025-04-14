@@ -1,6 +1,7 @@
 #%%
 from Imports import *
 import DateAndTimeManager
+from FilesReader import *
 
 #%%
 class fM():
@@ -39,70 +40,11 @@ class fM():
 
     def __init__(self):
         pass
-    def ReadExcel(self, itemCode):
-        self.fmItemCode = itemCode
-        self.fileList = []
+    
+    def GettingData(self, itemCode, lotNumber):
+        if itemCode == "FM05000102-00A" or itemCode == "FM05000102-01A":
+            self.fileList = FM05000102Data
 
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', None)
-
-        while not self.fileFinishedReading:
-            try:
-                vt1Directory = (fr'\\192.168.2.19\quality control\{str(self.readingYear)}')
-
-                for d in os.listdir(vt1Directory):
-                    if "supplier" in d.lower():
-                        vt1Directory = os.path.join(vt1Directory, d)
-                        for d in os.listdir(vt1Directory):
-                            if "inspection standard" in d.lower():
-                                vt1Directory = os.path.join(vt1Directory, d)
-                                for d in os.listdir(vt1Directory):
-                                    if "receiving inspection record" in d.lower():
-                                        vt1Directory = os.path.join(vt1Directory, d)
-
-                                        #CHECKING THE ITEM CODE
-                                        if itemCode == "FM05000102-00A" or itemCode == "FM05000102-01A":
-                                            try:
-                                                for d in os.listdir(vt1Directory):
-                                                    if "cronics" in d.lower():
-                                                        directory = os.path.join(vt1Directory, d)
-
-                                                        #Finding A Folder That Contains New Trend
-                                                        for d in os.listdir(directory):
-                                                            if 'new trend' in d.lower():
-                                                                directory = os.path.join(directory, d)
-                                                                print(f"Updated vt1Directory: {directory}")
-                                                                break
-
-                                                        os.chdir(directory)
-
-                                                        files = glob.glob('*FM05000102*.xlsm')
-
-                                                        for f in files:
-                                                            print(f'File Readed {f}')
-                                                            workbook = CalamineWorkbook.from_path(f)
-
-                                                            self.fmData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                            self.fmData = pd.DataFrame(self.fmData)
-                                                            self.fmData = self.fmData.replace(r'\s+', '', regex=True)
-                                                            
-                                                            print(f"FM FINDED IN {self.readingYear} NEW TREND")
-                                                            self.fileList.append(self.fmData)
-                                            except:
-                                                print("NO DATA FOUND IN CRONICS")
-
-                                        elif itemCode == "FM03500100-01":
-                                            # IN PROGRESS
-                                            pass
-            except:
-                pass
-
-            if self.readingYear > 2021:
-                self.readingYear -= 1
-            else:
-                self.fileFinishedReading = True   
-
-    def GettingData(self, lotNumber):
         for fileNum in range(len(self.fileList)):
             self.totalAverage1 = []
             self.totalAverage2 = []
@@ -156,7 +98,7 @@ class fM():
                     inspectionData = self.fileList[fileNum].iloc[max(0, lotNumberRow[a]):min(len(self.fileList[fileNum]), lotNumberRow[a] + 13), self.fileList[fileNum].columns.get_loc(lotNumberColumn[a]):self.fileList[fileNum].columns.get_loc(lotNumberColumn[a]) + 5]
 
                     #CHECKING THE ITEM CODE
-                    if self.fmItemCode == "FM05000102-00A" or self.fmItemCode == "FM05000102-01A":
+                    if itemCode == "FM05000102-00A" or itemCode == "FM05000102-01A":
                         average1 = inspectionData.iloc[3].mean()
                         average2 = inspectionData.iloc[4].mean()
                         average3 = inspectionData.iloc[5].mean()
@@ -205,11 +147,11 @@ class fM():
                         self.totalMaximum6.append(maximum6)
                         self.totalMaximum7.append(maximum7)
 
-                    elif self.fmItemCode == "FM03500100-01":
+                    elif itemCode == "FM03500100-01":
                         # IN PROGRESS
                         pass
 
-                if self.fmItemCode == "FM05000102-00A" or self.fmItemCode == "FM05000102-01A":
+                if itemCode == "FM05000102-00A" or itemCode == "FM05000102-01A":
                     self.totalAverage1 = statistics.mean(self.totalAverage1)
                     self.totalAverage2 = statistics.mean(self.totalAverage2)
                     self.totalAverage3 = statistics.mean(self.totalAverage3)
@@ -260,7 +202,7 @@ class fM():
 
                     break
 
-                elif self.fmItemCode == "FM03500100-01":
+                elif itemCode == "FM03500100-01":
                     # IN PROGRESS
                     pass
                 
