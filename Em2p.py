@@ -29,8 +29,7 @@ class em2P():
 
     def __init__(self):
         pass
-    
-                
+             
     def GettingData(self, itemCode, lotNumber):
         if itemCode == "EM0580106P":
             self.fileList = EM0580106PData

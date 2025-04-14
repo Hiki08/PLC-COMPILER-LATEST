@@ -1,6 +1,7 @@
 #%%
 from Imports import *
 import DateAndTimeManager
+from FilesReader import *
 
 #%%
 class em3P():
@@ -28,213 +29,15 @@ class em3P():
 
     def __init__(self):
         pass
-    def ReadExcel(self, itemCode):
-        self.em3PItemCode = itemCode
-        self.fileList = []
 
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', None)
+    def GettingData(self, itemCode, lotNumber):
+        if itemCode == "EM0580107P":
+            self.fileList = EM0580107PData
+        elif itemCode == "EM0660047P":
+            self.fileList = EM0660047PData
+        elif itemCode == "EM0660045P":
+            self.fileList = EM0660045PData
 
-        while not self.fileFinishedReading:
-            try:
-                vt1Directory = (fr'\\192.168.2.19\quality control\{str(self.readingYear)}')
-
-                for d in os.listdir(vt1Directory):
-                    if "supplier" in d.lower():
-                        vt1Directory = os.path.join(vt1Directory, d)
-                        for d in os.listdir(vt1Directory):
-                            if "inspection standard" in d.lower():
-                                vt1Directory = os.path.join(vt1Directory, d)
-                                for d in os.listdir(vt1Directory):
-                                    if "receiving inspection record" in d.lower():
-                                        vt1Directory = os.path.join(vt1Directory, d)
-                                        
-                                        #CHECKING THE ITEM CODE
-                                        if itemCode == "EM0580107P":
-                                            try:
-                                                for d in os.listdir(vt1Directory):
-                                                    if "gaptec" in d.lower():
-                                                        directory = os.path.join(vt1Directory, d)
-
-                                                        #Finding A Folder That Contains New Trend
-                                                        for d in os.listdir(directory):
-                                                            if 'new trend' in d.lower():
-                                                                directory = os.path.join(directory, d)
-                                                                print(f"Updated vt1Directory: {directory}")
-                                                                break
-
-                                                        os.chdir(directory)
-
-                                                        files = glob.glob('*EM0580107P*.xlsm')
-
-                                                        for f in files:
-                                                            print(f'File Readed {f}')
-                                                            workbook = CalamineWorkbook.from_path(f)
-
-                                                            self.em3PData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                            self.em3PData = pd.DataFrame(self.em3PData)
-                                                            self.em3PData = self.em3PData.replace(r'\s+', '', regex=True)
-                                                            
-                                                            print(f"EM3P FINDED IN {self.readingYear} NEW TREND")
-                                                            self.fileList.append(self.em3PData)
-                                            except:
-                                                print("NO DATA FOUND IN GAPTEC")
-                                            try:
-                                                for d in os.listdir(vt1Directory):
-                                                    if "dhye" in d.lower():
-                                                        directory = os.path.join(vt1Directory, d)
-
-                                                        #Finding A Folder That Contains New Trend
-                                                        for d in os.listdir(directory):
-                                                            if 'new trend' in d.lower():
-                                                                directory = os.path.join(directory, d)
-                                                                print(f"Updated vt1Directory: {directory}")
-                                                                break
-
-                                                        os.chdir(directory)
-
-                                                        files = glob.glob('*EM0580107P*.xlsm')
-
-                                                        for f in files:
-                                                            print(f'File Readed {f}')
-                                                            workbook = CalamineWorkbook.from_path(f)
-
-                                                            self.em3PData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                            self.em3PData = pd.DataFrame(self.em3PData)
-                                                            self.em3PData = self.em3PData.replace(r'\s+', '', regex=True)
-                                                            
-                                                            print(f"EM3P FINDED IN {self.readingYear} NEW TREND")
-                                                            self.fileList.append(self.em3PData)
-                                            except:
-                                                print("NO DATA FOUND IN DHYE")
-                                        elif itemCode == "EM0660047P":
-                                            try:
-                                                for d in os.listdir(vt1Directory):
-                                                    if "gaptec" in d.lower():
-                                                        directory = os.path.join(vt1Directory, d)
-
-                                                        #Finding A Folder That Contains New Trend
-                                                        for d in os.listdir(directory):
-                                                            if 'new trend' in d.lower():
-                                                                directory = os.path.join(directory, d)
-                                                                print(f"Updated vt1Directory: {directory}")
-                                                                break
-
-                                                        os.chdir(directory)
-
-                                                        files = glob.glob('*EM0660047P*.xlsm')
-
-                                                        for f in files:
-                                                            print(f'File Readed {f}')
-                                                            workbook = CalamineWorkbook.from_path(f)
-
-                                                            self.em3PData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                            self.em3PData = pd.DataFrame(self.em3PData)
-                                                            self.em3PData = self.em3PData.replace(r'\s+', '', regex=True)
-                                                            
-                                                            print(f"EM3P FINDED IN {self.readingYear} NEW TREND")
-                                                            self.fileList.append(self.em3PData)
-                                            except:
-                                                print("NO DATA FOUND IN GAPTEC")
-                                            try:
-                                                for d in os.listdir(vt1Directory):
-                                                    if "dhye" in d.lower():
-                                                        directory = os.path.join(vt1Directory, d)
-
-                                                        #Finding A Folder That Contains New Trend
-                                                        for d in os.listdir(directory):
-                                                            if 'new trend' in d.lower():
-                                                                directory = os.path.join(directory, d)
-                                                                print(f"Updated vt1Directory: {directory}")
-                                                                break
-
-                                                        os.chdir(directory)
-
-                                                        files = glob.glob('*EM0660047P*.xlsm')
-
-                                                        for f in files:
-                                                            print(f'File Readed {f}')
-                                                            workbook = CalamineWorkbook.from_path(f)
-
-                                                            self.em3PData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                            self.em3PData = pd.DataFrame(self.em3PData)
-                                                            self.em3PData = self.em3PData.replace(r'\s+', '', regex=True)
-                                                            
-                                                            print(f"EM3P FINDED IN {self.readingYear} NEW TREND")
-                                                            self.fileList.append(self.em3PData)
-                                            except:
-                                                print("NO DATA FOUND IN DHYE")
-                                        elif itemCode == "EM0660045P":
-                                            try:
-                                                for d in os.listdir(vt1Directory):
-                                                    if "gaptec" in d.lower():
-                                                        directory = os.path.join(vt1Directory, d)
-
-                                                        #Finding A Folder That Contains New Trend
-                                                        for d in os.listdir(directory):
-                                                            if 'new trend' in d.lower():
-                                                                directory = os.path.join(directory, d)
-                                                                print(f"Updated vt1Directory: {directory}")
-                                                                break
-
-                                                        os.chdir(directory)
-
-                                                        files = glob.glob('*EM0660045P*.xlsm')
-
-                                                        for f in files:
-                                                            print(f'File Readed {f}')
-                                                            workbook = CalamineWorkbook.from_path(f)
-
-                                                            self.em3PData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                            self.em3PData = pd.DataFrame(self.em3PData)
-                                                            self.em3PData = self.em3PData.replace(r'\s+', '', regex=True)
-                                                            
-                                                            print(f"EM3P FINDED IN {self.readingYear} NEW TREND")
-                                                            self.fileList.append(self.em3PData)
-                                            except:
-                                                print("NO DATA FOUND IN GAPTEC")
-                                            try:
-                                                for d in os.listdir(vt1Directory):
-                                                    if "dhye" in d.lower():
-                                                        directory = os.path.join(vt1Directory, d)
-
-                                                        #Finding A Folder That Contains New Trend
-                                                        for d in os.listdir(directory):
-                                                            if 'new trend' in d.lower():
-                                                                directory = os.path.join(directory, d)
-                                                                print(f"Updated vt1Directory: {directory}")
-                                                                break
-
-                                                        os.chdir(directory)
-
-                                                        files = glob.glob('*EM0660045P*.xlsm')
-
-                                                        for f in files:
-                                                            print(f'File Readed {f}')
-                                                            workbook = CalamineWorkbook.from_path(f)
-
-                                                            self.em3PData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                            self.em3PData = pd.DataFrame(self.em3PData)
-                                                            self.em3PData = self.em3PData.replace(r'\s+', '', regex=True)
-                                                            
-                                                            print(f"EM3P FINDED IN {self.readingYear} NEW TREND")
-                                                            self.fileList.append(self.em3PData)
-                                            except:
-                                                print("NO DATA FOUND IN DHYE")
-            except:
-                pass
-
-            if self.readingYear > 2021:
-                self.readingYear -= 1
-            else:
-                self.fileFinishedReading = True                  
-                                
-        # self.em3PData.replace('', np.nan, inplace=True)  
-
-        for file in self.fileList:
-            file.replace('', np.nan, inplace=True)            
-                                
-    def GettingData(self, lotNumber):
         for fileNum in range(len(self.fileList)):
             self.totalAverage3 = []
             self.totalAverage4 = []
@@ -277,7 +80,7 @@ class em3P():
                     inspectionData = self.fileList[fileNum].iloc[max(0, lotNumberRow[a]):min(len(self.fileList[fileNum]), lotNumberRow[a] + 13), self.fileList[fileNum].columns.get_loc(lotNumberColumn[a]):self.fileList[fileNum].columns.get_loc(lotNumberColumn[a]) + 5]
 
                     #CHECKING THE ITEM CODE
-                    if self.em3PItemCode == "EM0580107P":
+                    if itemCode == "EM0580107P":
                         average3 = inspectionData.iloc[5].mean()
                         average4 = inspectionData.iloc[6].mean()
                         average5 = inspectionData.iloc[7].mean()
@@ -304,7 +107,7 @@ class em3P():
                         self.totalMaximum4.append(maximum4)
                         self.totalMaximum5.append(maximum5)
                     #CHECKING THE ITEM CODE
-                    elif self.em3PItemCode == "EM0660047P":
+                    elif itemCode == "EM0660047P":
                         average3 = inspectionData.iloc[5].mean()
                         average10 = inspectionData.iloc[8, 0]
 
@@ -319,7 +122,7 @@ class em3P():
 
                         self.totalMaximum3.append(maximum3)
                     #CHECKING THE ITEM CODE
-                    elif self.em3PItemCode == "EM0660045P":
+                    elif itemCode == "EM0660045P":
                         average3 = inspectionData.iloc[5].mean()
                         average10 = inspectionData.iloc[8, 0]
 
@@ -335,7 +138,7 @@ class em3P():
                         self.totalMaximum3.append(maximum3)
                     
                 #CHECKING THE ITEM CODE
-                if self.em3PItemCode == "EM0580107P":
+                if itemCode == "EM0580107P":
                     self.totalAverage3 = statistics.mean(self.totalAverage3)
                     self.totalAverage4 = statistics.mean(self.totalAverage4)
                     self.totalAverage5 = statistics.mean(self.totalAverage5)
@@ -364,7 +167,7 @@ class em3P():
 
                     break
                 #CHECKING THE ITEM CODE
-                elif self.em3PItemCode == "EM0660047P":
+                elif itemCode == "EM0660047P":
                     self.totalAverage3 = statistics.mean(self.totalAverage3)
                     self.totalAverage10 = statistics.mean(self.totalAverage10)
 
@@ -380,7 +183,7 @@ class em3P():
                     self.totalMaximum3 = f"{self.totalMaximum3:.2f}"
                     break
                 #CHECKING THE ITEM CODE
-                elif self.em3PItemCode == "EM0660045P":
+                elif itemCode == "EM0660045P":
                     self.totalAverage3 = statistics.mean(self.totalAverage3)
                     self.totalAverage10 = statistics.mean(self.totalAverage10)
 

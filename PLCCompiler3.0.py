@@ -3,6 +3,8 @@
 from Imports import *
 import DateAndTimeManager
 
+from FilesReader import *
+
 from Em2p import em2P
 from Em3p import em3P
 from Fm import fM
@@ -10,6 +12,23 @@ from Dfb import dFB
 from Dfb import Tensile
 from Rdb import rDB
 from Csb import cSB
+
+#%%
+DateAndTimeManager.GetDateToday()
+
+filesreader = filesReader()
+filesreader.readingYearStored = DateAndTimeManager.yearNow
+filesreader.ReadEm2pFiles()
+filesreader.ReadEm3pFiles()
+
+# em2p = em2P()
+# em2p.GettingData("EM0580106P", "CAT-4J15DI")
+
+# em2p.GettingData("EM0660046P", "FC6030-1F18GT")
+# em2p.GettingData("EM0580106P", "CAT-4J15DI")
+
+em3p = em3P()
+em3p.GettingData("EM0580107P", "CAT-5A07DI")
 
 # %%
 #Variables 
@@ -1049,15 +1068,15 @@ def CompileCsv():
 
     # GETTING EM2P INSPECTION DATA
     em2p = em2P()
-    em2p.readingYear = int(DateAndTimeManager.yearNow)
-    em2p.ReadExcel(tempDfVt1["Process 1 Em2p"].values)
-    em2p.GettingData(tempDfVt1["Process 1 Em2p Lot No"].values)
+    # em2p.readingYear = int(DateAndTimeManager.yearNow)
+    # em2p.ReadExcel(tempDfVt1["Process 1 Em2p"].values)
+    em2p.GettingData(tempDfVt1["Process 1 Em2p"].values, tempDfVt1["Process 1 Em2p Lot No"].values)
 
     #GETTING EM3P INSPECTION DATA
     em3p = em3P()
-    em3p.readingYear = int(DateAndTimeManager.yearNow)
-    em3p.ReadExcel(tempDfVt1["Process 1 Em3p"].values)
-    em3p.GettingData(tempDfVt1["Process 1 Em3p Lot No"].values)
+    # em3p.readingYear = int(DateAndTimeManager.yearNow)
+    # em3p.ReadExcel(tempDfVt1["Process 1 Em3p"].values)
+    em3p.GettingData(tempDfVt1["Process 1 Em3p"].values, tempDfVt1["Process 1 Em3p Lot No"].values)
 
     #GETTING FM INSPECTION DATA
     fm = fM()
@@ -4092,6 +4111,12 @@ def start():
     compiledFrame = pd.DataFrame(columns=col)
 
     DateAndTimeManager.GetDateToday()
+
+    #READING ALL FILES USING FILES READER
+    filesreader = filesReader()
+    filesreader.readingYearStored = DateAndTimeManager.yearNow
+    filesreader.ReadEm2pFiles()
+    filesreader.ReadEm3pFiles()
 
     try:
         #Checking If There's Master Pump Data
