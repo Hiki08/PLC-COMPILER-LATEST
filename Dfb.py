@@ -3,8 +3,14 @@ from Imports import *
 import DateAndTimeManager
 from FilesReader import *
 
+DFBMAINLotNo = ""
+
 #%%
 class dFB():
+    global DFBMAINLotNo
+
+    DFBMAINLotNo = ""
+
     dfbSnapData = ""
     dfbLetterCode = ""
     dfbLotNumber = ""
@@ -79,6 +85,8 @@ class dFB():
                 tempDfbSnapData = self.dfbSnapData[(self.dfbSnapData[0].isin([f"{self.dfbLotNumber} 00:00:00"])) & (self.dfbSnapData[2].isin([self.dfbLetterCode]))]
 
                 self.dfbLotNumber2 = tempDfbSnapData.iloc[:,3].values[0]
+
+                DFBMAINLotNo = self.dfbLotNumber2
 
                 print(f"Dfb Code {self.dfbCode}")
                 print(f"Dfb Lot Number {self.dfbLotNumber2}")
@@ -254,61 +262,25 @@ class Tensile():
 
     def __init__(self):
         pass
-    def ReadExcel(self):
+    
+    def GettingData(self, itemCode, lotNo):
         self.fileList = []
 
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', None)
+        if itemCode == "DFB6600600":
+            self.fileList = TENSILEData
 
-        while not self.fileFinishedReading:
-            try:
-                vt1Directory = (fr'\\192.168.2.19\quality control\{str(self.readingYear)}')
+        # self.rateOfChangeTotalAverage = []
+        # self.rateOfChangeTotalMinimum = []
+        # self.rateOfChangeTotalMaximum = []
 
-                for d in os.listdir(vt1Directory):
-                    if "supplier" in d.lower():
-                        vt1Directory = os.path.join(vt1Directory, d)
-                        for d in os.listdir(vt1Directory):
-                            if "inspection standard" in d.lower():
-                                vt1Directory = os.path.join(vt1Directory, d)
-                                for d in os.listdir(vt1Directory):
-                                    if "receiving inspection record" in d.lower():
-                                        vt1Directory = os.path.join(vt1Directory, d)
-                                        try:
-                                            for d in os.listdir(vt1Directory):
-                                                if "tensile" in d.lower():
-                                                    directory = os.path.join(vt1Directory, d)
+        # self.startForceTotalAverage = []
+        # self.startForceTotalMinimum = []
+        # self.startForceTotalMaximum = []
 
-                                                    print(f"Updated vt1Directory: {directory}")
+        # self.terminatingForceTotalAverage = []
+        # self.terminatingForceTotalMinimum = []
+        # self.terminatingForceTotalMaximum = []
 
-                                                    os.chdir(directory)
-
-                                                    files = glob.glob('*DF06600600*.xlsx')
-
-                                                    for f in files:
-                                                        print(f'File Readed {f}')
-                                                        workbook = CalamineWorkbook.from_path(f)
-
-                                                        self.tensileData = workbook.get_sheet_by_name("Rate_Result_List").to_python(skip_empty_area=True)
-                                                        self.tensileData = pd.DataFrame(self.tensileData)
-                                                        self.tensileData = self.tensileData.replace(r'\s+', '', regex=True)
-                                                        
-                                                        print(f"TENSILE FINDED IN {self.readingYear}")
-                                                        self.fileList.append(self.tensileData)
-                                        except:
-                                            print("NO DATA FOUND IN TENSILE")
-
-            except:
-                pass
-
-            if self.readingYear > 2021:
-                self.readingYear -= 1
-            else:
-                self.fileFinishedReading = True
-
-        for file in self.fileList:
-            file.replace('', np.nan, inplace=True)
-
-    def GettingData(self, lotNo):
         #Skipping 4 Rows
         self.fileList[0] = self.fileList[0].iloc[4:]
 
@@ -345,3 +317,10 @@ class Tensile():
         print(f"RATE OF CHANGE\nAVERAGE: {self.rateOfChangeTotalAverage}\nMINIMUM: {self.rateOfChangeTotalMinimum}\nMAXIMUM: {self.rateOfChangeTotalMaximum}")
         print(f"START FORCE\nAVERAGE: {self.startForceTotalAverage}\nMINIMUM: {self.startForceTotalMinimum}\nMAXIMUM: {self.startForceTotalMaximum}")
         print(f"TERMINATING FORCE\nAVERAGE: {self.terminatingForceTotalAverage}\nMINIMUM: {self.terminatingForceTotalMinimum}\nMAXIMUM: {self.terminatingForceTotalMaximum}")
+
+
+#%%
+# tensile = Tensile()
+# tensile.GettingData("DFB6600600", "T000727-02"[:-3])
+
+# %%

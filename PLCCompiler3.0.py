@@ -10,22 +10,24 @@ from Em3p import em3P
 from Fm import fM
 from Dfb import dFB
 from Dfb import Tensile
+from Dfb import DFBMAINLotNo
 from Rdb import rDB
 from Csb import cSB
 
 #%%
-# DateAndTimeManager.GetDateToday()
+DateAndTimeManager.GetDateToday()
 
-# filesreader = filesReader()
-# filesreader.readingYearStored = DateAndTimeManager.yearNow
+filesreader = filesReader()
+filesreader.readingYearStored = DateAndTimeManager.yearNow
 # filesreader.ReadEm2pFiles()
 # filesreader.ReadEm3pFiles()
 # filesreader.ReadFmFiles()
 
 # filesreader.ReadCsbFiles()
 
-# filesreader.ReadDfbSnapFiles()
-# filesreader.ReadDfbFiles()
+filesreader.ReadDfbSnapFiles()
+filesreader.ReadDfbFiles()
+filesreader.ReadTensile()
 
 # em2p = em2P()
 # em2p.GettingData("EM0580106P", "CAT-4J15DI")
@@ -42,9 +44,13 @@ from Csb import cSB
 # csb = cSB()
 # csb.GettingData("CSB6400802", "012225A")
 
-# dfb = dFB()
-# dfb.ReadDfbSnap("20241031-A")
-# dfb.GettingData("DFB6600600")
+dfb = dFB()
+dfb.ReadDfbSnap("20241031-A")
+dfb.GettingData("DFB6600600")
+
+tensile = Tensile()
+tensile.GettingData("DFB6600600", dfb.dfbLotNumber2[:-3])
+
 
 # %%
 #Variables 
@@ -1087,9 +1093,7 @@ def CompileCsv():
 
     #GETTING TENSILE FOR DFB
     tensile = Tensile()
-    tensile.readingYear = int(DateAndTimeManager.yearNow)
-    # tensile.ReadExcel()
-    # tensile.GettingData(dfb.dfbLotNumber2[:-3])
+    tensile.GettingData(tempDfVt2["Process 2 Df Blk"].values[0], dfb.dfbLotNumber2[:-3])
 
     #GETTING RDB INSPECTION DATA
     rdb = rDB()
@@ -1246,15 +1250,15 @@ def CompileCsv():
         "Process 2 Df Blk Inspection 2 Maximum Data": dfb.totalMaximum2,
         "Process 2 Df Blk Inspection 3 Maximum Data": dfb.totalMaximum3,
         "Process 2 Df Blk Inspection 4 Maximum Data": dfb.totalMaximum4,
-        # "Process 2 Df Blk Tensile Rate Of Change Average" : tensile.rateOfChangeTotalAverage,
-        # "Process 2 Df Blk Tensile Rate Of Change Minimum" : tensile.rateOfChangeTotalMinimum,
-        # "Process 2 Df Blk Tensile Rate Of Change Maximum" : tensile.rateOfChangeTotalMaximum,
-        # "Process 2 Df Blk Tensile Start Force Average" : tensile.startForceTotalAverage,
-        # "Process 2 Df Blk Tensile Start Force Minimum" : tensile.startForceTotalMinimum,
-        # "Process 2 Df Blk Tensile Start Force Maximum" : tensile.startForceTotalMaximum,
-        # "Process 2 Df Blk Tensile Terminating Force Average" : tensile.terminatingForceTotalAverage,
-        # "Process 2 Df Blk Tensile Terminating Force Minimum" : tensile.terminatingForceTotalMinimum,
-        # "Process 2 Df Blk Tensile Terminating Force Maximum" : tensile.terminatingForceTotalMaximum,
+        "Process 2 Df Blk Tensile Rate Of Change Average" : tensile.rateOfChangeTotalAverage,
+        "Process 2 Df Blk Tensile Rate Of Change Minimum" : tensile.rateOfChangeTotalMinimum,
+        "Process 2 Df Blk Tensile Rate Of Change Maximum" : tensile.rateOfChangeTotalMaximum,
+        "Process 2 Df Blk Tensile Start Force Average" : tensile.startForceTotalAverage,
+        "Process 2 Df Blk Tensile Start Force Minimum" : tensile.startForceTotalMinimum,
+        "Process 2 Df Blk Tensile Start Force Maximum" : tensile.startForceTotalMaximum,
+        "Process 2 Df Blk Tensile Terminating Force Average" : tensile.terminatingForceTotalAverage,
+        "Process 2 Df Blk Tensile Terminating Force Minimum" : tensile.terminatingForceTotalMinimum,
+        "Process 2 Df Blk Tensile Terminating Force Maximum" : tensile.terminatingForceTotalMaximum,
         "Process 2 Df Ring": tempDfVt2["Process 2 Df Ring"].values,
         "Process 2 Df Ring Lot No": tempDfVt2["Process 2 Df Ring Lot No"].values,
         "Process 2 Washer": tempDfVt2["Process 2 Washer"].values,
@@ -4076,6 +4080,7 @@ def start():
     filesreader.ReadFmFiles()
     filesreader.ReadDfbSnapFiles()
     filesreader.ReadDfbFiles()
+    filesreader.ReadTensile()
 
     filesreader.ReadCsbFiles()
 

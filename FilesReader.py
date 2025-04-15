@@ -21,6 +21,7 @@ CSB6400802Data = []
 #DFB
 DFBSNAPData = []
 DF06600600Data = []
+TENSILEData = []
 
 class filesReader():
     global EM0580106PData
@@ -36,6 +37,8 @@ class filesReader():
     global CSB6400802Data
 
     global DFBSNAPData
+    global DF06600600Data
+    global TENSILEData
 
     #RESETING VALUES
     EM0580106PData = []
@@ -51,7 +54,8 @@ class filesReader():
     CSB6400802Data = []
 
     DFBSNAPData = []
-
+    DF06600600Data = []
+    TENSILEData = []
 
     readingYearStored = ""
     readingYear = ""
@@ -652,8 +656,59 @@ class filesReader():
         for file in DF06600600Data:
             file.replace('', np.nan, inplace=True)
 
+    def ReadTensile(self):
+        self.readingYear = self.readingYearStored
 
+        while True:
+            try:
+                vt1Directory = (fr'\\192.168.2.19\quality control\{str(self.readingYear)}')
 
+                for d in os.listdir(vt1Directory):
+                    if "supplier" in d.lower():
+                        vt1Directory = os.path.join(vt1Directory, d)
+                        for d in os.listdir(vt1Directory):
+                            if "inspection standard" in d.lower():
+                                vt1Directory = os.path.join(vt1Directory, d)
+                                for d in os.listdir(vt1Directory):
+                                    if "receiving inspection record" in d.lower():
+                                        vt1Directory = os.path.join(vt1Directory, d)
+
+                                        #GETTING DF06600600 FILES
+                                        try:
+                                            for d in os.listdir(vt1Directory):
+                                                if "tensile" in d.lower():
+                                                    directory = os.path.join(vt1Directory, d)
+
+                                                    print(f"Updated vt1Directory: {directory}")
+
+                                                    os.chdir(directory)
+
+                                                    files = glob.glob('*DF06600600*.xlsx')
+
+                                                    for f in files:
+                                                        print(f'File Readed {f}')
+                                                        workbook = CalamineWorkbook.from_path(f)
+
+                                                        tensileData = workbook.get_sheet_by_name("Rate_Result_List").to_python(skip_empty_area=True)
+                                                        tensileData = pd.DataFrame(tensileData)
+                                                        tensileData = tensileData.replace(r'\s+', '', regex=True)
+                                                        
+                                                        print(f"TENSILE FINDED IN {self.readingYear}")
+                                                        TENSILEData.append(tensileData)
+                                        except:
+                                            print("NO DATA FOUND IN TENSILE")
+            except:
+                pass
+
+            if self.readingYear > 2021:
+                self.readingYear -= 1
+            else:
+                # self.fileFinishedReading = True
+                break
+        
+        #REPLACING BLANK VALUES WITH N/A
+        for file in TENSILEData:
+            file.replace('', np.nan, inplace=True)
 
 
 
@@ -761,4 +816,10 @@ class filesReader():
 
 # print(len(DFBSNAPData))
 # print(len(DF06600600Data))
+# %%
+# filesreader = filesReader()
+# filesreader.readingYearStored = 2025
+# filesreader.ReadTensile()
+
+# print(len(TENSILEData))
 # %%
