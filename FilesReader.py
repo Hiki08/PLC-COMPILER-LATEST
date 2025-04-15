@@ -18,6 +18,10 @@ FM05000102Data = []
 #CSB
 CSB6400802Data = []
 
+#DFB
+DFBSNAPData = []
+DF06600600Data = []
+
 class filesReader():
     global EM0580106PData
     global EM0660046PData
@@ -27,6 +31,12 @@ class filesReader():
     global EM0660047PData
     global EM0660045PData 
 
+    global FM05000102Data
+
+    global CSB6400802Data
+
+    global DFBSNAPData
+
     #RESETING VALUES
     EM0580106PData = []
     EM0660046PData = []
@@ -35,6 +45,13 @@ class filesReader():
     EM0580107PData = []
     EM0660047PData = []
     EM0660045PData = []
+
+    FM05000102Data = []
+
+    CSB6400802Data = []
+
+    DFBSNAPData = []
+
 
     readingYearStored = ""
     readingYear = ""
@@ -542,11 +559,98 @@ class filesReader():
         for file in FM05000102Data:
             file.replace('', np.nan, inplace=True)
 
+    def ReadDfbSnapFiles(self):
+        self.readingYear = self.readingYearStored
+
+        while True:
+            try:
+                if self.readingYear < 2025:
+                    vt1Directory = (fr'\\192.168.2.19\{self.readingYear}$')
+                else:
+                    vt1Directory = (fr'\\192.168.2.19\production\{self.readingYear}')
+
+                for d in os.listdir(vt1Directory):
+                    if "online checksheet" in d.lower():
+                        vt1Directory = os.path.join(vt1Directory, d)
+                        for d in os.listdir(vt1Directory):
+                            if "outjob" in d.lower():
+                                vt1Directory = os.path.join(vt1Directory, d)
+                                for d in os.listdir(vt1Directory):
+                                    if "outjob material monitoring checksheet" in d.lower():
+                                        vt1Directory = os.path.join(vt1Directory, d)
+                                        os.chdir(vt1Directory)
+
+                                        wb = load_workbook(filename='SNAP.xlsx', data_only=True)
+
+                                        print(f"SNAP FINDED IN {vt1Directory}")
+                                        DFBSNAPData.append(wb)
+            except:
+                pass
+
+            if self.readingYear > 2021:
+                self.readingYear -= 1
+            else:
+                # self.fileFinishedReading = True
+                break
+
     def ReadDfbFiles(self):
-        pass
+        self.readingYear = self.readingYearStored
 
+        while True:
+            try:
+                vt1Directory = (fr'\\192.168.2.19\quality control\{str(self.readingYear)}')
 
+                for d in os.listdir(vt1Directory):
+                    if "supplier" in d.lower():
+                        vt1Directory = os.path.join(vt1Directory, d)
+                        for d in os.listdir(vt1Directory):
+                            if "inspection standard" in d.lower():
+                                vt1Directory = os.path.join(vt1Directory, d)
+                                for d in os.listdir(vt1Directory):
+                                    if "receiving inspection record" in d.lower():
+                                        vt1Directory = os.path.join(vt1Directory, d)
 
+                                        #GETTING DF06600600 FILES
+                                        try:
+                                            for d in os.listdir(vt1Directory):
+                                                if "takaishi" in d.lower():
+                                                    directory = os.path.join(vt1Directory, d)
+
+                                                    #Finding A Folder That Contains New Trend
+                                                    for d in os.listdir(directory):
+                                                        if 'new trend' in d.lower():
+                                                            directory = os.path.join(directory, d)
+                                                            print(f"Updated vt1Directory: {directory}")
+                                                            break
+
+                                                    os.chdir(directory)
+
+                                                    files = glob.glob('*DF06600600*.xlsm')
+
+                                                    for f in files:
+                                                        print(f'File Readed {f}')
+                                                        workbook = CalamineWorkbook.from_path(f)
+
+                                                        dfbData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
+                                                        dfbData = pd.DataFrame(dfbData)
+                                                        dfbData = dfbData.replace(r'\s+', '', regex=True)
+                                                        
+                                                        print(f"DFB FINDED IN {self.readingYear} NEW TREND")
+                                                        DF06600600Data.append(dfbData)
+                                        except:
+                                            print("NO DATA FOUND IN TAKAISHI")
+            except:
+                pass
+
+            if self.readingYear > 2021:
+                self.readingYear -= 1
+            else:
+                # self.fileFinishedReading = True
+                break
+        
+        #REPLACING BLANK VALUES WITH N/A
+        for file in DF06600600Data:
+            file.replace('', np.nan, inplace=True)
 
 
 
@@ -650,3 +754,11 @@ class filesReader():
 
 # print(len(CSB6400802Data))
 #%%
+# filesreader = filesReader()
+# filesreader.readingYearStored = 2025
+# filesreader.ReadDfbSnapFiles()
+# filesreader.ReadDfbFiles()
+
+# print(len(DFBSNAPData))
+# print(len(DF06600600Data))
+# %%

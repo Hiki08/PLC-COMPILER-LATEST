@@ -1,6 +1,7 @@
 #%%
 from Imports import *
 import DateAndTimeManager
+from FilesReader import *
 
 #%%
 class dFB():
@@ -45,130 +46,57 @@ class dFB():
         self.dfbMonth = lotNumber.strftime("%B")
         self.dfbLotNumber = lotNumber.strftime("%Y-%m-%d")
         
+
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.max_rows', None)
+
+        for fileNum in range(len(DFBSNAPData)):
+            print(fileNum)
+            try:
+                #Checking SNAPDATA Per Sheets
+                for s in DFBSNAPData[fileNum].sheetnames:
+                    if self.dfbMonth.lower() in s.lower():
+                        sheet = DFBSNAPData[fileNum][s]
+                        self.dfbSnapData = pd.DataFrame(sheet.values)
+                        self.dfbSnapData = self.dfbSnapData.iloc[6:]
+                        self.dfbSnapData = self.dfbSnapData.replace(r'\s+', '', regex=True)
+
+                        #Getting DFB Code
+                        self.dfbCode = self.dfbSnapData.iloc[1, 3]
+                        self.dfbCode = self.dfbCode[8:]
+                        self.dfbCode = self.dfbCode[:-28]
+
+                        #Filtering SNAP Data, That Contains DFB6600600
+                        self.dfbSnapData = self.dfbSnapData[(self.dfbSnapData[1].isin(["DFB6600600"]))]
+
+                        break
+
+
+
+                #Converting The First Column/Date To String
+                self.dfbSnapData.iloc[:, 0] = self.dfbSnapData.iloc[:, 0].astype(str)
+
+                tempDfbSnapData = self.dfbSnapData[(self.dfbSnapData[0].isin([f"{self.dfbLotNumber} 00:00:00"])) & (self.dfbSnapData[2].isin([self.dfbLetterCode]))]
+
+                self.dfbLotNumber2 = tempDfbSnapData.iloc[:,3].values[0]
+
+                print(f"Dfb Code {self.dfbCode}")
+                print(f"Dfb Lot Number {self.dfbLotNumber2}")
+
+                break
+
+            except:
+                print('No DFB6600600 Snap Not Found')
+
+
         print(self.dfbLotNumber)
         print(self.dfbMonth)
         print(self.dfbLetterCode)
 
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', None)
+    def GettingData(self, itemCode):
+        if itemCode == "DFB6600600":
+            self.fileList = DF06600600Data
 
-        try:
-            if self.dfbYear == "2024":
-                self.dfbYear = "2024$"
-                vt1Directory = (fr'\\192.168.2.19\{self.dfbYear}')
-            else:
-                vt1Directory = (fr'\\192.168.2.19\production\{self.dfbYear}')
-
-
-
-            for d in os.listdir(vt1Directory):
-                if "online checksheet" in d.lower():
-                    vt1Directory = os.path.join(vt1Directory, d)
-                    for d in os.listdir(vt1Directory):
-                        if "outjob" in d.lower():
-                            vt1Directory = os.path.join(vt1Directory, d)
-                            for d in os.listdir(vt1Directory):
-                                if "outjob material monitoring checksheet" in d.lower():
-                                    vt1Directory = os.path.join(vt1Directory, d)
-                                    os.chdir(vt1Directory)
-
-                                    wb = load_workbook(filename='SNAP.xlsx', data_only=True)
-
-                                    for s in wb.sheetnames:
-                                        if self.dfbMonth.lower() in s.lower():
-                                            sheet = wb[s]
-                                            self.dfbSnapData = pd.DataFrame(sheet.values)
-                                            self.dfbSnapData = self.dfbSnapData.iloc[6:]
-                                            self.dfbSnapData = self.dfbSnapData.replace(r'\s+', '', regex=True)
-
-                                            #Getting DFB Code
-                                            self.dfbCode = self.dfbSnapData.iloc[1, 3]
-                                            self.dfbCode = self.dfbCode[8:]
-                                            self.dfbCode = self.dfbCode[:-28]
-
-                                            #Filtering SNAP Data, That Contains DFB6600600
-                                            self.dfbSnapData = self.dfbSnapData[(self.dfbSnapData[1].isin(["DFB6600600"]))]
-
-                                            break
-        except:
-            print('No DFB6600600 Snap Not Found')
-
-    def ReadDFB6600600(self):
-        try:
-            #Converting The First Column/Date To String
-            self.dfbSnapData.iloc[:, 0] = self.dfbSnapData.iloc[:, 0].astype(str)
-
-            tempDfbSnapData = self.dfbSnapData[(self.dfbSnapData[0].isin([f"{self.dfbLotNumber} 00:00:00"])) & (self.dfbSnapData[2].isin([self.dfbLetterCode]))]
-            
-            # tempDfbSnapData = self.dfbSnapData
-
-            # print(self.dfbLotNumber)
-
-            self.dfbLotNumber2 = tempDfbSnapData.iloc[:,3].values[0]
-
-            print(f"Dfb Code {self.dfbCode}")
-            print(f"Dfb Lot Number {self.dfbLotNumber2}")
-        except:
-            print("DFB: There's a problem reading lot number")
-
-    def ReadExcel(self):
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', None)
-
-        while not self.fileFinishedReading:
-            try:
-                vt1Directory = (fr'\\192.168.2.19\quality control\{str(self.readingYear)}')
-
-                for d in os.listdir(vt1Directory):
-                    if "supplier" in d.lower():
-                        vt1Directory = os.path.join(vt1Directory, d)
-                        for d in os.listdir(vt1Directory):
-                            if "inspection standard" in d.lower():
-                                vt1Directory = os.path.join(vt1Directory, d)
-                                for d in os.listdir(vt1Directory):
-                                    if "receiving inspection record" in d.lower():
-                                        vt1Directory = os.path.join(vt1Directory, d)
-                                        try:
-                                            for d in os.listdir(vt1Directory):
-                                                if "takaishi" in d.lower():
-                                                    directory = os.path.join(vt1Directory, d)
-
-                                                    #Finding A Folder That Contains New Trend
-                                                    for d in os.listdir(directory):
-                                                        if 'new trend' in d.lower():
-                                                            directory = os.path.join(directory, d)
-                                                            print(f"Updated vt1Directory: {directory}")
-                                                            break
-
-                                                    os.chdir(directory)
-
-                                                    files = glob.glob('*DF06600600*.xlsm')
-
-                                                    for f in files:
-                                                        print(f'File Readed {f}')
-                                                        workbook = CalamineWorkbook.from_path(f)
-
-                                                        self.em2PData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                        self.em2PData = pd.DataFrame(self.em2PData)
-                                                        self.em2PData = self.em2PData.replace(r'\s+', '', regex=True)
-                                                        
-                                                        print(f"DFB FINDED IN {self.readingYear} NEW TREND")
-                                                        self.fileList.append(self.em2PData)
-                                        except:
-                                            print("NO DATA FOUND IN GAPTEC")
-
-            except:
-                pass
-
-            if self.readingYear > 2021:
-                self.readingYear -= 1
-            else:
-                self.fileFinishedReading = True
-
-        for file in self.fileList:
-            file.replace('', np.nan, inplace=True)   
-
-    def GettingData(self):
         for fileNum in range(len(self.fileList)):
             self.totalAverage1 = []
             self.totalAverage2 = []

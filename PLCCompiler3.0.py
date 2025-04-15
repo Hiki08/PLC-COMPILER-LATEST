@@ -24,6 +24,9 @@ from Csb import cSB
 
 # filesreader.ReadCsbFiles()
 
+# filesreader.ReadDfbSnapFiles()
+# filesreader.ReadDfbFiles()
+
 # em2p = em2P()
 # em2p.GettingData("EM0580106P", "CAT-4J15DI")
 
@@ -38,6 +41,10 @@ from Csb import cSB
 
 # csb = cSB()
 # csb.GettingData("CSB6400802", "012225A")
+
+# dfb = dFB()
+# dfb.ReadDfbSnap("20241031-A")
+# dfb.GettingData("DFB6600600")
 
 # %%
 #Variables 
@@ -1075,11 +1082,8 @@ def CompileCsv():
 
     #GETTING DFB INSPECTION DATA
     dfb = dFB()
-    dfb.readingYear = int(DateAndTimeManager.yearNow)
-    # dfb.ReadDfbSnap(tempDfVt2["Process 2 Df Blk Lot No"].values[0])
-    # dfb.ReadDFB6600600()
-    # dfb.ReadExcel()
-    # dfb.GettingData()
+    dfb.ReadDfbSnap(tempDfVt2["Process 2 Df Blk Lot No"].values[0])
+    dfb.GettingData(tempDfVt2["Process 2 Df Blk"].values[0])
 
     #GETTING TENSILE FOR DFB
     tensile = Tensile()
@@ -1230,18 +1234,18 @@ def CompileCsv():
         # "Process 2 Rod Blk Inspection 9 Maximum Data": rdb.rdbTotalMaximum9,
         "Process 2 Df Blk": tempDfVt2["Process 2 Df Blk"].values,
         "Process 2 Df Blk Lot No": tempDfVt2["Process 2 Df Blk Lot No"].values,
-        # "Process 2 Df Blk Inspection 1 Average Data": dfb.totalAverage1,
-        # "Process 2 Df Blk Inspection 2 Average Data": dfb.totalAverage2,
-        # "Process 2 Df Blk Inspection 3 Average Data": dfb.totalAverage3,
-        # "Process 2 Df Blk Inspection 4 Average Data": dfb.totalAverage4,
-        # "Process 2 Df Blk Inspection 1 Minimum Data": dfb.totalMinimum1,
-        # "Process 2 Df Blk Inspection 2 Minimum Data": dfb.totalMinimum2,
-        # "Process 2 Df Blk Inspection 3 Minimum Data": dfb.totalMinimum3,
-        # "Process 2 Df Blk Inspection 4 Minimum Data": dfb.totalMinimum4,
-        # "Process 2 Df Blk Inspection 1 Maximum Data": dfb.totalMaximum1,
-        # "Process 2 Df Blk Inspection 2 Maximum Data": dfb.totalMaximum2,
-        # "Process 2 Df Blk Inspection 3 Maximum Data": dfb.totalMaximum3,
-        # "Process 2 Df Blk Inspection 4 Maximum Data": dfb.totalMaximum4,
+        "Process 2 Df Blk Inspection 1 Average Data": dfb.totalAverage1,
+        "Process 2 Df Blk Inspection 2 Average Data": dfb.totalAverage2,
+        "Process 2 Df Blk Inspection 3 Average Data": dfb.totalAverage3,
+        "Process 2 Df Blk Inspection 4 Average Data": dfb.totalAverage4,
+        "Process 2 Df Blk Inspection 1 Minimum Data": dfb.totalMinimum1,
+        "Process 2 Df Blk Inspection 2 Minimum Data": dfb.totalMinimum2,
+        "Process 2 Df Blk Inspection 3 Minimum Data": dfb.totalMinimum3,
+        "Process 2 Df Blk Inspection 4 Minimum Data": dfb.totalMinimum4,
+        "Process 2 Df Blk Inspection 1 Maximum Data": dfb.totalMaximum1,
+        "Process 2 Df Blk Inspection 2 Maximum Data": dfb.totalMaximum2,
+        "Process 2 Df Blk Inspection 3 Maximum Data": dfb.totalMaximum3,
+        "Process 2 Df Blk Inspection 4 Maximum Data": dfb.totalMaximum4,
         # "Process 2 Df Blk Tensile Rate Of Change Average" : tensile.rateOfChangeTotalAverage,
         # "Process 2 Df Blk Tensile Rate Of Change Minimum" : tensile.rateOfChangeTotalMinimum,
         # "Process 2 Df Blk Tensile Rate Of Change Maximum" : tensile.rateOfChangeTotalMaximum,
@@ -4070,7 +4074,9 @@ def start():
     filesreader.ReadEm2pFiles()
     filesreader.ReadEm3pFiles()
     filesreader.ReadFmFiles()
-    
+    filesreader.ReadDfbSnapFiles()
+    filesreader.ReadDfbFiles()
+
     filesreader.ReadCsbFiles()
 
     try:
