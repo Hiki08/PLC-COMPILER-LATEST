@@ -10,24 +10,32 @@ from Em3p import em3P
 from Fm import fM
 from Dfb import dFB
 from Dfb import Tensile
-from Dfb import DFBMAINLotNo
 from Rdb import rDB
 from Csb import cSB
 
 #%%
-DateAndTimeManager.GetDateToday()
+# num = [2, 5, 3, "nan"]
 
-filesreader = filesReader()
-filesreader.readingYearStored = DateAndTimeManager.yearNow
+# print(statistics.mean(num))
+
+#%%
+# DateAndTimeManager.GetDateToday()
+
+# filesreader = filesReader()
+# filesreader.readingYearStored = DateAndTimeManager.yearNow
 # filesreader.ReadEm2pFiles()
 # filesreader.ReadEm3pFiles()
 # filesreader.ReadFmFiles()
 
-# filesreader.ReadCsbFiles()
 
-filesreader.ReadDfbSnapFiles()
-filesreader.ReadDfbFiles()
-filesreader.ReadTensile()
+# filesreader.ReadDfbSnapFiles()
+# filesreader.ReadDfbFiles()
+# filesreader.ReadTensile()
+
+# filesreader.ReadRdbCheckSheetFiles()
+# filesreader.ReadRdbFiles()
+
+# filesreader.ReadCsbFiles()
 
 # em2p = em2P()
 # em2p.GettingData("EM0580106P", "CAT-4J15DI")
@@ -36,20 +44,26 @@ filesreader.ReadTensile()
 # em2p.GettingData("EM0580106P", "CAT-4J15DI")
 
 # em3p = em3P()
-# em3p.GettingData("EM0580107P", "CAT-5A07DI")
+# em3p.GettingData("EM0580107P", "CAT-4J15DI")
+# em3p.GettingData("EM0580107P", "CAT-4I14DI")
 
 # fm = fM()
 # fm.GettingData("FM05000102-00A", "112524A-40")
 
+# dfb = dFB()
+# dfb.ReadDfbSnap("20241031-A")
+# dfb.GettingData("DFB6600600")
+
+# tensile = Tensile()
+# tensile.GettingData("DFB6600600", dfb.dfbLotNumber2[:-3])
+
+# rdb = rDB()
+# rdb.ReadCheckSheet("20241209-D", "RDB5200200")
+# rdb.GettingData("RDB5200200")
+
 # csb = cSB()
 # csb.GettingData("CSB6400802", "012225A")
 
-dfb = dFB()
-dfb.ReadDfbSnap("20241031-A")
-dfb.GettingData("DFB6600600")
-
-tensile = Tensile()
-tensile.GettingData("DFB6600600", dfb.dfbLotNumber2[:-3])
 
 
 # %%
@@ -1097,10 +1111,8 @@ def CompileCsv():
 
     #GETTING RDB INSPECTION DATA
     rdb = rDB()
-    rdb.readingYear = int(DateAndTimeManager.yearNow)
-    # rdb.ReadCheckSheet(tempDfVt2["Process 2 Rod Blk Lot No"].values[0], tempDfVt2["Process 2 Rod Blk"].values)
-    # rdb.ReadRDB5200200()
-    # rdb.GettingData()
+    rdb.ReadCheckSheet(tempDfVt2["Process 2 Rod Blk Lot No"].values[0], tempDfVt2["Process 2 Rod Blk"].values)
+    rdb.GettingData(tempDfVt2["Process 2 Rod Blk"].values)
 
     #GETTING CSB INSPECTION DATA
     csb = cSB()
@@ -1197,45 +1209,45 @@ def CompileCsv():
         "Process 2 M4x40 Screw Lot No": tempDfVt2["Process 2 M4x40 Screw Lot No"].values,
         "Process 2 Rod Blk": tempDfVt2["Process 2 Rod Blk"].values,
         "Process 2 Rod Blk Lot No": tempDfVt2["Process 2 Rod Blk Lot No"].values,
-        # "Process 2 Rod Blk Tesla 1 Average Data": rdb.rdbTeslaTotalAverage1,
-        # "Process 2 Rod Blk Tesla 2 Average Data": rdb.rdbTeslaTotalAverage2,
-        # "Process 2 Rod Blk Tesla 3 Average Data": rdb.rdbTeslaTotalAverage3,
-        # "Process 2 Rod Blk Tesla 4 Average Data": rdb.rdbTeslaTotalAverage4,
-        # "Process 2 Rod Blk Tesla 1 Minimum Data": rdb.rdbTeslaTotalMinimum1,
-        # "Process 2 Rod Blk Tesla 2 Minimum Data": rdb.rdbTeslaTotalMinimum2,
-        # "Process 2 Rod Blk Tesla 3 Minimum Data": rdb.rdbTeslaTotalMinimum3,
-        # "Process 2 Rod Blk Tesla 4 Minimum Data": rdb.rdbTeslaTotalMinimum4,
-        # "Process 2 Rod Blk Tesla 1 Maximum Data": rdb.rdbTeslaTotalMaximum1,
-        # "Process 2 Rod Blk Tesla 2 Maximum Data": rdb.rdbTeslaTotalMaximum2,
-        # "Process 2 Rod Blk Tesla 3 Maximum Data": rdb.rdbTeslaTotalMaximum3,
-        # "Process 2 Rod Blk Tesla 4 Maximum Data": rdb.rdbTeslaTotalMaximum4,
-        # "Process 2 Rod Blk Inspection 1 Average Data": rdb.rdbTotalAverage1,
-        # "Process 2 Rod Blk Inspection 2 Average Data": rdb.rdbTotalAverage2,
-        # "Process 2 Rod Blk Inspection 3 Average Data": rdb.rdbTotalAverage3,
-        # "Process 2 Rod Blk Inspection 4 Average Data": rdb.rdbTotalAverage4,
-        # "Process 2 Rod Blk Inspection 5 Average Data": rdb.rdbTotalAverage5,
-        # "Process 2 Rod Blk Inspection 6 Average Data": rdb.rdbTotalAverage6,
-        # "Process 2 Rod Blk Inspection 7 Average Data": rdb.rdbTotalAverage7,
-        # "Process 2 Rod Blk Inspection 8 Average Data": rdb.rdbTotalAverage8,
-        # "Process 2 Rod Blk Inspection 9 Average Data": rdb.rdbTotalAverage9,
-        # "Process 2 Rod Blk Inspection 1 Minimum Data": rdb.rdbTotalMinimum1,
-        # "Process 2 Rod Blk Inspection 2 Minimum Data": rdb.rdbTotalMinimum2,
-        # "Process 2 Rod Blk Inspection 3 Minimum Data": rdb.rdbTotalMinimum3,
-        # "Process 2 Rod Blk Inspection 4 Minimum Data": rdb.rdbTotalMinimum4,
-        # "Process 2 Rod Blk Inspection 5 Minimum Data": rdb.rdbTotalMinimum5,
-        # "Process 2 Rod Blk Inspection 6 Minimum Data": rdb.rdbTotalMinimum6,
-        # "Process 2 Rod Blk Inspection 7 Minimum Data": rdb.rdbTotalMinimum7,
-        # "Process 2 Rod Blk Inspection 8 Minimum Data": rdb.rdbTotalMinimum8,
-        # "Process 2 Rod Blk Inspection 9 Minimum Data": rdb.rdbTotalMinimum9,
-        # "Process 2 Rod Blk Inspection 1 Maximum Data": rdb.rdbTotalMaximum1,
-        # "Process 2 Rod Blk Inspection 2 Maximum Data": rdb.rdbTotalMaximum2,
-        # "Process 2 Rod Blk Inspection 3 Maximum Data": rdb.rdbTotalMaximum3,
-        # "Process 2 Rod Blk Inspection 4 Maximum Data": rdb.rdbTotalMaximum4,
-        # "Process 2 Rod Blk Inspection 5 Maximum Data": rdb.rdbTotalMaximum5,
-        # "Process 2 Rod Blk Inspection 6 Maximum Data": rdb.rdbTotalMaximum6,
-        # "Process 2 Rod Blk Inspection 7 Maximum Data": rdb.rdbTotalMaximum7,
-        # "Process 2 Rod Blk Inspection 8 Maximum Data": rdb.rdbTotalMaximum8,
-        # "Process 2 Rod Blk Inspection 9 Maximum Data": rdb.rdbTotalMaximum9,
+        "Process 2 Rod Blk Tesla 1 Average Data": rdb.rdbTeslaTotalAverage1,
+        "Process 2 Rod Blk Tesla 2 Average Data": rdb.rdbTeslaTotalAverage2,
+        "Process 2 Rod Blk Tesla 3 Average Data": rdb.rdbTeslaTotalAverage3,
+        "Process 2 Rod Blk Tesla 4 Average Data": rdb.rdbTeslaTotalAverage4,
+        "Process 2 Rod Blk Tesla 1 Minimum Data": rdb.rdbTeslaTotalMinimum1,
+        "Process 2 Rod Blk Tesla 2 Minimum Data": rdb.rdbTeslaTotalMinimum2,
+        "Process 2 Rod Blk Tesla 3 Minimum Data": rdb.rdbTeslaTotalMinimum3,
+        "Process 2 Rod Blk Tesla 4 Minimum Data": rdb.rdbTeslaTotalMinimum4,
+        "Process 2 Rod Blk Tesla 1 Maximum Data": rdb.rdbTeslaTotalMaximum1,
+        "Process 2 Rod Blk Tesla 2 Maximum Data": rdb.rdbTeslaTotalMaximum2,
+        "Process 2 Rod Blk Tesla 3 Maximum Data": rdb.rdbTeslaTotalMaximum3,
+        "Process 2 Rod Blk Tesla 4 Maximum Data": rdb.rdbTeslaTotalMaximum4,
+        "Process 2 Rod Blk Inspection 1 Average Data": rdb.rdbTotalAverage1,
+        "Process 2 Rod Blk Inspection 2 Average Data": rdb.rdbTotalAverage2,
+        "Process 2 Rod Blk Inspection 3 Average Data": rdb.rdbTotalAverage3,
+        "Process 2 Rod Blk Inspection 4 Average Data": rdb.rdbTotalAverage4,
+        "Process 2 Rod Blk Inspection 5 Average Data": rdb.rdbTotalAverage5,
+        "Process 2 Rod Blk Inspection 6 Average Data": rdb.rdbTotalAverage6,
+        "Process 2 Rod Blk Inspection 7 Average Data": rdb.rdbTotalAverage7,
+        "Process 2 Rod Blk Inspection 8 Average Data": rdb.rdbTotalAverage8,
+        "Process 2 Rod Blk Inspection 9 Average Data": rdb.rdbTotalAverage9,
+        "Process 2 Rod Blk Inspection 1 Minimum Data": rdb.rdbTotalMinimum1,
+        "Process 2 Rod Blk Inspection 2 Minimum Data": rdb.rdbTotalMinimum2,
+        "Process 2 Rod Blk Inspection 3 Minimum Data": rdb.rdbTotalMinimum3,
+        "Process 2 Rod Blk Inspection 4 Minimum Data": rdb.rdbTotalMinimum4,
+        "Process 2 Rod Blk Inspection 5 Minimum Data": rdb.rdbTotalMinimum5,
+        "Process 2 Rod Blk Inspection 6 Minimum Data": rdb.rdbTotalMinimum6,
+        "Process 2 Rod Blk Inspection 7 Minimum Data": rdb.rdbTotalMinimum7,
+        "Process 2 Rod Blk Inspection 8 Minimum Data": rdb.rdbTotalMinimum8,
+        "Process 2 Rod Blk Inspection 9 Minimum Data": rdb.rdbTotalMinimum9,
+        "Process 2 Rod Blk Inspection 1 Maximum Data": rdb.rdbTotalMaximum1,
+        "Process 2 Rod Blk Inspection 2 Maximum Data": rdb.rdbTotalMaximum2,
+        "Process 2 Rod Blk Inspection 3 Maximum Data": rdb.rdbTotalMaximum3,
+        "Process 2 Rod Blk Inspection 4 Maximum Data": rdb.rdbTotalMaximum4,
+        "Process 2 Rod Blk Inspection 5 Maximum Data": rdb.rdbTotalMaximum5,
+        "Process 2 Rod Blk Inspection 6 Maximum Data": rdb.rdbTotalMaximum6,
+        "Process 2 Rod Blk Inspection 7 Maximum Data": rdb.rdbTotalMaximum7,
+        "Process 2 Rod Blk Inspection 8 Maximum Data": rdb.rdbTotalMaximum8,
+        "Process 2 Rod Blk Inspection 9 Maximum Data": rdb.rdbTotalMaximum9,
         "Process 2 Df Blk": tempDfVt2["Process 2 Df Blk"].values,
         "Process 2 Df Blk Lot No": tempDfVt2["Process 2 Df Blk Lot No"].values,
         "Process 2 Df Blk Inspection 1 Average Data": dfb.totalAverage1,
@@ -4081,7 +4093,8 @@ def start():
     filesreader.ReadDfbSnapFiles()
     filesreader.ReadDfbFiles()
     filesreader.ReadTensile()
-
+    filesreader.ReadRdbCheckSheetFiles()
+    filesreader.ReadRdbFiles()
     filesreader.ReadCsbFiles()
 
     try:
@@ -4103,6 +4116,8 @@ def start():
                 isCsvReaded = False
                 time.sleep(1)
 
+
+        # !--------- UNUSED CODEBLOCK ---------!
         #Getting VT Original File
         process1OrigFile = os.path.getmtime(r'\\192.168.2.10\csv\csv\VT1\log000_1.csv')
         process2OrigFile = os.path.getmtime(r'\\192.168.2.10\csv\csv\VT2\log000_2.csv')
@@ -4112,6 +4127,8 @@ def start():
         process6OrigFile = os.path.getmtime(r'\\192.168.2.10\csv\csv\VT6\log000_6.csv')
 
         piOrigFile = os.path.getmtime(r'\\192.168.2.19\ai_team\AI Program\Outputs\PICompiled6.csv')
+
+        # !--------- UNUSED CODEBLOCK ---------!
 
         while programRunning:
             CsvOrganize()
@@ -4123,12 +4140,12 @@ def start():
                 loadingText += "."
                 compileButton.config(text= loadingText)
 
-            print(f"Process 1 S/N{tempDfVt1["Process 1 S/N"]}_______________________________________________________________________________")
-            print(f"Process 2 S/N{tempDfVt2["Process 2 S/N"]}_______________________________________________________________________________")
-            print(f"Process 3 S/N{tempDfVt3["Process 3 S/N"]}_______________________________________________________________________________")
-            print(f"Process 4 S/N{tempDfVt4["Process 4 S/N"]}_______________________________________________________________________________")
-            print(f"Process 5 S/N{tempDfVt5["Process 5 S/N"]}_______________________________________________________________________________")
-            print(f"Process 6 S/N{tempDfVt6["Process 6 S/N"]}_______________________________________________________________________________")
+            # print(f"Process 1 S/N{tempDfVt1["Process 1 S/N"]}_______________________________________________________________________________")
+            # print(f"Process 2 S/N{tempDfVt2["Process 2 S/N"]}_______________________________________________________________________________")
+            # print(f"Process 3 S/N{tempDfVt3["Process 3 S/N"]}_______________________________________________________________________________")
+            # print(f"Process 4 S/N{tempDfVt4["Process 4 S/N"]}_______________________________________________________________________________")
+            # print(f"Process 5 S/N{tempDfVt5["Process 5 S/N"]}_______________________________________________________________________________")
+            # print(f"Process 6 S/N{tempDfVt6["Process 6 S/N"]}_______________________________________________________________________________")
 
             #Clearing Cmd Logs When Reaches 10 Lines
             readCount += 1
