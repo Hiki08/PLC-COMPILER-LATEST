@@ -1,6 +1,7 @@
 #%%
 from Imports import *
 import DateAndTimeManager
+from FilesReader import *
 
 #%%
 class rDB():
@@ -70,6 +71,8 @@ class rDB():
         pass
 
     def ReadCheckSheet(self, lotNumber, modelCode):
+        RDB5200200Data = ""
+
         self.rdbModelCode = modelCode
 
         if self.rdbModelCode == "RDB5200200":
@@ -94,235 +97,131 @@ class rDB():
             pd.set_option('display.max_columns', None)
             pd.set_option('display.max_rows', None)
 
-            if self.rdbYear == "2024":
-                self.rdbYear = "2024$"
-                vt1Directory = (fr'\\192.168.2.19\{self.rdbYear}')
-            else:
-                vt1Directory = (fr'\\192.168.2.19\production\{self.rdbYear}')
+            targetValue = self.rdbMonth
 
-            for d in os.listdir(vt1Directory):
-                if "online checksheet" in d.lower():
-                    vt1Directory = os.path.join(vt1Directory, d)
-                    for d in os.listdir(vt1Directory):
-                        if "outjob" in d.lower():
-                            vt1Directory = os.path.join(vt1Directory, d)
-                            for d in os.listdir(vt1Directory):
-                                if "rod checksheet" in d.lower():
-                                    vt1Directory = os.path.join(vt1Directory, d)
+            for file in RDB5200200CheckSheet:
+                try:
+                    # workbook = CalamineWorkbook.from_path(fileName)
+                    for s in file.sheet_names:
+                        if targetValue.lower() in s.lower():
+                            RDB5200200Data = file.get_sheet_by_name(s).to_python(skip_empty_area=True)
+                            RDB5200200Data = pd.DataFrame(RDB5200200Data)
+                            RDB5200200Data = RDB5200200Data.replace(r'\s+', '', regex=True)
+                            break
 
-                                    os.chdir(vt1Directory)
-                                    print(f"Updated vt1Directory: {vt1Directory}")
+                    #Getting The RDB Code
+                    rdbCode = RDB5200200Data.iloc[4, 9]
+                    rdbCode = rdbCode[:-3]
+                    rdbCode = rdbCode[27:]
 
-                                    #Finding All xlsm Files In The Current Directory
-                                    files = glob.glob('*.xlsx')
+                    #__________________________________
+                    #Getting The RDB Code 2
+                    rdbCode2 = RDB5200200Data.iloc[4, 9]
+                    rdbCode2 = rdbCode2[27:]
+                    #__________________________________
+                    
+                    #Getting The Lot Number (Supplier)
+                    rdbLotNumber2 = RDB5200200Data.iloc[max(0 + 7, 0):min(len(RDB5200200Data), 0 + 999), RDB5200200Data.columns.get_loc(0):RDB5200200Data.columns.get_loc(0) + 11]
+                    rdbLotNumber2 = rdbLotNumber2[(rdbLotNumber2[0].isin([self.rdbLotNumber])) & (rdbLotNumber2[8].isin([self.rdbLetterCode]))]
+                    rdbProdDate = rdbLotNumber2[10].values[0]
 
-                                    recentTime = 0
+                    rdbProdDate = rdbProdDate[:-1]
 
-                                    #Checking Each Files In Files;
-                                    for f in files:
-                                        if 'RDB5200200' in f:
-                                            #Checking If It Is Recent File
-                                            fileTime = os.path.getmtime(f)
-                                            if fileTime > recentTime:
-                                                recentTime = fileTime
-                                                fileName = f
+                    rdbLotNumber2 = rdbLotNumber2[9].values[0]
 
-                                    targetValue = self.rdbMonth
+                    #Getting The Row, Column Location Of Lot Number
+                    findLotNumber = [(index, column) for index, row in RDB5200200Data.iterrows() for column, value in row.items() if str(value) == str(self.rdbLotNumber)]
+                    lotNumberRow = [index for index, _ in findLotNumber]
+                    lotNumberColumn = [column for _, column in findLotNumber]
 
-                                    workbook = CalamineWorkbook.from_path(fileName)
-                                    for s in workbook.sheet_names:
-                                        if targetValue.lower() in s.lower():
-                                            RDB5200200Data = workbook.get_sheet_by_name(s).to_python(skip_empty_area=True)
-                                            RDB5200200Data = pd.DataFrame(RDB5200200Data)
-                                            RDB5200200Data = RDB5200200Data.replace(r'\s+', '', regex=True)
-                                            break
+                    print("Row indices:", lotNumberRow)
+                    print("Column names:", lotNumberColumn)
 
-                                    #Getting The RDB Code
-                                    rdbCode = RDB5200200Data.iloc[4, 9]
-                                    rdbCode = rdbCode[:-3]
-                                    rdbCode = rdbCode[27:]
-                                    #__________________________________
-                                    #Getting The RDB Code 2
-                                    rdbCode2 = RDB5200200Data.iloc[4, 9]
-                                    rdbCode2 = rdbCode2[27:]
-                                    #__________________________________
+                    #Getting The Tesla Table
+                    inspectionData = RDB5200200Data.iloc[max(0, lotNumberRow[0]):min(len(RDB5200200Data), lotNumberRow[0] + 7), RDB5200200Data.columns.get_loc(lotNumberColumn[0] + 21):RDB5200200Data.columns.get_loc(lotNumberColumn[0]) + 26]
 
-                                    #Getting The Lot Number (Supplier)
-                                    rdbLotNumber2 = RDB5200200Data.iloc[max(0 + 7, 0):min(len(RDB5200200Data), 0 + 999), RDB5200200Data.columns.get_loc(0):RDB5200200Data.columns.get_loc(0) + 11]
-                                    rdbLotNumber2 = rdbLotNumber2[(rdbLotNumber2[0].isin([self.rdbLotNumber])) & (rdbLotNumber2[8].isin([self.rdbLetterCode]))]
-                                    rdbProdDate = rdbLotNumber2[10].values[0]
+                    self.rdbTeslaTotalAverage1 = inspectionData.iloc[0].mean()
+                    self.rdbTeslaTotalAverage2 = inspectionData.iloc[2].mean()
+                    self.rdbTeslaTotalAverage3 = inspectionData.iloc[4].mean()
+                    self.rdbTeslaTotalAverage4 = inspectionData.iloc[6].mean()
 
-                                    rdbProdDate = rdbProdDate[:-1]
+                    self.rdbTeslaTotalMinimum1 = inspectionData.iloc[0].min()
+                    self.rdbTeslaTotalMinimum2 = inspectionData.iloc[2].min()
+                    self.rdbTeslaTotalMinimum3 = inspectionData.iloc[4].min()
+                    self.rdbTeslaTotalMinimum4 = inspectionData.iloc[6].min()
 
-                                    rdbLotNumber2 = rdbLotNumber2[9].values[0]
+                    self.rdbTeslaTotalMaximum1 = inspectionData.iloc[0].max()
+                    self.rdbTeslaTotalMaximum2 = inspectionData.iloc[2].max()
+                    self.rdbTeslaTotalMaximum3 = inspectionData.iloc[4].max()
+                    self.rdbTeslaTotalMaximum4 = inspectionData.iloc[6].max()
 
-                                    #Getting The Row, Column Location Of Lot Number
-                                    findLotNumber = [(index, column) for index, row in RDB5200200Data.iterrows() for column, value in row.items() if str(value) == str(self.rdbLotNumber)]
-                                    lotNumberRow = [index for index, _ in findLotNumber]
-                                    lotNumberColumn = [column for _, column in findLotNumber]
+                    print(f"Tesla Average 1:{self.rdbTeslaTotalAverage1}")
+                    print(f"Tesla Average 2:{self.rdbTeslaTotalAverage2}")
+                    print(f"Tesla Average 3:{self.rdbTeslaTotalAverage3}")
+                    print(f"Tesla Average 4:{self.rdbTeslaTotalAverage4}")
 
-                                    print("Row indices:", lotNumberRow)
-                                    print("Column names:", lotNumberColumn)
+                    print(f"Tesla Minimum 1:{self.rdbTeslaTotalMinimum1}")
+                    print(f"Tesla Minimum 2:{self.rdbTeslaTotalMinimum2}")
+                    print(f"Tesla Minimum 3:{self.rdbTeslaTotalMinimum3}")
+                    print(f"Tesla Minimum 4:{self.rdbTeslaTotalMinimum4}")
 
-                                    #Getting The Tesla Table
-                                    inspectionData = RDB5200200Data.iloc[max(0, lotNumberRow[0]):min(len(RDB5200200Data), lotNumberRow[0] + 7), RDB5200200Data.columns.get_loc(lotNumberColumn[0] + 21):RDB5200200Data.columns.get_loc(lotNumberColumn[0]) + 26]
+                    print(f"Tesla Maximum 1:{self.rdbTeslaTotalMaximum1}")
+                    print(f"Tesla Maximum 2:{self.rdbTeslaTotalMaximum2}")
+                    print(f"Tesla Maximum 3:{self.rdbTeslaTotalMaximum3}")
+                    print(f"Tesla Maximum 4:{self.rdbTeslaTotalMaximum4}")
 
-                                    self.rdbTeslaTotalAverage1 = inspectionData.iloc[0].mean()
-                                    self.rdbTeslaTotalAverage2 = inspectionData.iloc[2].mean()
-                                    self.rdbTeslaTotalAverage3 = inspectionData.iloc[4].mean()
-                                    self.rdbTeslaTotalAverage4 = inspectionData.iloc[6].mean()
-
-                                    self.rdbTeslaTotalMinimum1 = inspectionData.iloc[0].min()
-                                    self.rdbTeslaTotalMinimum2 = inspectionData.iloc[2].min()
-                                    self.rdbTeslaTotalMinimum3 = inspectionData.iloc[4].min()
-                                    self.rdbTeslaTotalMinimum4 = inspectionData.iloc[6].min()
-
-                                    self.rdbTeslaTotalMaximum1 = inspectionData.iloc[0].max()
-                                    self.rdbTeslaTotalMaximum2 = inspectionData.iloc[2].max()
-                                    self.rdbTeslaTotalMaximum3 = inspectionData.iloc[4].max()
-                                    self.rdbTeslaTotalMaximum4 = inspectionData.iloc[6].max()
-
-                                    print(f"Tesla Average 1:{self.rdbTeslaTotalAverage1}")
-                                    print(f"Tesla Average 2:{self.rdbTeslaTotalAverage2}")
-                                    print(f"Tesla Average 3:{self.rdbTeslaTotalAverage3}")
-                                    print(f"Tesla Average 4:{self.rdbTeslaTotalAverage4}")
-
-                                    print(f"Tesla Minimum 1:{self.rdbTeslaTotalMinimum1}")
-                                    print(f"Tesla Minimum 2:{self.rdbTeslaTotalMinimum2}")
-                                    print(f"Tesla Minimum 3:{self.rdbTeslaTotalMinimum3}")
-                                    print(f"Tesla Minimum 4:{self.rdbTeslaTotalMinimum4}")
-
-                                    print(f"Tesla Maximum 1:{self.rdbTeslaTotalMaximum1}")
-                                    print(f"Tesla Maximum 2:{self.rdbTeslaTotalMaximum2}")
-                                    print(f"Tesla Maximum 3:{self.rdbTeslaTotalMaximum3}")
-                                    print(f"Tesla Maximum 4:{self.rdbTeslaTotalMaximum4}")
-
-                                    #Reading HPIQCDATA
-                                    hpiQcDataDirectory = (fr'\\192.168.2.19\quality control\{self.rdbYearFormat2}\1.Supplier{"'"}s  Relation\B. Monitoring Files')
-                                    os.chdir(hpiQcDataDirectory)
-
-                                    xlsxFiles = glob.glob('*.xlsx')
-                                    xlsFiles = glob.glob('*.xls')
-
-                                    files = xlsxFiles + xlsFiles
-
-                                    #Checking Each Files In Files;
-                                    for f in files:
-                                        if 'HPI-QA'.lower() in f.lower() or "HPI-QC".lower() in f.lower():
-                                            
-                                            workbook = CalamineWorkbook.from_path(f)
-
-                                            #Reading Possible Sheets
-                                            try:
-                                                hpiQAQCData = workbook.get_sheet_by_name("HPI-QC01-01").to_python(skip_empty_area=True)
-                                                hpiQAQCData = pd.DataFrame(hpiQAQCData[1:], columns=hpiQAQCData[2])
-                                            except:
-                                                hpiQAQCData = workbook.get_sheet_by_name("SUMMARY").to_python(skip_empty_area=True)
-                                                hpiQAQCData = pd.DataFrame(hpiQAQCData[1:], columns=hpiQAQCData[0])
-
-                                            hpiQAQCData['DATE RECEIVED'] = hpiQAQCData['DATE RECEIVED'].astype(str).str.replace("-", "")
-                                            hpiQAQCData = hpiQAQCData[(hpiQAQCData["DATE RECEIVED"].isin([str(rdbProdDate)])) & (hpiQAQCData["ITEM CODE"].isin([str(rdbCode2)]))]
-                                            hpiQAQCData = hpiQAQCData[hpiQAQCData['LOT NUMBER'].str.contains(rdbLotNumber2[:-3], na=False)]
+                    break
+                except:
+                    pass
 
 
-                                            if hpiQAQCData.empty:
-                                                print(f"No data found for {f}")
-                                            else:
-                                                break
 
-                                    self.rdbLotNumber3 = hpiQAQCData["LOT NUMBER"].values[0]
-                                    self.rdbNoDataFound = False
+
+            #Reading HPIQCDATA
+            hpiQcDataDirectory = (fr'\\192.168.2.19\quality control\{self.rdbYearFormat2}\1.Supplier{"'"}s  Relation\B. Monitoring Files')
+            os.chdir(hpiQcDataDirectory)
+
+            xlsxFiles = glob.glob('*.xlsx')
+            xlsFiles = glob.glob('*.xls')
+
+            files = xlsxFiles + xlsFiles
+
+            #Checking Each Files In Files;
+            for f in files:
+                if 'HPI-QA'.lower() in f.lower() or "HPI-QC".lower() in f.lower():
+                    
+                    workbook = CalamineWorkbook.from_path(f)
+
+                    #Reading Possible Sheets
+                    try:
+                        hpiQAQCData = workbook.get_sheet_by_name("HPI-QC01-01").to_python(skip_empty_area=True)
+                        hpiQAQCData = pd.DataFrame(hpiQAQCData[1:], columns=hpiQAQCData[2])
+                    except:
+                        hpiQAQCData = workbook.get_sheet_by_name("SUMMARY").to_python(skip_empty_area=True)
+                        hpiQAQCData = pd.DataFrame(hpiQAQCData[1:], columns=hpiQAQCData[0])
+
+                    hpiQAQCData['DATE RECEIVED'] = hpiQAQCData['DATE RECEIVED'].astype(str).str.replace("-", "")
+                    hpiQAQCData = hpiQAQCData[(hpiQAQCData["DATE RECEIVED"].isin([str(rdbProdDate)])) & (hpiQAQCData["ITEM CODE"].isin([str(rdbCode2)]))]
+                    hpiQAQCData = hpiQAQCData[hpiQAQCData['LOT NUMBER'].str.contains(rdbLotNumber2[:-3], na=False)]
+
+
+                    if hpiQAQCData.empty:
+                        print(f"No data found for {f}")
+                    else:
+                        break
+
+            self.rdbLotNumber3 = hpiQAQCData["LOT NUMBER"].values[0]
+            self.rdbNoDataFound = False
 
         else:
             self.rdbLotNumber = lotNumber
 
-    def ReadRDB5200200(self):
-        if not self.rdbNoDataFound:
+    def GettingData(self, itemCode):
+        if itemCode == "RDB5200200":
+            self.fileList = RD05200200Data
+        elif itemCode == "RDB4200801":
+            self.fileList = RDB4200801Data
 
-            pd.set_option('display.max_columns', None)
-            pd.set_option('display.max_rows', None)
-
-            while not self.fileFinishedReading:
-                try:
-                    vt1Directory = (fr'\\192.168.2.19\quality control\{str(self.readingYear)}')
-
-                    for d in os.listdir(vt1Directory):
-                        if "supplier" in d.lower():
-                            vt1Directory = os.path.join(vt1Directory, d)
-                            for d in os.listdir(vt1Directory):
-                                if "inspection standard" in d.lower():
-                                    vt1Directory = os.path.join(vt1Directory, d)
-                                    for d in os.listdir(vt1Directory):
-                                        if "receiving inspection record" in d.lower():
-                                            vt1Directory = os.path.join(vt1Directory, d)
-
-                                            #CHECKING ITEM CODE
-                                            if self.rdbModelCode == "RDB5200200":
-                                                for d in os.listdir(vt1Directory):
-                                                    if "sbros" in d.lower():
-                                                        vt1Directory = os.path.join(vt1Directory, d)
-
-                                                        #Finding A Folder That Contains New Trend
-                                                        for d in os.listdir(vt1Directory):
-                                                            if 'new trend' in d.lower():
-                                                                vt1Directory = os.path.join(vt1Directory, d)
-                                                                print(f"Updated vt1Directory: {vt1Directory}")
-                                                                break
-
-                                                        os.chdir(vt1Directory)
-
-                                                        files = glob.glob('*RD05200200*.xlsm')
-
-                                                        for f in files:
-                                                            print(f'File Readed {f}')
-                                                            workbook = CalamineWorkbook.from_path(f)
-
-                                                            self.rdbData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                            self.rdbData = pd.DataFrame(self.rdbData)
-                                                            self.rdbData = self.rdbData.replace(r'\s+', '', regex=True)
-                                                            
-                                                            # print(f"EM2P FINDED IN {self.readingYear} NEW TREND")
-                                                            self.fileList.append(self.rdbData)
-
-                                            elif self.rdbModelCode == "RDB4200801":      
-                                                for d in os.listdir(vt1Directory):
-                                                    if "ningbo" in d.lower():
-                                                        vt1Directory = os.path.join(vt1Directory, d)
-                
-                                                        #Finding A Folder That Contains New Trend
-                                                        for d in os.listdir(vt1Directory):
-                                                            if 'new trend' in d.lower():
-                                                                vt1Directory = os.path.join(vt1Directory, d)
-                                                                print(f"Updated vt1Directory: {vt1Directory}")
-                                                                break
-
-                                                        os.chdir(vt1Directory)
-
-                                                        files = glob.glob('*RDB4200801*.xlsm')
-
-                                                        for f in files:
-                                                            print(f'File Readed {f}')
-                                                            workbook = CalamineWorkbook.from_path(f)
-
-                                                            self.rdbData = workbook.get_sheet_by_name("format").to_python(skip_empty_area=True)
-                                                            self.rdbData = pd.DataFrame(self.rdbData)
-                                                            self.rdbData = self.rdbData.replace(r'\s+', '', regex=True)
-                                                            
-                                                            # print(f"EM2P FINDED IN {self.readingYear} NEW TREND")
-                                                            self.fileList.append(self.rdbData)
-                                                            
-                except:
-                    pass
-
-                if self.readingYear > 2021:
-                    self.readingYear -= 1
-                else:
-                    self.fileFinishedReading = True
-
-        for file in self.fileList:
-            file.replace('', np.nan, inplace=True)
-
-    def GettingData(self):
         if not self.rdbNoDataFound:
             for fileNum in range(len(self.fileList)):
                 self.rdbTotalAverage1 = []

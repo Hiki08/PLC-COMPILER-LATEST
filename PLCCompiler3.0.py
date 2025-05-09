@@ -89,6 +89,7 @@ process4Status = ""
 process5Status = ""
 process6Status = ""
 isRepairedWithNG = False
+piStatus = ""
 
 compiledFrame = ""
 excelData = ""
@@ -726,6 +727,10 @@ def CsvOrganize():
     global tempDfVt5
     global tempDfVt6
 
+    global dfPi
+    global tempdfPi
+    global piRow
+
     global ngProcess
     
     global process1Status
@@ -735,6 +740,7 @@ def CsvOrganize():
     global process5Status
     global process6Status
     global isRepairedWithNG
+    global piStatus
 
     global canCompile
 
@@ -749,6 +755,7 @@ def CsvOrganize():
     process5Status = ""
     process6Status = ""
     isRepairedWithNG = False
+    piStatus = ""
 
     isVt1Blank = False
     isVt2Blank = False
@@ -757,295 +764,305 @@ def CsvOrganize():
     isVt5Blank = False
     isVt6Blank = False
 
+    # ReadPI In PiRow Value
     try:
-        #Checking If There's Value In tempDfVt1 To 6
-        tempDfVt1 = dfVt1.iloc[[process1Row], :]
-        tempDfVt2 = dfVt2.iloc[[process2Row], :]
-        tempDfVt3 = dfVt3.iloc[[process3Row], :]
-        tempDfVt4 = dfVt4.iloc[[process4Row], :]
-        tempDfVt5 = dfVt5.iloc[[process5Row], :]
-        tempDfVt6 = dfVt6.iloc[[process6Row], :]
+        tempdfPi = dfPi.iloc[[piRow], :]
+    except IndexError:
+        pass
 
-        if tempDfVt1["Process 1 Repaired Action"].values[0] == "-" and tempDfVt2["Process 2 Repaired Action"].values[0] == "-" and tempDfVt3["Process 3 Repaired Action"].values[0] == "-" and tempDfVt4["Process 4 Repaired Action"].values[0] == "-" and tempDfVt5["Process 5 Repaired Action"].values[0] == "-" and tempDfVt6["Process 6 Repaired Action"].values[0] == "-":
-            if tempDfVt1["Process 1 NG Cause"].values[0] == "-":
-                print("Process1 Good")
-                process1Status = "Good"
-                if tempDfVt2["Process 2 NG Cause"].values[0] == "-":
-                    print("Process2 Good")
-                    process2Status = "Good"
-                    if tempDfVt3["Process 3 NG Cause"].values[0] == "-":
-                        print("Process3 Good")
-                        process3Status = "Good"
-                        if tempDfVt4["Process 4 NG Cause"].values[0] == "-":
-                            print("Process4 Good")
-                            process4Status = "Good"
-                            if tempDfVt5["Process 5 NG Cause"].values[0] == "-":
-                                print("Process5 Good")
-                                process5Status = "Good"
-                                if tempDfVt6["Process 6 NG Cause"].values[0] == "-":
-                                    print("Process6 Good")
-                                    process6Status = "Good"
-                                else:
-                                    print("Process6 NG")
-                                    process6Status = "NG"
-                            elif tempDfVt5["Process 5 NG Cause"].values[0].replace(' ', '') == "NGPRESSURE":
-                                print("Process5 NG PRESSURE")
-                                process5Status = "NG PRESSURE"
-                            else:
-                                print("Process5 NG")
-                                process5Status = "NG"
-                        else:
-                            print("Process4 NG")
-                            process4Status = "NG"
-                    else:
-                        print("Process3 NG")
-                        process3Status = "NG"
-                else:
-                    print("Process2 NG")
-                    process2Status = "NG"
-            else:
-                print("Process1 NG")
-                process1Status = "NG"
-        else:
-            print("Repaired")
-            
-            if tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
-                process1Status = "Repaired"
-                process2Status = ""
-                process3Status = ""
-                process4Status = ""
-                process5Status = ""
-                process6Status = ""
-            if tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
-                process1Status = ""
-                process2Status = "Repaired"
-                process3Status = ""
-                process4Status = ""
-                process5Status = ""
-                process6Status = ""
-            if tempDfVt3["Process 3 Repaired Action"].values[0] != "-":
-                process1Status = ""
-                process2Status = ""
-                process3Status = "Repaired"
-                process4Status = ""
-                process5Status = ""
-                process6Status = ""
-            if tempDfVt4["Process 4 Repaired Action"].values[0] != "-":
-                process1Status = ""
-                process2Status = ""
-                process3Status = ""
-                process4Status = "Repaired"
-                process5Status = ""
-                process6Status = ""
-            if tempDfVt5["Process 5 Repaired Action"].values[0] != "-":
-                process1Status = ""
-                process2Status = ""
-                process3Status = ""
-                process4Status = ""
-                process5Status = "Repaired"
-                process6Status = ""
-            if tempDfVt6["Process 6 Repaired Action"].values[0] != "-":
-                process1Status = ""
-                process2Status = ""
-                process3Status = ""
-                process4Status = ""
-                process5Status = ""
-                process6Status = "Repaired"
+    if "INSPECTION ONLY" in tempdfPi["PROCESS S/N"].values:
+        piStatus = "INSPECTION ONLY"
+    else:
 
-            #Checking Again For NG Process
-            if tempDfVt1["Process 1 NG Cause"].values[0] != "-":
-                process1Status = "NG"
-                isRepairedWithNG = True
-            elif tempDfVt2["Process 2 NG Cause"].values[0] != "-":
-                process2Status = "NG"
-                isRepairedWithNG = True
-            elif tempDfVt3["Process 3 NG Cause"].values[0] != "-":
-                process3Status = "NG"
-                isRepairedWithNG = True
-            elif tempDfVt4["Process 4 NG Cause"].values[0] != "-":
-                process4Status = "NG"
-                isRepairedWithNG = True
-            elif tempDfVt5["Process 5 NG Cause"].values[0].replace(' ', '') == "NGPRESSURE":
-                print("Repaired With NG PRESSURE__________________________________________________________________________________________________________________")
-                process5Status = "NG PRESSURE"
-                isRepairedWithNG = True
-            elif tempDfVt5["Process 5 NG Cause"].values[0] != "-":
-                process5Status = "NG"
-                isRepairedWithNG = True
-            elif tempDfVt6["Process 6 NG Cause"].values[0] != "-":
-                process6Status = "NG"
-                isRepairedWithNG = True
-        canCompile = True
-    except:
-        #Checking What tempDfVt Is Blank
         try:
+            #Checking If There's Value In tempDfVt1 To 6
             tempDfVt1 = dfVt1.iloc[[process1Row], :]
-            isVt1Blank = False
-        except:
-            print("VT1 Blank")
-            isVt1Blank = True
-        try:
             tempDfVt2 = dfVt2.iloc[[process2Row], :]
-            isVt2Blank = False
-        except:
-            print("VT2 Blank")
-            isVt2Blank = True
-        try:
             tempDfVt3 = dfVt3.iloc[[process3Row], :]
-            isVt3Blank = False
-        except:
-            print("VT3 Blank")
-            isVt3Blank = True
-        try:
             tempDfVt4 = dfVt4.iloc[[process4Row], :]
-            isVt4Blank = False
-        except:
-            print("VT4 Blank")
-            isVt4Blank = True
-        try:
             tempDfVt5 = dfVt5.iloc[[process5Row], :]
-            isVt5Blank = False
-        except:
-            print("VT5 Blank")
-            isVt5Blank = True
-        try:
             tempDfVt6 = dfVt6.iloc[[process6Row], :]
-            isVt6Blank = False
+
+            if tempDfVt1["Process 1 Repaired Action"].values[0] == "-" and tempDfVt2["Process 2 Repaired Action"].values[0] == "-" and tempDfVt3["Process 3 Repaired Action"].values[0] == "-" and tempDfVt4["Process 4 Repaired Action"].values[0] == "-" and tempDfVt5["Process 5 Repaired Action"].values[0] == "-" and tempDfVt6["Process 6 Repaired Action"].values[0] == "-":
+                if tempDfVt1["Process 1 NG Cause"].values[0] == "-":
+                    print("Process1 Good")
+                    process1Status = "Good"
+                    if tempDfVt2["Process 2 NG Cause"].values[0] == "-":
+                        print("Process2 Good")
+                        process2Status = "Good"
+                        if tempDfVt3["Process 3 NG Cause"].values[0] == "-":
+                            print("Process3 Good")
+                            process3Status = "Good"
+                            if tempDfVt4["Process 4 NG Cause"].values[0] == "-":
+                                print("Process4 Good")
+                                process4Status = "Good"
+                                if tempDfVt5["Process 5 NG Cause"].values[0] == "-":
+                                    print("Process5 Good")
+                                    process5Status = "Good"
+                                    if tempDfVt6["Process 6 NG Cause"].values[0] == "-":
+                                        print("Process6 Good")
+                                        process6Status = "Good"
+                                    else:
+                                        print("Process6 NG")
+                                        process6Status = "NG"
+                                elif tempDfVt5["Process 5 NG Cause"].values[0].replace(' ', '') == "NGPRESSURE":
+                                    print("Process5 NG PRESSURE")
+                                    process5Status = "NG PRESSURE"
+                                else:
+                                    print("Process5 NG")
+                                    process5Status = "NG"
+                            else:
+                                print("Process4 NG")
+                                process4Status = "NG"
+                        else:
+                            print("Process3 NG")
+                            process3Status = "NG"
+                    else:
+                        print("Process2 NG")
+                        process2Status = "NG"
+                else:
+                    print("Process1 NG")
+                    process1Status = "NG"
+            else:
+                print("Repaired")
+                
+                if tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
+                    process1Status = "Repaired"
+                    process2Status = ""
+                    process3Status = ""
+                    process4Status = ""
+                    process5Status = ""
+                    process6Status = ""
+                if tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
+                    process1Status = ""
+                    process2Status = "Repaired"
+                    process3Status = ""
+                    process4Status = ""
+                    process5Status = ""
+                    process6Status = ""
+                if tempDfVt3["Process 3 Repaired Action"].values[0] != "-":
+                    process1Status = ""
+                    process2Status = ""
+                    process3Status = "Repaired"
+                    process4Status = ""
+                    process5Status = ""
+                    process6Status = ""
+                if tempDfVt4["Process 4 Repaired Action"].values[0] != "-":
+                    process1Status = ""
+                    process2Status = ""
+                    process3Status = ""
+                    process4Status = "Repaired"
+                    process5Status = ""
+                    process6Status = ""
+                if tempDfVt5["Process 5 Repaired Action"].values[0] != "-":
+                    process1Status = ""
+                    process2Status = ""
+                    process3Status = ""
+                    process4Status = ""
+                    process5Status = "Repaired"
+                    process6Status = ""
+                if tempDfVt6["Process 6 Repaired Action"].values[0] != "-":
+                    process1Status = ""
+                    process2Status = ""
+                    process3Status = ""
+                    process4Status = ""
+                    process5Status = ""
+                    process6Status = "Repaired"
+
+                #Checking Again For NG Process
+                if tempDfVt1["Process 1 NG Cause"].values[0] != "-":
+                    process1Status = "NG"
+                    isRepairedWithNG = True
+                elif tempDfVt2["Process 2 NG Cause"].values[0] != "-":
+                    process2Status = "NG"
+                    isRepairedWithNG = True
+                elif tempDfVt3["Process 3 NG Cause"].values[0] != "-":
+                    process3Status = "NG"
+                    isRepairedWithNG = True
+                elif tempDfVt4["Process 4 NG Cause"].values[0] != "-":
+                    process4Status = "NG"
+                    isRepairedWithNG = True
+                elif tempDfVt5["Process 5 NG Cause"].values[0].replace(' ', '') == "NGPRESSURE":
+                    print("Repaired With NG PRESSURE__________________________________________________________________________________________________________________")
+                    process5Status = "NG PRESSURE"
+                    isRepairedWithNG = True
+                elif tempDfVt5["Process 5 NG Cause"].values[0] != "-":
+                    process5Status = "NG"
+                    isRepairedWithNG = True
+                elif tempDfVt6["Process 6 NG Cause"].values[0] != "-":
+                    process6Status = "NG"
+                    isRepairedWithNG = True
+            canCompile = True
         except:
-            print("VT6 Blank")
-            isVt6Blank = True
-        #No Data In Next Row
-        if isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True:
-            print("No More To Read")
-            canCompile = False
-        #Blank At Process2, Process3, Process4, Process5
-        elif isVt1Blank == False and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] == "-":
-            if tempDfVt1["Process 1 NG Cause"].values[0] != "-":
-                print("Process 1 Proceed With NG")
-                process1Status = "NG"
-                canCompile = True
-            else:
-                print("Pending In Process 1")
+            #Checking What tempDfVt Is Blank
+            try:
+                tempDfVt1 = dfVt1.iloc[[process1Row], :]
+                isVt1Blank = False
+            except:
+                print("VT1 Blank")
+                isVt1Blank = True
+            try:
+                tempDfVt2 = dfVt2.iloc[[process2Row], :]
+                isVt2Blank = False
+            except:
+                print("VT2 Blank")
+                isVt2Blank = True
+            try:
+                tempDfVt3 = dfVt3.iloc[[process3Row], :]
+                isVt3Blank = False
+            except:
+                print("VT3 Blank")
+                isVt3Blank = True
+            try:
+                tempDfVt4 = dfVt4.iloc[[process4Row], :]
+                isVt4Blank = False
+            except:
+                print("VT4 Blank")
+                isVt4Blank = True
+            try:
+                tempDfVt5 = dfVt5.iloc[[process5Row], :]
+                isVt5Blank = False
+            except:
+                print("VT5 Blank")
+                isVt5Blank = True
+            try:
+                tempDfVt6 = dfVt6.iloc[[process6Row], :]
+                isVt6Blank = False
+            except:
+                print("VT6 Blank")
+                isVt6Blank = True
+            #No Data In Next Row
+            if isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True:
+                print("No More To Read")
                 canCompile = False
-        #Blank At Process3, Process4, Process 5
-        elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt2["Process 2 Repaired Action"].values[0] == "-":
-            if tempDfVt2["Process 2 NG Cause"].values[0] != "-":
-                print("Process 2 Proceed With NG")
-                process1Status = "Good"
-                process2Status = "NG"
-                canCompile = True
-            else:
-                print("Pending In Process 1 and Process 2")
-                canCompile = False
-        #Blank At Process4, Process5
-        elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt3["Process 3 Repaired Action"].values[0] == "-":
-            if tempDfVt3["Process 3 NG Cause"].values[0] != "-":
-                print("Process 3 Proceed With NG")
-                process1Status = "Good"
-                process2Status = "Good"
-                process3Status = "NG"
-                canCompile = True
-            else:
-                print("Pending In Process 1 and Process 2 and Process 3")
-                canCompile = False
-        #Blank At Process5
-        elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == True and isVt6Blank == True and tempDfVt4["Process 4 Repaired Action"].values[0] == "-":
-            if tempDfVt4["Process 4 NG Cause"].values[0] != "-":
-                print("Process 4 Proceed With NG")
-                process1Status = "Good"
-                process2Status = "Good"
-                process3Status = "Good"
-                process4Status = "NG"
-                canCompile = True
-            else:
-                print("Pending In Process 1 and Process 2 and Process 3 and Process 4")
-                canCompile = False
-        #Blank At Process6       
-        elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == True and tempDfVt4["Process 4 Repaired Action"].values[0] == "-":
-            if tempDfVt5["Process 5 NG Cause"].values[0] != "-":
-                print("Process 5 Proceed With NG")
-                process1Status = "Good"
-                process2Status = "Good"
-                process3Status = "Good"
-                process4Status = "Good"
-                process5Status = "NG"
-                canCompile = True
-            else:
-                print("Pending In Process 1 and Process 2 and Process 3 and Process 4 and Process 5")
-                canCompile = False
+            #Blank At Process2, Process3, Process4, Process5
+            elif isVt1Blank == False and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] == "-":
+                if tempDfVt1["Process 1 NG Cause"].values[0] != "-":
+                    print("Process 1 Proceed With NG")
+                    process1Status = "NG"
+                    canCompile = True
+                else:
+                    print("Pending In Process 1")
+                    canCompile = False
+            #Blank At Process3, Process4, Process 5
+            elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt2["Process 2 Repaired Action"].values[0] == "-":
+                if tempDfVt2["Process 2 NG Cause"].values[0] != "-":
+                    print("Process 2 Proceed With NG")
+                    process1Status = "Good"
+                    process2Status = "NG"
+                    canCompile = True
+                else:
+                    print("Pending In Process 1 and Process 2")
+                    canCompile = False
+            #Blank At Process4, Process5
+            elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt3["Process 3 Repaired Action"].values[0] == "-":
+                if tempDfVt3["Process 3 NG Cause"].values[0] != "-":
+                    print("Process 3 Proceed With NG")
+                    process1Status = "Good"
+                    process2Status = "Good"
+                    process3Status = "NG"
+                    canCompile = True
+                else:
+                    print("Pending In Process 1 and Process 2 and Process 3")
+                    canCompile = False
+            #Blank At Process5
+            elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == True and isVt6Blank == True and tempDfVt4["Process 4 Repaired Action"].values[0] == "-":
+                if tempDfVt4["Process 4 NG Cause"].values[0] != "-":
+                    print("Process 4 Proceed With NG")
+                    process1Status = "Good"
+                    process2Status = "Good"
+                    process3Status = "Good"
+                    process4Status = "NG"
+                    canCompile = True
+                else:
+                    print("Pending In Process 1 and Process 2 and Process 3 and Process 4")
+                    canCompile = False
+            #Blank At Process6       
+            elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == True and tempDfVt4["Process 4 Repaired Action"].values[0] == "-":
+                if tempDfVt5["Process 5 NG Cause"].values[0] != "-":
+                    print("Process 5 Proceed With NG")
+                    process1Status = "Good"
+                    process2Status = "Good"
+                    process3Status = "Good"
+                    process4Status = "Good"
+                    process5Status = "NG"
+                    canCompile = True
+                else:
+                    print("Pending In Process 1 and Process 2 and Process 3 and Process 4 and Process 5")
+                    canCompile = False
 
 
-        #Repair Process 1
-        elif isVt1Blank == False and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 1")
+            #Repair Process 1
+            elif isVt1Blank == False and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 1")
+                    canCompile = False
+            elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 1, Pending In Process 2")
+                    canCompile = False
+            elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 1, Pending In Process 2, Pending In Process 3")
+                    canCompile = False
+            elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == True and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 1, Pending In Process 2, Pending In Process 3, Pending In Process 4")
+                    canCompile = False
+            elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 1, Pending In Process 2, Pending In Process 3, Pending In Process 4, Pending In Process 6")
+                    canCompile = False
+            #Repair Process 2
+            elif isVt1Blank == True and isVt2Blank == False and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 2")
+                    canCompile = False
+            elif isVt1Blank == True and isVt2Blank == False and isVt3Blank == False and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 2, Process 3")
+                    canCompile = False
+            elif isVt1Blank == True and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == True and isVt6Blank == True and tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 2, Process 3, Process 4")
+                    canCompile = False
+            elif isVt1Blank == True and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == True and tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 2, Process 3, Process 4, Process 5")
+                    canCompile = False
+            elif isVt1Blank == True and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == False and tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
+                    process2Status = "Repaired"
+                    canCompile = True
+            #Repair Process 3
+            elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == False and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt3["Process 3 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 3")
+                    canCompile = False
+            elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == False and isVt4Blank == False and isVt5Blank == True and isVt6Blank == True and tempDfVt3["Process 3 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 3, Process 4")
+                    canCompile = False
+            elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == True and tempDfVt3["Process 3 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 3, Process 4, Process 5")
+                    canCompile = False
+            elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == False and tempDfVt3["Process 3 Repaired Action"].values[0] != "-":
+                    process3Status = "Repaired"
+                    canCompile = True
+            #Repair Process 4
+            elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == False and isVt5Blank == True and isVt6Blank == True and tempDfVt4["Process 4 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 4")
+                    canCompile = False
+            elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == False and isVt5Blank == False and isVt6Blank == True and tempDfVt4["Process 4 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 4, Process 5")
+                    canCompile = False
+            elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == False and isVt5Blank == False and isVt6Blank == False and tempDfVt4["Process 4 Repaired Action"].values[0] != "-":
+                    process4Status = "Repaired"
+                    canCompile = True
+            #Repair Process 5
+            elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == False and isVt6Blank == True and tempDfVt5["Process 5 Repaired Action"].values[0] != "-":
+                    print("Pending Repair At Process 5")
+                    canCompile = False
+            elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == False and isVt6Blank == False and tempDfVt5["Process 5 Repaired Action"].values[0] != "-":
+                    process5Status = "Repaired"
+                    canCompile = True
+            #Repair Process 6
+            elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == False and tempDfVt6["Process 6 Repaired Action"].values[0] != "-":
+                    process6Status = "Repaired"
+                    canCompile = True
+            else:
                 canCompile = False
-        elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 1, Pending In Process 2")
-                canCompile = False
-        elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 1, Pending In Process 2, Pending In Process 3")
-                canCompile = False
-        elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == True and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 1, Pending In Process 2, Pending In Process 3, Pending In Process 4")
-                canCompile = False
-        elif isVt1Blank == False and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == True and tempDfVt1["Process 1 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 1, Pending In Process 2, Pending In Process 3, Pending In Process 4, Pending In Process 6")
-                canCompile = False
-        #Repair Process 2
-        elif isVt1Blank == True and isVt2Blank == False and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 2")
-                canCompile = False
-        elif isVt1Blank == True and isVt2Blank == False and isVt3Blank == False and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 2, Process 3")
-                canCompile = False
-        elif isVt1Blank == True and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == True and isVt6Blank == True and tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 2, Process 3, Process 4")
-                canCompile = False
-        elif isVt1Blank == True and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == True and tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 2, Process 3, Process 4, Process 5")
-                canCompile = False
-        elif isVt1Blank == True and isVt2Blank == False and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == False and tempDfVt2["Process 2 Repaired Action"].values[0] != "-":
-                process2Status = "Repaired"
-                canCompile = True
-        #Repair Process 3
-        elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == False and isVt4Blank == True and isVt5Blank == True and isVt6Blank == True and tempDfVt3["Process 3 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 3")
-                canCompile = False
-        elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == False and isVt4Blank == False and isVt5Blank == True and isVt6Blank == True and tempDfVt3["Process 3 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 3, Process 4")
-                canCompile = False
-        elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == True and tempDfVt3["Process 3 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 3, Process 4, Process 5")
-                canCompile = False
-        elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == False and isVt4Blank == False and isVt5Blank == False and isVt6Blank == False and tempDfVt3["Process 3 Repaired Action"].values[0] != "-":
-                process3Status = "Repaired"
-                canCompile = True
-        #Repair Process 4
-        elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == False and isVt5Blank == True and isVt6Blank == True and tempDfVt4["Process 4 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 4")
-                canCompile = False
-        elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == False and isVt5Blank == False and isVt6Blank == True and tempDfVt4["Process 4 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 4, Process 5")
-                canCompile = False
-        elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == False and isVt5Blank == False and isVt6Blank == False and tempDfVt4["Process 4 Repaired Action"].values[0] != "-":
-                process4Status = "Repaired"
-                canCompile = True
-        #Repair Process 5
-        elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == False and isVt6Blank == True and tempDfVt5["Process 5 Repaired Action"].values[0] != "-":
-                print("Pending Repair At Process 5")
-                canCompile = False
-        elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == False and isVt6Blank == False and tempDfVt5["Process 5 Repaired Action"].values[0] != "-":
-                process5Status = "Repaired"
-                canCompile = True
-        #Repair Process 6
-        elif isVt1Blank == True and isVt2Blank == True and isVt3Blank == True and isVt4Blank == True and isVt5Blank == True and isVt6Blank == False and tempDfVt6["Process 6 Repaired Action"].values[0] != "-":
-                process6Status = "Repaired"
-                canCompile = True
-        else:
-            canCompile = False
 
-        if not canCompile:
-            programRunning = False
+            if not canCompile:
+                programRunning = False
 
 # %%
 def CompileCsv():
@@ -1067,6 +1084,7 @@ def CompileCsv():
     global process5Status
     global process6Status
     global isRepairedWithNG
+    global piStatus
 
     global tempDfVt1
     global tempDfVt2
@@ -1388,2383 +1406,2533 @@ def CompileCsv():
         "Process 6 Repaired Action": tempDfVt6["Process 6 Repaired Action"].values
     }
     excelData = pd.DataFrame(excelData)
-    if process1Status == "Good":
-        process1Row += 1
-    if process2Status == "Good":
-        process2Row += 1
-    if process3Status == "Good":
-        process3Row += 1
-    if process4Status == "Good":
-        process4Row += 1
-    if process5Status == "Good":
-        process5Row += 1
+    if piStatus == "INSPECTION ONLY":
         piRow += 1
-    if process6Status == "Good":
-        process6Row += 1
-    
-    if isRepairedWithNG:
-        if process1Status == "Repaired":
-            if process2Status == "NG":
-                ngProcess = "NG AT PROCESS2"
-                process1Row += 1
-                process2Row += 1
 
-                excelData["Process 3 Model Code"] = ngProcess
-                excelData["Process 3 S/N"] = ngProcess
-                excelData["Process 3 ID"] = ngProcess
-                excelData["Process 3 NAME"] = ngProcess
-                excelData["Process 3 Regular/Contractual"] = ngProcess
-                excelData["Process 3 Frame Gasket"] = ngProcess
-                excelData["Process 3 Frame Gasket Lot No"] = ngProcess
-                excelData["Process 3 Casing Block"] = ngProcess
-                excelData["Process 3 Casing Block Lot No"] = ngProcess
-                excelData["Process 3 Casing Block Inspection 1 Average Data"] = ngProcess
-                excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = ngProcess
-                excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = ngProcess
-                excelData["Process 3 Casing Gasket"] = ngProcess
-                excelData["Process 3 Casing Gasket Lot No"] = ngProcess
-                excelData["Process 3 M4x16 Screw 1"] = ngProcess
-                excelData["Process 3 M4x16 Screw 1 Lot No"] = ngProcess
-                excelData["Process 3 M4x16 Screw 2"] = ngProcess
-                excelData["Process 3 M4x16 Screw 2 Lot No"] = ngProcess
-                excelData["Process 3 Ball Cushion"] = ngProcess
-                excelData["Process 3 Ball Cushion Lot No"] = ngProcess
-                excelData["Process 3 Frame Cover"] = ngProcess
-                excelData["Process 3 Frame Cover Lot No"] = ngProcess
-                excelData["Process 3 Partition Board"] = ngProcess
-                excelData["Process 3 Partition Board Lot No"] = ngProcess
-                excelData["Process 3 Built In Tube 1"] = ngProcess
-                excelData["Process 3 Built In Tube 1 Lot No"] = ngProcess
-                excelData["Process 3 Built In Tube 2"] = ngProcess
-                excelData["Process 3 Built In Tube 2 Lot No"] = ngProcess
-                excelData["Process 3 Head Cover"] = ngProcess
-                excelData["Process 3 Head Cover Lot No"] = ngProcess
-                excelData["Process 3 Casing Packing"] = ngProcess
-                excelData["Process 3 Casing Packing Lot No"] = ngProcess
-                excelData["Process 3 M4x12 Screw"] = ngProcess
-                excelData["Process 3 M4x12 Screw Lot No"] = ngProcess
-                excelData["Process 3 Csb L"] = ngProcess
-                excelData["Process 3 Csb L Lot No"] = ngProcess
-                excelData["Process 3 Csb R"] = ngProcess
-                excelData["Process 3 Csb R Lot No"] = ngProcess
-                excelData["Process 3 Head Packing"] = ngProcess
-                excelData["Process 3 Head Packing Lot No"] = ngProcess
-                excelData["Process 3 ST"] = ngProcess
-                excelData["Process 3 Actual Time"] = ngProcess
-                excelData["Process 3 NG Cause"] = ngProcess
-                excelData["Process 3 Repaired Action"] = ngProcess
+        excelData["Process 1 Model Code"] = piStatus
+        excelData["Process 1 S/N"] = piStatus
+        excelData["Process 1 ID"] = piStatus
+        excelData["Process 1 NAME"] = piStatus
+        excelData["Process 1 Regular/Contractual"] = piStatus
+        excelData["Process 1 Em2p"] = piStatus
+        excelData["Process 1 Em2p Lot No"] = piStatus
+        excelData["Process 1 Em3p"] = piStatus
+        excelData["Process 1 Em3p Lot No"] = piStatus
+        excelData["Process 1 Harness"] = piStatus
+        excelData["Process 1 Harness Lot No"] = piStatus
+        excelData["Process 1 Frame"] = piStatus
+        excelData["Process 1 Frame Lot No"] = piStatus 
+        excelData["Process 1 Bushing"] = piStatus
+        excelData["Process 1 Bushing Lot No"] = piStatus
+        excelData["Process 1 ST"] = piStatus
+        excelData["Process 1 Actual Time"] = piStatus
+        excelData["Process 1 NG Cause"] = piStatus
+        excelData["Process 1 Repaired Action"] = piStatus 
 
-                excelData["Process 4 Model Code"] = ngProcess
-                excelData["Process 4 S/N"] = ngProcess
-                excelData["Process 4 ID"] = ngProcess
-                excelData["Process 4 NAME"] = ngProcess
-                excelData["Process 4 Regular/Contractual"] = ngProcess
-                excelData["Process 4 Tank"] = ngProcess
-                excelData["Process 4 Tank Lot No"] = ngProcess
-                excelData["Process 4 Upper Housing"] = ngProcess
-                excelData["Process 4 Upper Housing Lot No"] = ngProcess
-                excelData["Process 4 Cord Hook" ] = ngProcess
-                excelData["Process 4 Cord Hook Lot No"] = ngProcess
-                excelData["Process 4 M4x16 Screw"] = ngProcess
-                excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
-                excelData["Process 4 Tank Gasket"] = ngProcess
-                excelData["Process 4 Tank Gasket Lot No"] = ngProcess
-                excelData["Process 4 Tank Cover"] = ngProcess
-                excelData["Process 4 Tank Cover Lot No"] = ngProcess
-                excelData["Process 4 Housing Gasket"] = ngProcess
-                excelData["Process 4 Housing Gasket Lot No"] = ngProcess
-                excelData["Process 4 M4x40 Screw"] = ngProcess
-                excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
-                excelData["Process 4 PartitionGasket"] = ngProcess
-                excelData["Process 4 PartitionGasket Lot No"] = ngProcess
-                excelData["Process 4 M4x12 Screw"] = ngProcess
-                excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
-                excelData["Process 4 Muffler"] = ngProcess
-                excelData["Process 4 Muffler Lot No"] = ngProcess
-                excelData["Process 4 Muffler Gasket"] = ngProcess
-                excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
-                excelData["Process 4 VCR"] = ngProcess
-                excelData["Process 4 VCR Lot No"] = ngProcess
-                excelData["Process 4 ST"] = ngProcess
-                excelData["Process 4 Actual Time"] = ngProcess
-                excelData["Process 4 NG Cause"] = ngProcess
-                excelData["Process 4 Repaired Action"] = ngProcess
+        excelData["Process 2 Model Code"] = piStatus
+        excelData["Process 2 S/N"] = piStatus
+        excelData["Process 2 ID"] = piStatus
+        excelData["Process 2 NAME"] = piStatus
+        excelData["Process 2 Regular/Contractual"] = piStatus
+        excelData["Process 2 M4x40 Screw"] = piStatus
+        excelData["Process 2 M4x40 Screw Lot No"] = piStatus
+        excelData["Process 2 Rod Blk"] = piStatus
+        excelData["Process 2 Rod Blk Lot No"] = piStatus
+        excelData["Process 2 Df Blk"] = piStatus
+        excelData["Process 2 Df Blk Lot No"] = piStatus
+        excelData["Process 2 Df Ring"] = piStatus
+        excelData["Process 2 Df Ring Lot No"] = piStatus
+        excelData["Process 2 Washer"] = piStatus
+        excelData["Process 2 Washer Lot No"] = piStatus
+        excelData["Process 2 Lock Nut"] = piStatus
+        excelData["Process 2 Lock Nut Lot No"] = piStatus
+        excelData["Process 2 ST"] = piStatus
+        excelData["Process 2 Actual Time"] = piStatus
+        excelData["Process 2 NG Cause"] = piStatus
+        excelData["Process 2 Repaired Action"] = piStatus
+
+        excelData["Process 3 Model Code"] = piStatus
+        excelData["Process 3 S/N"] = piStatus
+        excelData["Process 3 ID"] = piStatus
+        excelData["Process 3 NAME"] = piStatus
+        excelData["Process 3 Regular/Contractual"] = piStatus
+        excelData["Process 3 Frame Gasket"] = piStatus
+        excelData["Process 3 Frame Gasket Lot No"] = piStatus
+        excelData["Process 3 Casing Block"] = piStatus
+        excelData["Process 3 Casing Block Lot No"] = piStatus
+        excelData["Process 3 Casing Block Inspection 1 Average Data"] = piStatus
+        excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = piStatus
+        excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = piStatus
+        excelData["Process 3 Casing Gasket"] = piStatus
+        excelData["Process 3 Casing Gasket Lot No"] = piStatus
+        excelData["Process 3 M4x16 Screw 1"] = piStatus
+        excelData["Process 3 M4x16 Screw 1 Lot No"] = piStatus
+        excelData["Process 3 M4x16 Screw 2"] = piStatus
+        excelData["Process 3 M4x16 Screw 2 Lot No"] = piStatus
+        excelData["Process 3 Ball Cushion"] = piStatus
+        excelData["Process 3 Ball Cushion Lot No"] = piStatus
+        excelData["Process 3 Frame Cover"] = piStatus
+        excelData["Process 3 Frame Cover Lot No"] = piStatus
+        excelData["Process 3 Partition Board"] = piStatus
+        excelData["Process 3 Partition Board Lot No"] = piStatus
+        excelData["Process 3 Built In Tube 1"] = piStatus
+        excelData["Process 3 Built In Tube 1 Lot No"] = piStatus
+        excelData["Process 3 Built In Tube 2"] = piStatus
+        excelData["Process 3 Built In Tube 2 Lot No"] = piStatus
+        excelData["Process 3 Head Cover"] = piStatus
+        excelData["Process 3 Head Cover Lot No"] = piStatus
+        excelData["Process 3 Casing Packing"] = piStatus
+        excelData["Process 3 Casing Packing Lot No"] = piStatus
+        excelData["Process 3 M4x12 Screw"] = piStatus
+        excelData["Process 3 M4x12 Screw Lot No"] = piStatus
+        excelData["Process 3 Csb L"] = piStatus
+        excelData["Process 3 Csb L Lot No"] = piStatus
+        excelData["Process 3 Csb R"] = piStatus
+        excelData["Process 3 Csb R Lot No"] = piStatus
+        excelData["Process 3 Head Packing"] = piStatus
+        excelData["Process 3 Head Packing Lot No"] = piStatus
+        excelData["Process 3 ST"] = piStatus
+        excelData["Process 3 Actual Time"] = piStatus
+        excelData["Process 3 NG Cause"] = piStatus
+        excelData["Process 3 Repaired Action"] = piStatus
+
+        excelData["Process 4 Model Code"] = piStatus
+        excelData["Process 4 S/N"] = piStatus
+        excelData["Process 4 ID"] = piStatus
+        excelData["Process 4 NAME"] = piStatus
+        excelData["Process 4 Regular/Contractual"] = piStatus
+        excelData["Process 4 Tank"] = piStatus
+        excelData["Process 4 Tank Lot No"] = piStatus
+        excelData["Process 4 Upper Housing"] = piStatus
+        excelData["Process 4 Upper Housing Lot No"] = piStatus
+        excelData["Process 4 Cord Hook" ] = piStatus
+        excelData["Process 4 Cord Hook Lot No"] = piStatus
+        excelData["Process 4 M4x16 Screw"] = piStatus
+        excelData["Process 4 M4x16 Screw Lot No"] = piStatus
+        excelData["Process 4 Tank Gasket"] = piStatus
+        excelData["Process 4 Tank Gasket Lot No"] = piStatus
+        excelData["Process 4 Tank Cover"] = piStatus
+        excelData["Process 4 Tank Cover Lot No"] = piStatus
+        excelData["Process 4 Housing Gasket"] = piStatus
+        excelData["Process 4 Housing Gasket Lot No"] = piStatus
+        excelData["Process 4 M4x40 Screw"] = piStatus
+        excelData["Process 4 M4x40 Screw Lot No"] = piStatus
+        excelData["Process 4 PartitionGasket"] = piStatus
+        excelData["Process 4 PartitionGasket Lot No"] = piStatus
+        excelData["Process 4 M4x12 Screw"] = piStatus
+        excelData["Process 4 M4x12 Screw Lot No"] = piStatus
+        excelData["Process 4 Muffler"] = piStatus
+        excelData["Process 4 Muffler Lot No"] = piStatus
+        excelData["Process 4 Muffler Gasket"] = piStatus
+        excelData["Process 4 Muffler Gasket Lot No"] = piStatus
+        excelData["Process 4 VCR"] = piStatus
+        excelData["Process 4 VCR Lot No"] = piStatus
+        excelData["Process 4 ST"] = piStatus
+        excelData["Process 4 Actual Time"] = piStatus
+        excelData["Process 4 NG Cause"] = piStatus
+        excelData["Process 4 Repaired Action"] = piStatus
+        
+        excelData["Process 5 Model Code"] = piStatus
+        excelData["Process 5 S/N"] = piStatus
+        excelData["Process 5 ID"] = piStatus
+        excelData["Process 5 NAME"] = piStatus
+        excelData["Process 5 Regular/Contractual"] = piStatus
+        excelData["Process 5 Rating Label"] = piStatus
+        excelData["Process 5 Rating Label Lot No"] = piStatus
+        excelData["Process 5 ST"] = piStatus
+        excelData["Process 5 Actual Time"] = piStatus
+        excelData["Process 5 NG Cause"] = piStatus
+        excelData["Process 5 Repaired Action"] = piStatus
+        
+        excelData["Process 6 Model Code"] = piStatus
+        excelData["Process 6 S/N"] = piStatus
+        excelData["Process 6 ID"] = piStatus
+        excelData["Process 6 NAME"] = piStatus
+        excelData["Process 6 Regular/Contractual"] = piStatus
+        excelData["Process 6 Vinyl"] = piStatus
+        excelData["Process 6 Vinyl Lot No"] = piStatus
+        excelData["Process 6 ST"] = piStatus
+        excelData["Process 6 Actual Time"] = piStatus
+        excelData["Process 6 NG Cause"] = piStatus
+        excelData["Process 6 Repaired Action"] = piStatus
+    else:
+        if process1Status == "Good":
+            process1Row += 1
+        if process2Status == "Good":
+            process2Row += 1
+        if process3Status == "Good":
+            process3Row += 1
+        if process4Status == "Good":
+            process4Row += 1
+        if process5Status == "Good":
+            process5Row += 1
+            piRow += 1
+        if process6Status == "Good":
+            process6Row += 1
+        
+        if isRepairedWithNG:
+            if process1Status == "Repaired":
+                if process2Status == "NG":
+                    ngProcess = "NG AT PROCESS2"
+                    process1Row += 1
+                    process2Row += 1
+
+                    excelData["Process 3 Model Code"] = ngProcess
+                    excelData["Process 3 S/N"] = ngProcess
+                    excelData["Process 3 ID"] = ngProcess
+                    excelData["Process 3 NAME"] = ngProcess
+                    excelData["Process 3 Regular/Contractual"] = ngProcess
+                    excelData["Process 3 Frame Gasket"] = ngProcess
+                    excelData["Process 3 Frame Gasket Lot No"] = ngProcess
+                    excelData["Process 3 Casing Block"] = ngProcess
+                    excelData["Process 3 Casing Block Lot No"] = ngProcess
+                    excelData["Process 3 Casing Block Inspection 1 Average Data"] = ngProcess
+                    excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = ngProcess
+                    excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = ngProcess
+                    excelData["Process 3 Casing Gasket"] = ngProcess
+                    excelData["Process 3 Casing Gasket Lot No"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 1"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 1 Lot No"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 2"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 2 Lot No"] = ngProcess
+                    excelData["Process 3 Ball Cushion"] = ngProcess
+                    excelData["Process 3 Ball Cushion Lot No"] = ngProcess
+                    excelData["Process 3 Frame Cover"] = ngProcess
+                    excelData["Process 3 Frame Cover Lot No"] = ngProcess
+                    excelData["Process 3 Partition Board"] = ngProcess
+                    excelData["Process 3 Partition Board Lot No"] = ngProcess
+                    excelData["Process 3 Built In Tube 1"] = ngProcess
+                    excelData["Process 3 Built In Tube 1 Lot No"] = ngProcess
+                    excelData["Process 3 Built In Tube 2"] = ngProcess
+                    excelData["Process 3 Built In Tube 2 Lot No"] = ngProcess
+                    excelData["Process 3 Head Cover"] = ngProcess
+                    excelData["Process 3 Head Cover Lot No"] = ngProcess
+                    excelData["Process 3 Casing Packing"] = ngProcess
+                    excelData["Process 3 Casing Packing Lot No"] = ngProcess
+                    excelData["Process 3 M4x12 Screw"] = ngProcess
+                    excelData["Process 3 M4x12 Screw Lot No"] = ngProcess
+                    excelData["Process 3 Csb L"] = ngProcess
+                    excelData["Process 3 Csb L Lot No"] = ngProcess
+                    excelData["Process 3 Csb R"] = ngProcess
+                    excelData["Process 3 Csb R Lot No"] = ngProcess
+                    excelData["Process 3 Head Packing"] = ngProcess
+                    excelData["Process 3 Head Packing Lot No"] = ngProcess
+                    excelData["Process 3 ST"] = ngProcess
+                    excelData["Process 3 Actual Time"] = ngProcess
+                    excelData["Process 3 NG Cause"] = ngProcess
+                    excelData["Process 3 Repaired Action"] = ngProcess
+
+                    excelData["Process 4 Model Code"] = ngProcess
+                    excelData["Process 4 S/N"] = ngProcess
+                    excelData["Process 4 ID"] = ngProcess
+                    excelData["Process 4 NAME"] = ngProcess
+                    excelData["Process 4 Regular/Contractual"] = ngProcess
+                    excelData["Process 4 Tank"] = ngProcess
+                    excelData["Process 4 Tank Lot No"] = ngProcess
+                    excelData["Process 4 Upper Housing"] = ngProcess
+                    excelData["Process 4 Upper Housing Lot No"] = ngProcess
+                    excelData["Process 4 Cord Hook" ] = ngProcess
+                    excelData["Process 4 Cord Hook Lot No"] = ngProcess
+                    excelData["Process 4 M4x16 Screw"] = ngProcess
+                    excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
+                    excelData["Process 4 Tank Gasket"] = ngProcess
+                    excelData["Process 4 Tank Gasket Lot No"] = ngProcess
+                    excelData["Process 4 Tank Cover"] = ngProcess
+                    excelData["Process 4 Tank Cover Lot No"] = ngProcess
+                    excelData["Process 4 Housing Gasket"] = ngProcess
+                    excelData["Process 4 Housing Gasket Lot No"] = ngProcess
+                    excelData["Process 4 M4x40 Screw"] = ngProcess
+                    excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
+                    excelData["Process 4 PartitionGasket"] = ngProcess
+                    excelData["Process 4 PartitionGasket Lot No"] = ngProcess
+                    excelData["Process 4 M4x12 Screw"] = ngProcess
+                    excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
+                    excelData["Process 4 Muffler"] = ngProcess
+                    excelData["Process 4 Muffler Lot No"] = ngProcess
+                    excelData["Process 4 Muffler Gasket"] = ngProcess
+                    excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
+                    excelData["Process 4 VCR"] = ngProcess
+                    excelData["Process 4 VCR Lot No"] = ngProcess
+                    excelData["Process 4 ST"] = ngProcess
+                    excelData["Process 4 Actual Time"] = ngProcess
+                    excelData["Process 4 NG Cause"] = ngProcess
+                    excelData["Process 4 Repaired Action"] = ngProcess
+                    
+                    excelData["Process 5 Model Code"] = ngProcess
+                    excelData["Process 5 S/N"] = ngProcess
+                    excelData["Process 5 ID"] = ngProcess
+                    excelData["Process 5 NAME"] = ngProcess
+                    excelData["Process 5 Regular/Contractual"] = ngProcess
+                    excelData["Process 5 Rating Label"] = ngProcess
+                    excelData["Process 5 Rating Label Lot No"] = ngProcess
+                    excelData["Process 5 ST"] = ngProcess
+                    excelData["Process 5 Actual Time"] = ngProcess
+                    excelData["Process 5 NG Cause"] = ngProcess
+                    excelData["Process 5 Repaired Action"] = ngProcess
+                    
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process3Status == "NG":
+                    ngProcess = "NG AT PROCESS3"
+                    process1Row += 1
+                    process2Row += 1
+                    process3Row += 1
+
+                    excelData["Process 4 Model Code"] = ngProcess
+                    excelData["Process 4 S/N"] = ngProcess
+                    excelData["Process 4 ID"] = ngProcess
+                    excelData["Process 4 NAME"] = ngProcess
+                    excelData["Process 4 Regular/Contractual"] = ngProcess
+                    excelData["Process 4 Tank"] = ngProcess
+                    excelData["Process 4 Tank Lot No"] = ngProcess
+                    excelData["Process 4 Upper Housing"] = ngProcess
+                    excelData["Process 4 Upper Housing Lot No"] = ngProcess
+                    excelData["Process 4 Cord Hook" ] = ngProcess
+                    excelData["Process 4 Cord Hook Lot No"] = ngProcess
+                    excelData["Process 4 M4x16 Screw"] = ngProcess
+                    excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
+                    excelData["Process 4 Tank Gasket"] = ngProcess
+                    excelData["Process 4 Tank Gasket Lot No"] = ngProcess
+                    excelData["Process 4 Tank Cover"] = ngProcess
+                    excelData["Process 4 Tank Cover Lot No"] = ngProcess
+                    excelData["Process 4 Housing Gasket"] = ngProcess
+                    excelData["Process 4 Housing Gasket Lot No"] = ngProcess
+                    excelData["Process 4 M4x40 Screw"] = ngProcess
+                    excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
+                    excelData["Process 4 PartitionGasket"] = ngProcess
+                    excelData["Process 4 PartitionGasket Lot No"] = ngProcess
+                    excelData["Process 4 M4x12 Screw"] = ngProcess
+                    excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
+                    excelData["Process 4 Muffler"] = ngProcess
+                    excelData["Process 4 Muffler Lot No"] = ngProcess
+                    excelData["Process 4 Muffler Gasket"] = ngProcess
+                    excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
+                    excelData["Process 4 VCR"] = ngProcess
+                    excelData["Process 4 VCR Lot No"] = ngProcess
+                    excelData["Process 4 ST"] = ngProcess
+                    excelData["Process 4 Actual Time"] = ngProcess
+                    excelData["Process 4 NG Cause"] = ngProcess
+                    excelData["Process 4 Repaired Action"] = ngProcess
+                    
+                    excelData["Process 5 Model Code"] = ngProcess
+                    excelData["Process 5 S/N"] = ngProcess
+                    excelData["Process 5 ID"] = ngProcess
+                    excelData["Process 5 NAME"] = ngProcess
+                    excelData["Process 5 Regular/Contractual"] = ngProcess
+                    excelData["Process 5 Rating Label"] = ngProcess
+                    excelData["Process 5 Rating Label Lot No"] = ngProcess
+                    excelData["Process 5 ST"] = ngProcess
+                    excelData["Process 5 Actual Time"] = ngProcess
+                    excelData["Process 5 NG Cause"] = ngProcess
+                    excelData["Process 5 Repaired Action"] = ngProcess
+                    
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process4Status == "NG":
+                    ngProcess = "NG AT PROCESS4"
+                    process1Row += 1
+                    process2Row += 1
+                    process3Row += 1
+                    process4Row += 1
+
+                    excelData["Process 5 Model Code"] = ngProcess
+                    excelData["Process 5 S/N"] = ngProcess
+                    excelData["Process 5 ID"] = ngProcess
+                    excelData["Process 5 NAME"] = ngProcess
+                    excelData["Process 5 Regular/Contractual"] = ngProcess
+                    excelData["Process 5 Rating Label"] = ngProcess
+                    excelData["Process 5 Rating Label Lot No"] = ngProcess
+                    excelData["Process 5 ST"] = ngProcess
+                    excelData["Process 5 Actual Time"] = ngProcess
+                    excelData["Process 5 NG Cause"] = ngProcess
+                    excelData["Process 5 Repaired Action"] = ngProcess
+                    
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process5Status == "NG PRESSURE":
+                    ngProcess = "NG PRESSURE AT PROCESS5"
+                    process1Row += 1
+                    process2Row += 1
+                    process3Row += 1
+                    process4Row += 1
+                    process5Row += 1
+                    piRow += 1
+
+                    excelData["DATE"] = ngProcess
+                    excelData["TIME"] = ngProcess
+                    excelData["MODEL CODE"] = ngProcess
+                    # excelData["PROCESS S/N"] = ngProcess
+                    excelData["S/N"] = ngProcess
+                    excelData["PASS/NG"] = ngProcess
+                    excelData["VOLTAGE MAX (V)"] = ngProcess
+                    excelData["WATTAGE MAX (W)"] = ngProcess
+                    excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+                    excelData["VOLTAGE Middle (V)"] = ngProcess
+                    excelData["WATTAGE Middle (W)"] = ngProcess
+                    excelData["AMPERAGE Middle (A)"] = ngProcess
+                    excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+                    excelData["dB(A) 1"] = ngProcess
+                    excelData["dB(A) 2"] = ngProcess
+                    excelData["dB(A) 3"] = ngProcess
+                    excelData["VOLTAGE MIN (V)"] = ngProcess
+                    excelData["WATTAGE MIN (W)"] = ngProcess
+                    excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+                elif process5Status == "NG":
+                    ngProcess = "NG AT PROCESS5"
+                    process1Row += 1
+                    process2Row += 1
+                    process3Row += 1
+                    process4Row += 1
+                    process5Row += 1
+                    piRow += 1
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process6Status == "NG":
+                    ngProcess = "NG AT PROCESS6"
+                    process1Row += 1
+                    process2Row += 1
+                    process3Row += 1
+                    process4Row += 1
+                    process5Row += 1
+                    process6Row += 1
+                    piRow += 1
+
+            elif process2Status == "Repaired":
+                if process3Status == "NG":
+                    repairedProcess = "REPAIRED AT PROCESS2"
+                    ngProcess = "NG AT PROCESS3"
+                    process2Row += 1
+                    process3Row += 1
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess
+
+                    excelData["Process 4 Model Code"] = ngProcess
+                    excelData["Process 4 S/N"] = ngProcess
+                    excelData["Process 4 ID"] = ngProcess
+                    excelData["Process 4 NAME"] = ngProcess
+                    excelData["Process 4 Regular/Contractual"] = ngProcess
+                    excelData["Process 4 Tank"] = ngProcess
+                    excelData["Process 4 Tank Lot No"] = ngProcess
+                    excelData["Process 4 Upper Housing"] = ngProcess
+                    excelData["Process 4 Upper Housing Lot No"] = ngProcess
+                    excelData["Process 4 Cord Hook" ] = ngProcess
+                    excelData["Process 4 Cord Hook Lot No"] = ngProcess
+                    excelData["Process 4 M4x16 Screw"] = ngProcess
+                    excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
+                    excelData["Process 4 Tank Gasket"] = ngProcess
+                    excelData["Process 4 Tank Gasket Lot No"] = ngProcess
+                    excelData["Process 4 Tank Cover"] = ngProcess
+                    excelData["Process 4 Tank Cover Lot No"] = ngProcess
+                    excelData["Process 4 Housing Gasket"] = ngProcess
+                    excelData["Process 4 Housing Gasket Lot No"] = ngProcess
+                    excelData["Process 4 M4x40 Screw"] = ngProcess
+                    excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
+                    excelData["Process 4 PartitionGasket"] = ngProcess
+                    excelData["Process 4 PartitionGasket Lot No"] = ngProcess
+                    excelData["Process 4 M4x12 Screw"] = ngProcess
+                    excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
+                    excelData["Process 4 Muffler"] = ngProcess
+                    excelData["Process 4 Muffler Lot No"] = ngProcess
+                    excelData["Process 4 Muffler Gasket"] = ngProcess
+                    excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
+                    excelData["Process 4 VCR"] = ngProcess
+                    excelData["Process 4 VCR Lot No"] = ngProcess
+                    excelData["Process 4 ST"] = ngProcess
+                    excelData["Process 4 Actual Time"] = ngProcess
+                    excelData["Process 4 NG Cause"] = ngProcess
+                    excelData["Process 4 Repaired Action"] = ngProcess
+
+                    excelData["Process 5 Model Code"] = ngProcess
+                    excelData["Process 5 S/N"] = ngProcess
+                    excelData["Process 5 ID"] = ngProcess
+                    excelData["Process 5 NAME"] = ngProcess
+                    excelData["Process 5 Regular/Contractual"] = ngProcess
+                    excelData["Process 5 Rating Label"] = ngProcess
+                    excelData["Process 5 Rating Label Lot No"] = ngProcess
+                    excelData["Process 5 ST"] = ngProcess
+                    excelData["Process 5 Actual Time"] = ngProcess
+                    excelData["Process 5 NG Cause"] = ngProcess
+                    excelData["Process 5 Repaired Action"] = ngProcess
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+                    
+                elif process4Status == "NG":
+                    repairedProcess = "REPAIRED AT PROCESS2"
+                    ngProcess = "NG AT PROCESS4"
+                    process2Row += 1
+                    process3Row += 1
+                    process4Row += 1
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess 
+
+                    excelData["Process 5 Model Code"] = ngProcess
+                    excelData["Process 5 S/N"] = ngProcess
+                    excelData["Process 5 ID"] = ngProcess
+                    excelData["Process 5 NAME"] = ngProcess
+                    excelData["Process 5 Regular/Contractual"] = ngProcess
+                    excelData["Process 5 Rating Label"] = ngProcess
+                    excelData["Process 5 Rating Label Lot No"] = ngProcess
+                    excelData["Process 5 ST"] = ngProcess
+                    excelData["Process 5 Actual Time"] = ngProcess
+                    excelData["Process 5 NG Cause"] = ngProcess
+                    excelData["Process 5 Repaired Action"] = ngProcess
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process5Status == "NG PRESSURE":
+                    repairedProcess = "REPAIRED AT PROCESS2"
+                    ngProcess = "NG PRESSURE AT PROCESS5"
+                    process2Row += 1
+                    process3Row += 1
+                    process4Row += 1
+                    process5Row += 1
+                    piRow += 1
+
+                    excelData["DATE"] = ngProcess
+                    excelData["TIME"] = ngProcess
+                    excelData["MODEL CODE"] = ngProcess
+                    # excelData["PROCESS S/N"] = ngProcess
+                    excelData["S/N"] = ngProcess
+                    excelData["PASS/NG"] = ngProcess
+                    excelData["VOLTAGE MAX (V)"] = ngProcess
+                    excelData["WATTAGE MAX (W)"] = ngProcess
+                    excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+                    excelData["VOLTAGE Middle (V)"] = ngProcess
+                    excelData["WATTAGE Middle (W)"] = ngProcess
+                    excelData["AMPERAGE Middle (A)"] = ngProcess
+                    excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+                    excelData["dB(A) 1"] = ngProcess
+                    excelData["dB(A) 2"] = ngProcess
+                    excelData["dB(A) 3"] = ngProcess
+                    excelData["VOLTAGE MIN (V)"] = ngProcess
+                    excelData["WATTAGE MIN (W)"] = ngProcess
+                    excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process5Status == "NG":
+                    repairedProcess = "REPAIRED AT PROCESS2"
+                    ngProcess = "NG AT PROCESS5"
+                    process2Row += 1
+                    process3Row += 1
+                    process4Row += 1
+                    process5Row += 1
+                    piRow += 1
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process6Status == "NG":
+                    repairedProcess = "REPAIRED AT PROCESS2"
+                    
+                    process2Row += 1
+                    process3Row += 1
+                    process4Row += 1
+                    process5Row += 1
+                    process6Row += 1
+                    piRow += 1
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+            elif process3Status == "Repaired":
+                if process4Status == "NG":
+                    repairedProcess = "REPAIRED AT PROCESS3"
+                    ngProcess = "NG AT PROCESS4"
+                    process3Row += 1
+                    process4Row += 1
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+                    excelData["Process 2 Model Code"] = repairedProcess
+                    excelData["Process 2 S/N"] = repairedProcess
+                    excelData["Process 2 ID"] = repairedProcess
+                    excelData["Process 2 NAME"] = repairedProcess
+                    excelData["Process 2 Regular/Contractual"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+                    excelData["Process 2 Rod Blk"] = repairedProcess
+                    excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Blk"] = repairedProcess
+                    excelData["Process 2 Df Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Ring"] = repairedProcess
+                    excelData["Process 2 Df Ring Lot No"] = repairedProcess
+                    excelData["Process 2 Washer"] = repairedProcess
+                    excelData["Process 2 Washer Lot No"] = repairedProcess
+                    excelData["Process 2 Lock Nut"] = repairedProcess
+                    excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+                    excelData["Process 2 ST"] = repairedProcess
+                    excelData["Process 2 Actual Time"] = repairedProcess
+                    excelData["Process 2 NG Cause"] = repairedProcess
+                    excelData["Process 2 Repaired Action"] = repairedProcess
+
+                    excelData["Process 5 Model Code"] = ngProcess
+                    excelData["Process 5 S/N"] = ngProcess
+                    excelData["Process 5 ID"] = ngProcess
+                    excelData["Process 5 NAME"] = ngProcess
+                    excelData["Process 5 Regular/Contractual"] = ngProcess
+                    excelData["Process 5 Rating Label"] = ngProcess
+                    excelData["Process 5 Rating Label Lot No"] = ngProcess
+                    excelData["Process 5 ST"] = ngProcess
+                    excelData["Process 5 Actual Time"] = ngProcess
+                    excelData["Process 5 NG Cause"] = ngProcess
+                    excelData["Process 5 Repaired Action"] = ngProcess
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process5Status == "NG PRESSURE":
+                    repairedProcess = "REPAIRED AT PROCESS3"
+                    ngProcess = "NG PRESSURE AT PROCESS5"
+                    process3Row += 1
+                    process4Row += 1
+                    process5Row += 1
+                    piRow += 1
+
+                    excelData["DATE"] = ngProcess
+                    excelData["TIME"] = ngProcess
+                    excelData["MODEL CODE"] = ngProcess
+                    # excelData["PROCESS S/N"] = ngProcess
+                    excelData["S/N"] = ngProcess
+                    excelData["PASS/NG"] = ngProcess
+                    excelData["VOLTAGE MAX (V)"] = ngProcess
+                    excelData["WATTAGE MAX (W)"] = ngProcess
+                    excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+                    excelData["VOLTAGE Middle (V)"] = ngProcess
+                    excelData["WATTAGE Middle (W)"] = ngProcess
+                    excelData["AMPERAGE Middle (A)"] = ngProcess
+                    excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+                    excelData["dB(A) 1"] = ngProcess
+                    excelData["dB(A) 2"] = ngProcess
+                    excelData["dB(A) 3"] = ngProcess
+                    excelData["VOLTAGE MIN (V)"] = ngProcess
+                    excelData["WATTAGE MIN (W)"] = ngProcess
+                    excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+                    excelData["Process 2 Model Code"] = repairedProcess
+                    excelData["Process 2 S/N"] = repairedProcess
+                    excelData["Process 2 ID"] = repairedProcess
+                    excelData["Process 2 NAME"] = repairedProcess
+                    excelData["Process 2 Regular/Contractual"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+                    excelData["Process 2 Rod Blk"] = repairedProcess
+                    excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Blk"] = repairedProcess
+                    excelData["Process 2 Df Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Ring"] = repairedProcess
+                    excelData["Process 2 Df Ring Lot No"] = repairedProcess
+                    excelData["Process 2 Washer"] = repairedProcess
+                    excelData["Process 2 Washer Lot No"] = repairedProcess
+                    excelData["Process 2 Lock Nut"] = repairedProcess
+                    excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+                    excelData["Process 2 ST"] = repairedProcess
+                    excelData["Process 2 Actual Time"] = repairedProcess
+                    excelData["Process 2 NG Cause"] = repairedProcess
+                    excelData["Process 2 Repaired Action"] = repairedProcess
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process5Status == "NG":
+                    repairedProcess = "REPAIRED AT PROCESS3"
+                    ngProcess = "NG AT PROCESS5"
+                    process3Row += 1
+                    process4Row += 1
+                    process5Row += 1
+                    piRow += 1
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+                    excelData["Process 2 Model Code"] = repairedProcess
+                    excelData["Process 2 S/N"] = repairedProcess
+                    excelData["Process 2 ID"] = repairedProcess
+                    excelData["Process 2 NAME"] = repairedProcess
+                    excelData["Process 2 Regular/Contractual"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+                    excelData["Process 2 Rod Blk"] = repairedProcess
+                    excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Blk"] = repairedProcess
+                    excelData["Process 2 Df Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Ring"] = repairedProcess
+                    excelData["Process 2 Df Ring Lot No"] = repairedProcess
+                    excelData["Process 2 Washer"] = repairedProcess
+                    excelData["Process 2 Washer Lot No"] = repairedProcess
+                    excelData["Process 2 Lock Nut"] = repairedProcess
+                    excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+                    excelData["Process 2 ST"] = repairedProcess
+                    excelData["Process 2 Actual Time"] = repairedProcess
+                    excelData["Process 2 NG Cause"] = repairedProcess
+                    excelData["Process 2 Repaired Action"] = repairedProcess
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process6Status == "NG":
+                    repairedProcess = "REPAIRED AT PROCESS3"
+                    ngProcess = "NG AT PROCESS6"
+                    process3Row += 1
+                    process4Row += 1
+                    process5Row += 1
+                    process6Row += 1
+                    piRow += 1
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+                    excelData["Process 2 Model Code"] = repairedProcess
+                    excelData["Process 2 S/N"] = repairedProcess
+                    excelData["Process 2 ID"] = repairedProcess
+                    excelData["Process 2 NAME"] = repairedProcess
+                    excelData["Process 2 Regular/Contractual"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+                    excelData["Process 2 Rod Blk"] = repairedProcess
+                    excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Blk"] = repairedProcess
+                    excelData["Process 2 Df Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Ring"] = repairedProcess
+                    excelData["Process 2 Df Ring Lot No"] = repairedProcess
+                    excelData["Process 2 Washer"] = repairedProcess
+                    excelData["Process 2 Washer Lot No"] = repairedProcess
+                    excelData["Process 2 Lock Nut"] = repairedProcess
+                    excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+                    excelData["Process 2 ST"] = repairedProcess
+                    excelData["Process 2 Actual Time"] = repairedProcess
+                    excelData["Process 2 NG Cause"] = repairedProcess
+                    excelData["Process 2 Repaired Action"] = repairedProcess
+
+            elif process4Status == "Repaired":
+                if process5Status == "NG PRESSURE":
+                    repairedProcess = "REPAIRED AT PROCESS4"
+                    ngProcess = "NG PRESSURE AT PROCESS5"
+                    process4Row += 1
+                    process5Row += 1
+                    piRow += 1
+
+                    excelData["DATE"] = ngProcess
+                    excelData["TIME"] = ngProcess
+                    excelData["MODEL CODE"] = ngProcess
+                    # excelData["PROCESS S/N"] = ngProcess
+                    excelData["S/N"] = ngProcess
+                    excelData["PASS/NG"] = ngProcess
+                    excelData["VOLTAGE MAX (V)"] = ngProcess
+                    excelData["WATTAGE MAX (W)"] = ngProcess
+                    excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+                    excelData["VOLTAGE Middle (V)"] = ngProcess
+                    excelData["WATTAGE Middle (W)"] = ngProcess
+                    excelData["AMPERAGE Middle (A)"] = ngProcess
+                    excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+                    excelData["dB(A) 1"] = ngProcess
+                    excelData["dB(A) 2"] = ngProcess
+                    excelData["dB(A) 3"] = ngProcess
+                    excelData["VOLTAGE MIN (V)"] = ngProcess
+                    excelData["WATTAGE MIN (W)"] = ngProcess
+                    excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+                    excelData["Process 2 Model Code"] = repairedProcess
+                    excelData["Process 2 S/N"] = repairedProcess
+                    excelData["Process 2 ID"] = repairedProcess
+                    excelData["Process 2 NAME"] = repairedProcess
+                    excelData["Process 2 Regular/Contractual"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+                    excelData["Process 2 Rod Blk"] = repairedProcess
+                    excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Blk"] = repairedProcess
+                    excelData["Process 2 Df Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Ring"] = repairedProcess
+                    excelData["Process 2 Df Ring Lot No"] = repairedProcess
+                    excelData["Process 2 Washer"] = repairedProcess
+                    excelData["Process 2 Washer Lot No"] = repairedProcess
+                    excelData["Process 2 Lock Nut"] = repairedProcess
+                    excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+                    excelData["Process 2 ST"] = repairedProcess
+                    excelData["Process 2 Actual Time"] = repairedProcess
+                    excelData["Process 2 NG Cause"] = repairedProcess
+                    excelData["Process 2 Repaired Action"] = repairedProcess
+
+                    excelData["Process 3 Model Code"] = ngProcess
+                    excelData["Process 3 S/N"] = ngProcess
+                    excelData["Process 3 ID"] = ngProcess
+                    excelData["Process 3 NAME"] = ngProcess
+                    excelData["Process 3 Regular/Contractual"] = ngProcess
+                    excelData["Process 3 Frame Gasket"] = ngProcess
+                    excelData["Process 3 Frame Gasket Lot No"] = ngProcess
+                    excelData["Process 3 Casing Block"] = ngProcess
+                    excelData["Process 3 Casing Block Lot No"] = ngProcess
+                    excelData["Process 3 Casing Block Inspection 1 Average Data"] = ngProcess
+                    excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = ngProcess
+                    excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = ngProcess
+                    excelData["Process 3 Casing Gasket"] = ngProcess
+                    excelData["Process 3 Casing Gasket Lot No"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 1"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 1 Lot No"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 2"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 2 Lot No"] = ngProcess
+                    excelData["Process 3 Ball Cushion"] = ngProcess
+                    excelData["Process 3 Ball Cushion Lot No"] = ngProcess
+                    excelData["Process 3 Frame Cover"] = ngProcess
+                    excelData["Process 3 Frame Cover Lot No"] = ngProcess
+                    excelData["Process 3 Partition Board"] = ngProcess
+                    excelData["Process 3 Partition Board Lot No"] = ngProcess
+                    excelData["Process 3 Built In Tube 1"] = ngProcess
+                    excelData["Process 3 Built In Tube 1 Lot No"] = ngProcess
+                    excelData["Process 3 Built In Tube 2"] = ngProcess
+                    excelData["Process 3 Built In Tube 2 Lot No"] = ngProcess
+                    excelData["Process 3 Head Cover"] = ngProcess
+                    excelData["Process 3 Head Cover Lot No"] = ngProcess
+                    excelData["Process 3 Casing Packing"] = ngProcess
+                    excelData["Process 3 Casing Packing Lot No"] = ngProcess
+                    excelData["Process 3 M4x12 Screw"] = ngProcess
+                    excelData["Process 3 M4x12 Screw Lot No"] = ngProcess
+                    excelData["Process 3 Csb L"] = ngProcess
+                    excelData["Process 3 Csb L Lot No"] = ngProcess
+                    excelData["Process 3 Csb R"] = ngProcess
+                    excelData["Process 3 Csb R Lot No"] = ngProcess
+                    excelData["Process 3 Head Packing"] = ngProcess
+                    excelData["Process 3 Head Packing Lot No"] = ngProcess
+                    excelData["Process 3 ST"] = ngProcess
+                    excelData["Process 3 Actual Time"] = ngProcess
+                    excelData["Process 3 NG Cause"] = ngProcess
+                    excelData["Process 3 Repaired Action"] = ngProcess
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+
+                elif process5Status == "NG":
+                    repairedProcess = "REPAIRED AT PROCESS4"
+                    ngProcess = "NG AT PROCESS5"
+                    process4Row += 1
+                    process5Row += 1
+                    piRow += 1
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+                    excelData["Process 2 Model Code"] = repairedProcess
+                    excelData["Process 2 S/N"] = repairedProcess
+                    excelData["Process 2 ID"] = repairedProcess
+                    excelData["Process 2 NAME"] = repairedProcess
+                    excelData["Process 2 Regular/Contractual"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+                    excelData["Process 2 Rod Blk"] = repairedProcess
+                    excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Blk"] = repairedProcess
+                    excelData["Process 2 Df Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Ring"] = repairedProcess
+                    excelData["Process 2 Df Ring Lot No"] = repairedProcess
+                    excelData["Process 2 Washer"] = repairedProcess
+                    excelData["Process 2 Washer Lot No"] = repairedProcess
+                    excelData["Process 2 Lock Nut"] = repairedProcess
+                    excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+                    excelData["Process 2 ST"] = repairedProcess
+                    excelData["Process 2 Actual Time"] = repairedProcess
+                    excelData["Process 2 NG Cause"] = repairedProcess
+                    excelData["Process 2 Repaired Action"] = repairedProcess
+
+                    excelData["Process 3 Model Code"] = ngProcess
+                    excelData["Process 3 S/N"] = ngProcess
+                    excelData["Process 3 ID"] = ngProcess
+                    excelData["Process 3 NAME"] = ngProcess
+                    excelData["Process 3 Regular/Contractual"] = ngProcess
+                    excelData["Process 3 Frame Gasket"] = ngProcess
+                    excelData["Process 3 Frame Gasket Lot No"] = ngProcess
+                    excelData["Process 3 Casing Block"] = ngProcess
+                    excelData["Process 3 Casing Block Lot No"] = ngProcess
+                    excelData["Process 3 Casing Block Inspection 1 Average Data"] = ngProcess
+                    excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = ngProcess
+                    excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = ngProcess
+                    excelData["Process 3 Casing Gasket"] = ngProcess
+                    excelData["Process 3 Casing Gasket Lot No"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 1"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 1 Lot No"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 2"] = ngProcess
+                    excelData["Process 3 M4x16 Screw 2 Lot No"] = ngProcess
+                    excelData["Process 3 Ball Cushion"] = ngProcess
+                    excelData["Process 3 Ball Cushion Lot No"] = ngProcess
+                    excelData["Process 3 Frame Cover"] = ngProcess
+                    excelData["Process 3 Frame Cover Lot No"] = ngProcess
+                    excelData["Process 3 Partition Board"] = ngProcess
+                    excelData["Process 3 Partition Board Lot No"] = ngProcess
+                    excelData["Process 3 Built In Tube 1"] = ngProcess
+                    excelData["Process 3 Built In Tube 1 Lot No"] = ngProcess
+                    excelData["Process 3 Built In Tube 2"] = ngProcess
+                    excelData["Process 3 Built In Tube 2 Lot No"] = ngProcess
+                    excelData["Process 3 Head Cover"] = ngProcess
+                    excelData["Process 3 Head Cover Lot No"] = ngProcess
+                    excelData["Process 3 Casing Packing"] = ngProcess
+                    excelData["Process 3 Casing Packing Lot No"] = ngProcess
+                    excelData["Process 3 M4x12 Screw"] = ngProcess
+                    excelData["Process 3 M4x12 Screw Lot No"] = ngProcess
+                    excelData["Process 3 Csb L"] = ngProcess
+                    excelData["Process 3 Csb L Lot No"] = ngProcess
+                    excelData["Process 3 Csb R"] = ngProcess
+                    excelData["Process 3 Csb R Lot No"] = ngProcess
+                    excelData["Process 3 Head Packing"] = ngProcess
+                    excelData["Process 3 Head Packing Lot No"] = ngProcess
+                    excelData["Process 3 ST"] = ngProcess
+                    excelData["Process 3 Actual Time"] = ngProcess
+                    excelData["Process 3 NG Cause"] = ngProcess
+                    excelData["Process 3 Repaired Action"] = ngProcess
+
+                    excelData["Process 6 Model Code"] = ngProcess
+                    excelData["Process 6 S/N"] = ngProcess
+                    excelData["Process 6 ID"] = ngProcess
+                    excelData["Process 6 NAME"] = ngProcess
+                    excelData["Process 6 Regular/Contractual"] = ngProcess
+                    excelData["Process 6 Vinyl"] = ngProcess
+                    excelData["Process 6 Vinyl Lot No"] = ngProcess
+                    excelData["Process 6 ST"] = ngProcess
+                    excelData["Process 6 Actual Time"] = ngProcess
+                    excelData["Process 6 NG Cause"] = ngProcess
+                    excelData["Process 6 Repaired Action"] = ngProcess
+                    
+                elif process6Status == "NG":
+                    repairedProcess = "REPAIRED AT PROCESS4"
+                    process4Row += 1
+                    process5Row += 1
+                    process6Row += 1
+                    piRow += 1
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+                    excelData["Process 2 Model Code"] = repairedProcess
+                    excelData["Process 2 S/N"] = repairedProcess
+                    excelData["Process 2 ID"] = repairedProcess
+                    excelData["Process 2 NAME"] = repairedProcess
+                    excelData["Process 2 Regular/Contractual"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+                    excelData["Process 2 Rod Blk"] = repairedProcess
+                    excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Blk"] = repairedProcess
+                    excelData["Process 2 Df Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Ring"] = repairedProcess
+                    excelData["Process 2 Df Ring Lot No"] = repairedProcess
+                    excelData["Process 2 Washer"] = repairedProcess
+                    excelData["Process 2 Washer Lot No"] = repairedProcess
+                    excelData["Process 2 Lock Nut"] = repairedProcess
+                    excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+                    excelData["Process 2 ST"] = repairedProcess
+                    excelData["Process 2 Actual Time"] = repairedProcess
+                    excelData["Process 2 NG Cause"] = repairedProcess
+                    excelData["Process 2 Repaired Action"] = repairedProcess
+
+                    excelData["Process 3 Model Code"] = repairedProcess
+                    excelData["Process 3 S/N"] = repairedProcess
+                    excelData["Process 3 ID"] = repairedProcess
+                    excelData["Process 3 NAME"] = repairedProcess
+                    excelData["Process 3 Regular/Contractual"] = repairedProcess
+                    excelData["Process 3 Frame Gasket"] = repairedProcess
+                    excelData["Process 3 Frame Gasket Lot No"] = repairedProcess
+                    excelData["Process 3 Casing Block"] = repairedProcess
+                    excelData["Process 3 Casing Block Lot No"] = repairedProcess
+                    excelData["Process 3 Casing Block Inspection 1 Average Data"] = repairedProcess
+                    excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = repairedProcess
+                    excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = repairedProcess
+                    excelData["Process 3 Casing Gasket"] = repairedProcess
+                    excelData["Process 3 Casing Gasket Lot No"] = repairedProcess
+                    excelData["Process 3 M4x16 Screw 1"] = repairedProcess
+                    excelData["Process 3 M4x16 Screw 1 Lot No"] = repairedProcess
+                    excelData["Process 3 M4x16 Screw 2"] = repairedProcess
+                    excelData["Process 3 M4x16 Screw 2 Lot No"] = repairedProcess
+                    excelData["Process 3 Ball Cushion"] = repairedProcess
+                    excelData["Process 3 Ball Cushion Lot No"] = repairedProcess
+                    excelData["Process 3 Frame Cover"] = repairedProcess
+                    excelData["Process 3 Frame Cover Lot No"] = repairedProcess
+                    excelData["Process 3 Partition Board"] = repairedProcess
+                    excelData["Process 3 Partition Board Lot No"] = repairedProcess
+                    excelData["Process 3 Built In Tube 1"] = repairedProcess
+                    excelData["Process 3 Built In Tube 1 Lot No"] = repairedProcess
+                    excelData["Process 3 Built In Tube 2"] = repairedProcess
+                    excelData["Process 3 Built In Tube 2 Lot No"] = repairedProcess
+                    excelData["Process 3 Head Cover"] = repairedProcess
+                    excelData["Process 3 Head Cover Lot No"] = repairedProcess
+                    excelData["Process 3 Casing Packing"] = repairedProcess
+                    excelData["Process 3 Casing Packing Lot No"] = repairedProcess
+                    excelData["Process 3 M4x12 Screw"] = repairedProcess
+                    excelData["Process 3 M4x12 Screw Lot No"] = repairedProcess
+                    excelData["Process 3 Csb L"] = repairedProcess
+                    excelData["Process 3 Csb L Lot No"] = repairedProcess
+                    excelData["Process 3 Csb R"] = repairedProcess
+                    excelData["Process 3 Csb R Lot No"] = repairedProcess
+                    excelData["Process 3 Head Packing"] = repairedProcess
+                    excelData["Process 3 Head Packing Lot No"] = repairedProcess
+                    excelData["Process 3 ST"] = repairedProcess
+                    excelData["Process 3 Actual Time"] = repairedProcess
+                    excelData["Process 3 NG Cause"] = repairedProcess
+                    excelData["Process 3 Repaired Action"] = repairedProcess
+                    
+            elif process5Status == "Repaired":
+                if process6Status == "NG":
+                    repairedProcess = "REPAIRED AT PROCESS5"
+                    process5Row += 1
+                    process6Row += 1
+                    piRow += 1
+
+                    excelData["Process 1 Model Code"] = repairedProcess
+                    excelData["Process 1 S/N"] = repairedProcess
+                    excelData["Process 1 ID"] = repairedProcess
+                    excelData["Process 1 NAME"] = repairedProcess
+                    excelData["Process 1 Regular/Contractual"] = repairedProcess
+                    excelData["Process 1 Em2p"] = repairedProcess
+                    excelData["Process 1 Em2p Lot No"] = repairedProcess
+                    excelData["Process 1 Em3p"] = repairedProcess
+                    excelData["Process 1 Em3p Lot No"] = repairedProcess
+                    excelData["Process 1 Harness"] = repairedProcess
+                    excelData["Process 1 Harness Lot No"] = repairedProcess
+                    excelData["Process 1 Frame"] = repairedProcess
+                    excelData["Process 1 Frame Lot No"] = repairedProcess 
+                    excelData["Process 1 Bushing"] = repairedProcess
+                    excelData["Process 1 Bushing Lot No"] = repairedProcess
+                    excelData["Process 1 ST"] = repairedProcess
+                    excelData["Process 1 Actual Time"] = repairedProcess
+                    excelData["Process 1 NG Cause"] = repairedProcess
+                    excelData["Process 1 Repaired Action"] = repairedProcess  
+
+                    excelData["Process 2 Model Code"] = repairedProcess
+                    excelData["Process 2 S/N"] = repairedProcess
+                    excelData["Process 2 ID"] = repairedProcess
+                    excelData["Process 2 NAME"] = repairedProcess
+                    excelData["Process 2 Regular/Contractual"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw"] = repairedProcess
+                    excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+                    excelData["Process 2 Rod Blk"] = repairedProcess
+                    excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Blk"] = repairedProcess
+                    excelData["Process 2 Df Blk Lot No"] = repairedProcess
+                    excelData["Process 2 Df Ring"] = repairedProcess
+                    excelData["Process 2 Df Ring Lot No"] = repairedProcess
+                    excelData["Process 2 Washer"] = repairedProcess
+                    excelData["Process 2 Washer Lot No"] = repairedProcess
+                    excelData["Process 2 Lock Nut"] = repairedProcess
+                    excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+                    excelData["Process 2 ST"] = repairedProcess
+                    excelData["Process 2 Actual Time"] = repairedProcess
+                    excelData["Process 2 NG Cause"] = repairedProcess
+                    excelData["Process 2 Repaired Action"] = repairedProcess
+
+                    excelData["Process 3 Model Code"] = repairedProcess
+                    excelData["Process 3 S/N"] = repairedProcess
+                    excelData["Process 3 ID"] = repairedProcess
+                    excelData["Process 3 NAME"] = repairedProcess
+                    excelData["Process 3 Regular/Contractual"] = repairedProcess
+                    excelData["Process 3 Frame Gasket"] = repairedProcess
+                    excelData["Process 3 Frame Gasket Lot No"] = repairedProcess
+                    excelData["Process 3 Casing Block"] = repairedProcess
+                    excelData["Process 3 Casing Block Lot No"] = repairedProcess
+                    excelData["Process 3 Casing Block Inspection 1 Average Data"] = repairedProcess
+                    excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = repairedProcess
+                    excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = repairedProcess
+                    excelData["Process 3 Casing Gasket"] = repairedProcess
+                    excelData["Process 3 Casing Gasket Lot No"] = repairedProcess
+                    excelData["Process 3 M4x16 Screw 1"] = repairedProcess
+                    excelData["Process 3 M4x16 Screw 1 Lot No"] = repairedProcess
+                    excelData["Process 3 M4x16 Screw 2"] = repairedProcess
+                    excelData["Process 3 M4x16 Screw 2 Lot No"] = repairedProcess
+                    excelData["Process 3 Ball Cushion"] = repairedProcess
+                    excelData["Process 3 Ball Cushion Lot No"] = repairedProcess
+                    excelData["Process 3 Frame Cover"] = repairedProcess
+                    excelData["Process 3 Frame Cover Lot No"] = repairedProcess
+                    excelData["Process 3 Partition Board"] = repairedProcess
+                    excelData["Process 3 Partition Board Lot No"] = repairedProcess
+                    excelData["Process 3 Built In Tube 1"] = repairedProcess
+                    excelData["Process 3 Built In Tube 1 Lot No"] = repairedProcess
+                    excelData["Process 3 Built In Tube 2"] = repairedProcess
+                    excelData["Process 3 Built In Tube 2 Lot No"] = repairedProcess
+                    excelData["Process 3 Head Cover"] = repairedProcess
+                    excelData["Process 3 Head Cover Lot No"] = repairedProcess
+                    excelData["Process 3 Casing Packing"] = repairedProcess
+                    excelData["Process 3 Casing Packing Lot No"] = repairedProcess
+                    excelData["Process 3 M4x12 Screw"] = repairedProcess
+                    excelData["Process 3 M4x12 Screw Lot No"] = repairedProcess
+                    excelData["Process 3 Csb L"] = repairedProcess
+                    excelData["Process 3 Csb L Lot No"] = repairedProcess
+                    excelData["Process 3 Csb R"] = repairedProcess
+                    excelData["Process 3 Csb R Lot No"] = repairedProcess
+                    excelData["Process 3 Head Packing"] = repairedProcess
+                    excelData["Process 3 Head Packing Lot No"] = repairedProcess
+                    excelData["Process 3 ST"] = repairedProcess
+                    excelData["Process 3 Actual Time"] = repairedProcess
+                    excelData["Process 3 NG Cause"] = repairedProcess
+                    excelData["Process 3 Repaired Action"] = repairedProcess
+
+                    excelData["Process 4 Model Code"] = repairedProcess
+                    excelData["Process 4 S/N"] = repairedProcess
+                    excelData["Process 4 ID"] = repairedProcess
+                    excelData["Process 4 NAME"] = repairedProcess
+                    excelData["Process 4 Regular/Contractual"] = repairedProcess
+                    excelData["Process 4 Tank"] = repairedProcess
+                    excelData["Process 4 Tank Lot No"] = repairedProcess
+                    excelData["Process 4 Upper Housing"] = repairedProcess
+                    excelData["Process 4 Upper Housing Lot No"] = repairedProcess
+                    excelData["Process 4 Cord Hook" ] = repairedProcess
+                    excelData["Process 4 Cord Hook Lot No"] = repairedProcess
+                    excelData["Process 4 M4x16 Screw"] = repairedProcess
+                    excelData["Process 4 M4x16 Screw Lot No"] = repairedProcess
+                    excelData["Process 4 Tank Gasket"] = repairedProcess
+                    excelData["Process 4 Tank Gasket Lot No"] = repairedProcess
+                    excelData["Process 4 Tank Cover"] = repairedProcess
+                    excelData["Process 4 Tank Cover Lot No"] = repairedProcess
+                    excelData["Process 4 Housing Gasket"] = repairedProcess
+                    excelData["Process 4 Housing Gasket Lot No"] = repairedProcess
+                    excelData["Process 4 M4x40 Screw"] = repairedProcess
+                    excelData["Process 4 M4x40 Screw Lot No"] = repairedProcess
+                    excelData["Process 4 PartitionGasket"] = repairedProcess
+                    excelData["Process 4 PartitionGasket Lot No"] = repairedProcess
+                    excelData["Process 4 M4x12 Screw"] = repairedProcess
+                    excelData["Process 4 M4x12 Screw Lot No"] = repairedProcess
+                    excelData["Process 4 Muffler"] = repairedProcess
+                    excelData["Process 4 Muffler Lot No"] = repairedProcess
+                    excelData["Process 4 Muffler Gasket"] = repairedProcess
+                    excelData["Process 4 Muffler Gasket Lot No"] = repairedProcess
+                    excelData["Process 4 VCR"] = repairedProcess
+                    excelData["Process 4 VCR Lot No"] = repairedProcess
+                    excelData["Process 4 ST"] = repairedProcess
+                    excelData["Process 4 Actual Time"] = repairedProcess
+                    excelData["Process 4 NG Cause"] = repairedProcess
+                    excelData["Process 4 Repaired Action"] = repairedProcess
                 
-                excelData["Process 5 Model Code"] = ngProcess
-                excelData["Process 5 S/N"] = ngProcess
-                excelData["Process 5 ID"] = ngProcess
-                excelData["Process 5 NAME"] = ngProcess
-                excelData["Process 5 Regular/Contractual"] = ngProcess
-                excelData["Process 5 Rating Label"] = ngProcess
-                excelData["Process 5 Rating Label Lot No"] = ngProcess
-                excelData["Process 5 ST"] = ngProcess
-                excelData["Process 5 Actual Time"] = ngProcess
-                excelData["Process 5 NG Cause"] = ngProcess
-                excelData["Process 5 Repaired Action"] = ngProcess
-                
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
+            # elif process6Status == "Repaired":
+            #     pass
 
-            elif process3Status == "NG":
-                ngProcess = "NG AT PROCESS3"
-                process1Row += 1
-                process2Row += 1
-                process3Row += 1
+            process1Status = ""
+            process2Status = ""
+            process3Status = ""
+            process4Status = ""
+            process5Status = ""
+            process6Status = ""
 
-                excelData["Process 4 Model Code"] = ngProcess
-                excelData["Process 4 S/N"] = ngProcess
-                excelData["Process 4 ID"] = ngProcess
-                excelData["Process 4 NAME"] = ngProcess
-                excelData["Process 4 Regular/Contractual"] = ngProcess
-                excelData["Process 4 Tank"] = ngProcess
-                excelData["Process 4 Tank Lot No"] = ngProcess
-                excelData["Process 4 Upper Housing"] = ngProcess
-                excelData["Process 4 Upper Housing Lot No"] = ngProcess
-                excelData["Process 4 Cord Hook" ] = ngProcess
-                excelData["Process 4 Cord Hook Lot No"] = ngProcess
-                excelData["Process 4 M4x16 Screw"] = ngProcess
-                excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
-                excelData["Process 4 Tank Gasket"] = ngProcess
-                excelData["Process 4 Tank Gasket Lot No"] = ngProcess
-                excelData["Process 4 Tank Cover"] = ngProcess
-                excelData["Process 4 Tank Cover Lot No"] = ngProcess
-                excelData["Process 4 Housing Gasket"] = ngProcess
-                excelData["Process 4 Housing Gasket Lot No"] = ngProcess
-                excelData["Process 4 M4x40 Screw"] = ngProcess
-                excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
-                excelData["Process 4 PartitionGasket"] = ngProcess
-                excelData["Process 4 PartitionGasket Lot No"] = ngProcess
-                excelData["Process 4 M4x12 Screw"] = ngProcess
-                excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
-                excelData["Process 4 Muffler"] = ngProcess
-                excelData["Process 4 Muffler Lot No"] = ngProcess
-                excelData["Process 4 Muffler Gasket"] = ngProcess
-                excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
-                excelData["Process 4 VCR"] = ngProcess
-                excelData["Process 4 VCR Lot No"] = ngProcess
-                excelData["Process 4 ST"] = ngProcess
-                excelData["Process 4 Actual Time"] = ngProcess
-                excelData["Process 4 NG Cause"] = ngProcess
-                excelData["Process 4 Repaired Action"] = ngProcess
-                
-                excelData["Process 5 Model Code"] = ngProcess
-                excelData["Process 5 S/N"] = ngProcess
-                excelData["Process 5 ID"] = ngProcess
-                excelData["Process 5 NAME"] = ngProcess
-                excelData["Process 5 Regular/Contractual"] = ngProcess
-                excelData["Process 5 Rating Label"] = ngProcess
-                excelData["Process 5 Rating Label Lot No"] = ngProcess
-                excelData["Process 5 ST"] = ngProcess
-                excelData["Process 5 Actual Time"] = ngProcess
-                excelData["Process 5 NG Cause"] = ngProcess
-                excelData["Process 5 Repaired Action"] = ngProcess
-                
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
+        if process1Status == "NG":
+            ngProcess = "NG AT PROCESS1"
+            process1Row += 1
 
-            elif process4Status == "NG":
-                ngProcess = "NG AT PROCESS4"
-                process1Row += 1
-                process2Row += 1
-                process3Row += 1
-                process4Row += 1
+            excelData["DATE"] = ngProcess
+            excelData["TIME"] = ngProcess
+            excelData["MODEL CODE"] = ngProcess
+            excelData["PROCESS S/N"] = ngProcess
+            excelData["S/N"] = ngProcess
+            excelData["PASS/NG"] = ngProcess
+            excelData["VOLTAGE MAX (V)"] = ngProcess
+            excelData["WATTAGE MAX (W)"] = ngProcess
+            excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+            excelData["VOLTAGE Middle (V)"] = ngProcess
+            excelData["WATTAGE Middle (W)"] = ngProcess
+            excelData["AMPERAGE Middle (A)"] = ngProcess
+            excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+            excelData["dB(A) 1"] = ngProcess
+            excelData["dB(A) 2"] = ngProcess
+            excelData["dB(A) 3"] = ngProcess
+            excelData["VOLTAGE MIN (V)"] = ngProcess
+            excelData["WATTAGE MIN (W)"] = ngProcess
+            excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
 
-                excelData["Process 5 Model Code"] = ngProcess
-                excelData["Process 5 S/N"] = ngProcess
-                excelData["Process 5 ID"] = ngProcess
-                excelData["Process 5 NAME"] = ngProcess
-                excelData["Process 5 Regular/Contractual"] = ngProcess
-                excelData["Process 5 Rating Label"] = ngProcess
-                excelData["Process 5 Rating Label Lot No"] = ngProcess
-                excelData["Process 5 ST"] = ngProcess
-                excelData["Process 5 Actual Time"] = ngProcess
-                excelData["Process 5 NG Cause"] = ngProcess
-                excelData["Process 5 Repaired Action"] = ngProcess
-                
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
+            excelData["Process 2 Model Code"] = ngProcess
+            excelData["Process 2 S/N"] = ngProcess
+            excelData["Process 2 ID"] = ngProcess
+            excelData["Process 2 NAME"] = ngProcess
+            excelData["Process 2 Regular/Contractual"] = ngProcess
+            excelData["Process 2 M4x40 Screw"] = ngProcess
+            excelData["Process 2 M4x40 Screw Lot No"] = ngProcess
+            excelData["Process 2 Rod Blk"] = ngProcess
+            excelData["Process 2 Rod Blk Lot No"] = ngProcess
+            excelData["Process 2 Df Blk"] = ngProcess
+            excelData["Process 2 Df Blk Lot No"] = ngProcess
+            excelData["Process 2 Df Ring"] = ngProcess
+            excelData["Process 2 Df Ring Lot No"] = ngProcess
+            excelData["Process 2 Washer"] = ngProcess
+            excelData["Process 2 Washer Lot No"] = ngProcess
+            excelData["Process 2 Lock Nut"] = ngProcess
+            excelData["Process 2 Lock Nut Lot No"] = ngProcess
+            excelData["Process 2 ST"] = ngProcess
+            excelData["Process 2 Actual Time"] = ngProcess
+            excelData["Process 2 NG Cause"] = ngProcess
+            excelData["Process 2 Repaired Action"] = ngProcess
 
-            elif process5Status == "NG PRESSURE":
-                ngProcess = "NG PRESSURE AT PROCESS5"
-                process1Row += 1
-                process2Row += 1
-                process3Row += 1
-                process4Row += 1
-                process5Row += 1
-                piRow += 1
+            excelData["Process 3 Model Code"] = ngProcess
+            excelData["Process 3 S/N"] = ngProcess
+            excelData["Process 3 ID"] = ngProcess
+            excelData["Process 3 NAME"] = ngProcess
+            excelData["Process 3 Regular/Contractual"] = ngProcess
+            excelData["Process 3 Frame Gasket"] = ngProcess
+            excelData["Process 3 Frame Gasket Lot No"] = ngProcess
+            excelData["Process 3 Casing Block"] = ngProcess
+            excelData["Process 3 Casing Block Lot No"] = ngProcess
+            excelData["Process 3 Casing Block Inspection 1 Average Data"] = ngProcess
+            excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = ngProcess
+            excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = ngProcess
+            excelData["Process 3 Casing Gasket"] = ngProcess
+            excelData["Process 3 Casing Gasket Lot No"] = ngProcess
+            excelData["Process 3 M4x16 Screw 1"] = ngProcess
+            excelData["Process 3 M4x16 Screw 1 Lot No"] = ngProcess
+            excelData["Process 3 M4x16 Screw 2"] = ngProcess
+            excelData["Process 3 M4x16 Screw 2 Lot No"] = ngProcess
+            excelData["Process 3 Ball Cushion"] = ngProcess
+            excelData["Process 3 Ball Cushion Lot No"] = ngProcess
+            excelData["Process 3 Frame Cover"] = ngProcess
+            excelData["Process 3 Frame Cover Lot No"] = ngProcess
+            excelData["Process 3 Partition Board"] = ngProcess
+            excelData["Process 3 Partition Board Lot No"] = ngProcess
+            excelData["Process 3 Built In Tube 1"] = ngProcess
+            excelData["Process 3 Built In Tube 1 Lot No"] = ngProcess
+            excelData["Process 3 Built In Tube 2"] = ngProcess
+            excelData["Process 3 Built In Tube 2 Lot No"] = ngProcess
+            excelData["Process 3 Head Cover"] = ngProcess
+            excelData["Process 3 Head Cover Lot No"] = ngProcess
+            excelData["Process 3 Casing Packing"] = ngProcess
+            excelData["Process 3 Casing Packing Lot No"] = ngProcess
+            excelData["Process 3 M4x12 Screw"] = ngProcess
+            excelData["Process 3 M4x12 Screw Lot No"] = ngProcess
+            excelData["Process 3 Csb L"] = ngProcess
+            excelData["Process 3 Csb L Lot No"] = ngProcess
+            excelData["Process 3 Csb R"] = ngProcess
+            excelData["Process 3 Csb R Lot No"] = ngProcess
+            excelData["Process 3 Head Packing"] = ngProcess
+            excelData["Process 3 Head Packing Lot No"] = ngProcess
+            excelData["Process 3 ST"] = ngProcess
+            excelData["Process 3 Actual Time"] = ngProcess
+            excelData["Process 3 NG Cause"] = ngProcess
+            excelData["Process 3 Repaired Action"] = ngProcess
 
-                excelData["DATE"] = ngProcess
-                excelData["TIME"] = ngProcess
-                excelData["MODEL CODE"] = ngProcess
-                # excelData["PROCESS S/N"] = ngProcess
-                excelData["S/N"] = ngProcess
-                excelData["PASS/NG"] = ngProcess
-                excelData["VOLTAGE MAX (V)"] = ngProcess
-                excelData["WATTAGE MAX (W)"] = ngProcess
-                excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-                excelData["VOLTAGE Middle (V)"] = ngProcess
-                excelData["WATTAGE Middle (W)"] = ngProcess
-                excelData["AMPERAGE Middle (A)"] = ngProcess
-                excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-                excelData["dB(A) 1"] = ngProcess
-                excelData["dB(A) 2"] = ngProcess
-                excelData["dB(A) 3"] = ngProcess
-                excelData["VOLTAGE MIN (V)"] = ngProcess
-                excelData["WATTAGE MIN (W)"] = ngProcess
-                excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+            excelData["Process 4 Model Code"] = ngProcess
+            excelData["Process 4 S/N"] = ngProcess
+            excelData["Process 4 ID"] = ngProcess
+            excelData["Process 4 NAME"] = ngProcess
+            excelData["Process 4 Regular/Contractual"] = ngProcess
+            excelData["Process 4 Tank"] = ngProcess
+            excelData["Process 4 Tank Lot No"] = ngProcess
+            excelData["Process 4 Upper Housing"] = ngProcess
+            excelData["Process 4 Upper Housing Lot No"] = ngProcess
+            excelData["Process 4 Cord Hook" ] = ngProcess
+            excelData["Process 4 Cord Hook Lot No"] = ngProcess
+            excelData["Process 4 M4x16 Screw"] = ngProcess
+            excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
+            excelData["Process 4 Tank Gasket"] = ngProcess
+            excelData["Process 4 Tank Gasket Lot No"] = ngProcess
+            excelData["Process 4 Tank Cover"] = ngProcess
+            excelData["Process 4 Tank Cover Lot No"] = ngProcess
+            excelData["Process 4 Housing Gasket"] = ngProcess
+            excelData["Process 4 Housing Gasket Lot No"] = ngProcess
+            excelData["Process 4 M4x40 Screw"] = ngProcess
+            excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
+            excelData["Process 4 PartitionGasket"] = ngProcess
+            excelData["Process 4 PartitionGasket Lot No"] = ngProcess
+            excelData["Process 4 M4x12 Screw"] = ngProcess
+            excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
+            excelData["Process 4 Muffler"] = ngProcess
+            excelData["Process 4 Muffler Lot No"] = ngProcess
+            excelData["Process 4 Muffler Gasket"] = ngProcess
+            excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
+            excelData["Process 4 VCR"] = ngProcess
+            excelData["Process 4 VCR Lot No"] = ngProcess
+            excelData["Process 4 ST"] = ngProcess
+            excelData["Process 4 Actual Time"] = ngProcess
+            excelData["Process 4 NG Cause"] = ngProcess
+            excelData["Process 4 Repaired Action"] = ngProcess
 
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-            elif process5Status == "NG":
-                ngProcess = "NG AT PROCESS5"
-                process1Row += 1
-                process2Row += 1
-                process3Row += 1
-                process4Row += 1
-                process5Row += 1
-                piRow += 1
+            excelData["Process 5 Model Code"] = ngProcess
+            excelData["Process 5 S/N"] = ngProcess
+            excelData["Process 5 ID"] = ngProcess
+            excelData["Process 5 NAME"] = ngProcess
+            excelData["Process 5 Regular/Contractual"] = ngProcess
+            excelData["Process 5 Rating Label"] = ngProcess
+            excelData["Process 5 Rating Label Lot No"] = ngProcess
+            excelData["Process 5 ST"] = ngProcess
+            excelData["Process 5 Actual Time"] = ngProcess
+            excelData["Process 5 NG Cause"] = ngProcess
+            excelData["Process 5 Repaired Action"] = ngProcess
 
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-
-            elif process6Status == "NG":
-                ngProcess = "NG AT PROCESS6"
-                process1Row += 1
-                process2Row += 1
-                process3Row += 1
-                process4Row += 1
-                process5Row += 1
-                process6Row += 1
-                piRow += 1
-
-        elif process2Status == "Repaired":
-            if process3Status == "NG":
-                repairedProcess = "REPAIRED AT PROCESS2"
-                ngProcess = "NG AT PROCESS3"
-                process2Row += 1
-                process3Row += 1
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess
-
-                excelData["Process 4 Model Code"] = ngProcess
-                excelData["Process 4 S/N"] = ngProcess
-                excelData["Process 4 ID"] = ngProcess
-                excelData["Process 4 NAME"] = ngProcess
-                excelData["Process 4 Regular/Contractual"] = ngProcess
-                excelData["Process 4 Tank"] = ngProcess
-                excelData["Process 4 Tank Lot No"] = ngProcess
-                excelData["Process 4 Upper Housing"] = ngProcess
-                excelData["Process 4 Upper Housing Lot No"] = ngProcess
-                excelData["Process 4 Cord Hook" ] = ngProcess
-                excelData["Process 4 Cord Hook Lot No"] = ngProcess
-                excelData["Process 4 M4x16 Screw"] = ngProcess
-                excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
-                excelData["Process 4 Tank Gasket"] = ngProcess
-                excelData["Process 4 Tank Gasket Lot No"] = ngProcess
-                excelData["Process 4 Tank Cover"] = ngProcess
-                excelData["Process 4 Tank Cover Lot No"] = ngProcess
-                excelData["Process 4 Housing Gasket"] = ngProcess
-                excelData["Process 4 Housing Gasket Lot No"] = ngProcess
-                excelData["Process 4 M4x40 Screw"] = ngProcess
-                excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
-                excelData["Process 4 PartitionGasket"] = ngProcess
-                excelData["Process 4 PartitionGasket Lot No"] = ngProcess
-                excelData["Process 4 M4x12 Screw"] = ngProcess
-                excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
-                excelData["Process 4 Muffler"] = ngProcess
-                excelData["Process 4 Muffler Lot No"] = ngProcess
-                excelData["Process 4 Muffler Gasket"] = ngProcess
-                excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
-                excelData["Process 4 VCR"] = ngProcess
-                excelData["Process 4 VCR Lot No"] = ngProcess
-                excelData["Process 4 ST"] = ngProcess
-                excelData["Process 4 Actual Time"] = ngProcess
-                excelData["Process 4 NG Cause"] = ngProcess
-                excelData["Process 4 Repaired Action"] = ngProcess
-
-                excelData["Process 5 Model Code"] = ngProcess
-                excelData["Process 5 S/N"] = ngProcess
-                excelData["Process 5 ID"] = ngProcess
-                excelData["Process 5 NAME"] = ngProcess
-                excelData["Process 5 Regular/Contractual"] = ngProcess
-                excelData["Process 5 Rating Label"] = ngProcess
-                excelData["Process 5 Rating Label Lot No"] = ngProcess
-                excelData["Process 5 ST"] = ngProcess
-                excelData["Process 5 Actual Time"] = ngProcess
-                excelData["Process 5 NG Cause"] = ngProcess
-                excelData["Process 5 Repaired Action"] = ngProcess
-
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-                
-            elif process4Status == "NG":
-                repairedProcess = "REPAIRED AT PROCESS2"
-                ngProcess = "NG AT PROCESS4"
-                process2Row += 1
-                process3Row += 1
-                process4Row += 1
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess 
-
-                excelData["Process 5 Model Code"] = ngProcess
-                excelData["Process 5 S/N"] = ngProcess
-                excelData["Process 5 ID"] = ngProcess
-                excelData["Process 5 NAME"] = ngProcess
-                excelData["Process 5 Regular/Contractual"] = ngProcess
-                excelData["Process 5 Rating Label"] = ngProcess
-                excelData["Process 5 Rating Label Lot No"] = ngProcess
-                excelData["Process 5 ST"] = ngProcess
-                excelData["Process 5 Actual Time"] = ngProcess
-                excelData["Process 5 NG Cause"] = ngProcess
-                excelData["Process 5 Repaired Action"] = ngProcess
-
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-
-            elif process5Status == "NG PRESSURE":
-                repairedProcess = "REPAIRED AT PROCESS2"
-                ngProcess = "NG PRESSURE AT PROCESS5"
-                process2Row += 1
-                process3Row += 1
-                process4Row += 1
-                process5Row += 1
-                piRow += 1
-
-                excelData["DATE"] = ngProcess
-                excelData["TIME"] = ngProcess
-                excelData["MODEL CODE"] = ngProcess
-                # excelData["PROCESS S/N"] = ngProcess
-                excelData["S/N"] = ngProcess
-                excelData["PASS/NG"] = ngProcess
-                excelData["VOLTAGE MAX (V)"] = ngProcess
-                excelData["WATTAGE MAX (W)"] = ngProcess
-                excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-                excelData["VOLTAGE Middle (V)"] = ngProcess
-                excelData["WATTAGE Middle (W)"] = ngProcess
-                excelData["AMPERAGE Middle (A)"] = ngProcess
-                excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-                excelData["dB(A) 1"] = ngProcess
-                excelData["dB(A) 2"] = ngProcess
-                excelData["dB(A) 3"] = ngProcess
-                excelData["VOLTAGE MIN (V)"] = ngProcess
-                excelData["WATTAGE MIN (W)"] = ngProcess
-                excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-
-            elif process5Status == "NG":
-                repairedProcess = "REPAIRED AT PROCESS2"
-                ngProcess = "NG AT PROCESS5"
-                process2Row += 1
-                process3Row += 1
-                process4Row += 1
-                process5Row += 1
-                piRow += 1
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-
-            elif process6Status == "NG":
-                repairedProcess = "REPAIRED AT PROCESS2"
-                
-                process2Row += 1
-                process3Row += 1
-                process4Row += 1
-                process5Row += 1
-                process6Row += 1
-                piRow += 1
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-        elif process3Status == "Repaired":
-            if process4Status == "NG":
-                repairedProcess = "REPAIRED AT PROCESS3"
-                ngProcess = "NG AT PROCESS4"
-                process3Row += 1
-                process4Row += 1
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-                excelData["Process 2 Model Code"] = repairedProcess
-                excelData["Process 2 S/N"] = repairedProcess
-                excelData["Process 2 ID"] = repairedProcess
-                excelData["Process 2 NAME"] = repairedProcess
-                excelData["Process 2 Regular/Contractual"] = repairedProcess
-                excelData["Process 2 M4x40 Screw"] = repairedProcess
-                excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-                excelData["Process 2 Rod Blk"] = repairedProcess
-                excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Blk"] = repairedProcess
-                excelData["Process 2 Df Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Ring"] = repairedProcess
-                excelData["Process 2 Df Ring Lot No"] = repairedProcess
-                excelData["Process 2 Washer"] = repairedProcess
-                excelData["Process 2 Washer Lot No"] = repairedProcess
-                excelData["Process 2 Lock Nut"] = repairedProcess
-                excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-                excelData["Process 2 ST"] = repairedProcess
-                excelData["Process 2 Actual Time"] = repairedProcess
-                excelData["Process 2 NG Cause"] = repairedProcess
-                excelData["Process 2 Repaired Action"] = repairedProcess
-
-                excelData["Process 5 Model Code"] = ngProcess
-                excelData["Process 5 S/N"] = ngProcess
-                excelData["Process 5 ID"] = ngProcess
-                excelData["Process 5 NAME"] = ngProcess
-                excelData["Process 5 Regular/Contractual"] = ngProcess
-                excelData["Process 5 Rating Label"] = ngProcess
-                excelData["Process 5 Rating Label Lot No"] = ngProcess
-                excelData["Process 5 ST"] = ngProcess
-                excelData["Process 5 Actual Time"] = ngProcess
-                excelData["Process 5 NG Cause"] = ngProcess
-                excelData["Process 5 Repaired Action"] = ngProcess
-
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-
-            elif process5Status == "NG PRESSURE":
-                repairedProcess = "REPAIRED AT PROCESS3"
-                ngProcess = "NG PRESSURE AT PROCESS5"
-                process3Row += 1
-                process4Row += 1
-                process5Row += 1
-                piRow += 1
-
-                excelData["DATE"] = ngProcess
-                excelData["TIME"] = ngProcess
-                excelData["MODEL CODE"] = ngProcess
-                # excelData["PROCESS S/N"] = ngProcess
-                excelData["S/N"] = ngProcess
-                excelData["PASS/NG"] = ngProcess
-                excelData["VOLTAGE MAX (V)"] = ngProcess
-                excelData["WATTAGE MAX (W)"] = ngProcess
-                excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-                excelData["VOLTAGE Middle (V)"] = ngProcess
-                excelData["WATTAGE Middle (W)"] = ngProcess
-                excelData["AMPERAGE Middle (A)"] = ngProcess
-                excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-                excelData["dB(A) 1"] = ngProcess
-                excelData["dB(A) 2"] = ngProcess
-                excelData["dB(A) 3"] = ngProcess
-                excelData["VOLTAGE MIN (V)"] = ngProcess
-                excelData["WATTAGE MIN (W)"] = ngProcess
-                excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-                excelData["Process 2 Model Code"] = repairedProcess
-                excelData["Process 2 S/N"] = repairedProcess
-                excelData["Process 2 ID"] = repairedProcess
-                excelData["Process 2 NAME"] = repairedProcess
-                excelData["Process 2 Regular/Contractual"] = repairedProcess
-                excelData["Process 2 M4x40 Screw"] = repairedProcess
-                excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-                excelData["Process 2 Rod Blk"] = repairedProcess
-                excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Blk"] = repairedProcess
-                excelData["Process 2 Df Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Ring"] = repairedProcess
-                excelData["Process 2 Df Ring Lot No"] = repairedProcess
-                excelData["Process 2 Washer"] = repairedProcess
-                excelData["Process 2 Washer Lot No"] = repairedProcess
-                excelData["Process 2 Lock Nut"] = repairedProcess
-                excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-                excelData["Process 2 ST"] = repairedProcess
-                excelData["Process 2 Actual Time"] = repairedProcess
-                excelData["Process 2 NG Cause"] = repairedProcess
-                excelData["Process 2 Repaired Action"] = repairedProcess
-
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-
-            elif process5Status == "NG":
-                repairedProcess = "REPAIRED AT PROCESS3"
-                ngProcess = "NG AT PROCESS5"
-                process3Row += 1
-                process4Row += 1
-                process5Row += 1
-                piRow += 1
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-                excelData["Process 2 Model Code"] = repairedProcess
-                excelData["Process 2 S/N"] = repairedProcess
-                excelData["Process 2 ID"] = repairedProcess
-                excelData["Process 2 NAME"] = repairedProcess
-                excelData["Process 2 Regular/Contractual"] = repairedProcess
-                excelData["Process 2 M4x40 Screw"] = repairedProcess
-                excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-                excelData["Process 2 Rod Blk"] = repairedProcess
-                excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Blk"] = repairedProcess
-                excelData["Process 2 Df Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Ring"] = repairedProcess
-                excelData["Process 2 Df Ring Lot No"] = repairedProcess
-                excelData["Process 2 Washer"] = repairedProcess
-                excelData["Process 2 Washer Lot No"] = repairedProcess
-                excelData["Process 2 Lock Nut"] = repairedProcess
-                excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-                excelData["Process 2 ST"] = repairedProcess
-                excelData["Process 2 Actual Time"] = repairedProcess
-                excelData["Process 2 NG Cause"] = repairedProcess
-                excelData["Process 2 Repaired Action"] = repairedProcess
-
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-
-            elif process6Status == "NG":
-                repairedProcess = "REPAIRED AT PROCESS3"
-                ngProcess = "NG AT PROCESS6"
-                process3Row += 1
-                process4Row += 1
-                process5Row += 1
-                process6Row += 1
-                piRow += 1
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-                excelData["Process 2 Model Code"] = repairedProcess
-                excelData["Process 2 S/N"] = repairedProcess
-                excelData["Process 2 ID"] = repairedProcess
-                excelData["Process 2 NAME"] = repairedProcess
-                excelData["Process 2 Regular/Contractual"] = repairedProcess
-                excelData["Process 2 M4x40 Screw"] = repairedProcess
-                excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-                excelData["Process 2 Rod Blk"] = repairedProcess
-                excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Blk"] = repairedProcess
-                excelData["Process 2 Df Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Ring"] = repairedProcess
-                excelData["Process 2 Df Ring Lot No"] = repairedProcess
-                excelData["Process 2 Washer"] = repairedProcess
-                excelData["Process 2 Washer Lot No"] = repairedProcess
-                excelData["Process 2 Lock Nut"] = repairedProcess
-                excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-                excelData["Process 2 ST"] = repairedProcess
-                excelData["Process 2 Actual Time"] = repairedProcess
-                excelData["Process 2 NG Cause"] = repairedProcess
-                excelData["Process 2 Repaired Action"] = repairedProcess
-
-        elif process4Status == "Repaired":
-            if process5Status == "NG PRESSURE":
-                repairedProcess = "REPAIRED AT PROCESS4"
-                ngProcess = "NG PRESSURE AT PROCESS5"
-                process4Row += 1
-                process5Row += 1
-                piRow += 1
-
-                excelData["DATE"] = ngProcess
-                excelData["TIME"] = ngProcess
-                excelData["MODEL CODE"] = ngProcess
-                # excelData["PROCESS S/N"] = ngProcess
-                excelData["S/N"] = ngProcess
-                excelData["PASS/NG"] = ngProcess
-                excelData["VOLTAGE MAX (V)"] = ngProcess
-                excelData["WATTAGE MAX (W)"] = ngProcess
-                excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-                excelData["VOLTAGE Middle (V)"] = ngProcess
-                excelData["WATTAGE Middle (W)"] = ngProcess
-                excelData["AMPERAGE Middle (A)"] = ngProcess
-                excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-                excelData["dB(A) 1"] = ngProcess
-                excelData["dB(A) 2"] = ngProcess
-                excelData["dB(A) 3"] = ngProcess
-                excelData["VOLTAGE MIN (V)"] = ngProcess
-                excelData["WATTAGE MIN (W)"] = ngProcess
-                excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-                excelData["Process 2 Model Code"] = repairedProcess
-                excelData["Process 2 S/N"] = repairedProcess
-                excelData["Process 2 ID"] = repairedProcess
-                excelData["Process 2 NAME"] = repairedProcess
-                excelData["Process 2 Regular/Contractual"] = repairedProcess
-                excelData["Process 2 M4x40 Screw"] = repairedProcess
-                excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-                excelData["Process 2 Rod Blk"] = repairedProcess
-                excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Blk"] = repairedProcess
-                excelData["Process 2 Df Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Ring"] = repairedProcess
-                excelData["Process 2 Df Ring Lot No"] = repairedProcess
-                excelData["Process 2 Washer"] = repairedProcess
-                excelData["Process 2 Washer Lot No"] = repairedProcess
-                excelData["Process 2 Lock Nut"] = repairedProcess
-                excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-                excelData["Process 2 ST"] = repairedProcess
-                excelData["Process 2 Actual Time"] = repairedProcess
-                excelData["Process 2 NG Cause"] = repairedProcess
-                excelData["Process 2 Repaired Action"] = repairedProcess
-
-                excelData["Process 3 Model Code"] = ngProcess
-                excelData["Process 3 S/N"] = ngProcess
-                excelData["Process 3 ID"] = ngProcess
-                excelData["Process 3 NAME"] = ngProcess
-                excelData["Process 3 Regular/Contractual"] = ngProcess
-                excelData["Process 3 Frame Gasket"] = ngProcess
-                excelData["Process 3 Frame Gasket Lot No"] = ngProcess
-                excelData["Process 3 Casing Block"] = ngProcess
-                excelData["Process 3 Casing Block Lot No"] = ngProcess
-                excelData["Process 3 Casing Block Inspection 1 Average Data"] = ngProcess
-                excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = ngProcess
-                excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = ngProcess
-                excelData["Process 3 Casing Gasket"] = ngProcess
-                excelData["Process 3 Casing Gasket Lot No"] = ngProcess
-                excelData["Process 3 M4x16 Screw 1"] = ngProcess
-                excelData["Process 3 M4x16 Screw 1 Lot No"] = ngProcess
-                excelData["Process 3 M4x16 Screw 2"] = ngProcess
-                excelData["Process 3 M4x16 Screw 2 Lot No"] = ngProcess
-                excelData["Process 3 Ball Cushion"] = ngProcess
-                excelData["Process 3 Ball Cushion Lot No"] = ngProcess
-                excelData["Process 3 Frame Cover"] = ngProcess
-                excelData["Process 3 Frame Cover Lot No"] = ngProcess
-                excelData["Process 3 Partition Board"] = ngProcess
-                excelData["Process 3 Partition Board Lot No"] = ngProcess
-                excelData["Process 3 Built In Tube 1"] = ngProcess
-                excelData["Process 3 Built In Tube 1 Lot No"] = ngProcess
-                excelData["Process 3 Built In Tube 2"] = ngProcess
-                excelData["Process 3 Built In Tube 2 Lot No"] = ngProcess
-                excelData["Process 3 Head Cover"] = ngProcess
-                excelData["Process 3 Head Cover Lot No"] = ngProcess
-                excelData["Process 3 Casing Packing"] = ngProcess
-                excelData["Process 3 Casing Packing Lot No"] = ngProcess
-                excelData["Process 3 M4x12 Screw"] = ngProcess
-                excelData["Process 3 M4x12 Screw Lot No"] = ngProcess
-                excelData["Process 3 Csb L"] = ngProcess
-                excelData["Process 3 Csb L Lot No"] = ngProcess
-                excelData["Process 3 Csb R"] = ngProcess
-                excelData["Process 3 Csb R Lot No"] = ngProcess
-                excelData["Process 3 Head Packing"] = ngProcess
-                excelData["Process 3 Head Packing Lot No"] = ngProcess
-                excelData["Process 3 ST"] = ngProcess
-                excelData["Process 3 Actual Time"] = ngProcess
-                excelData["Process 3 NG Cause"] = ngProcess
-                excelData["Process 3 Repaired Action"] = ngProcess
-
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-
-            elif process5Status == "NG":
-                repairedProcess = "REPAIRED AT PROCESS4"
-                ngProcess = "NG AT PROCESS5"
-                process4Row += 1
-                process5Row += 1
-                piRow += 1
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-                excelData["Process 2 Model Code"] = repairedProcess
-                excelData["Process 2 S/N"] = repairedProcess
-                excelData["Process 2 ID"] = repairedProcess
-                excelData["Process 2 NAME"] = repairedProcess
-                excelData["Process 2 Regular/Contractual"] = repairedProcess
-                excelData["Process 2 M4x40 Screw"] = repairedProcess
-                excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-                excelData["Process 2 Rod Blk"] = repairedProcess
-                excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Blk"] = repairedProcess
-                excelData["Process 2 Df Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Ring"] = repairedProcess
-                excelData["Process 2 Df Ring Lot No"] = repairedProcess
-                excelData["Process 2 Washer"] = repairedProcess
-                excelData["Process 2 Washer Lot No"] = repairedProcess
-                excelData["Process 2 Lock Nut"] = repairedProcess
-                excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-                excelData["Process 2 ST"] = repairedProcess
-                excelData["Process 2 Actual Time"] = repairedProcess
-                excelData["Process 2 NG Cause"] = repairedProcess
-                excelData["Process 2 Repaired Action"] = repairedProcess
-
-                excelData["Process 3 Model Code"] = ngProcess
-                excelData["Process 3 S/N"] = ngProcess
-                excelData["Process 3 ID"] = ngProcess
-                excelData["Process 3 NAME"] = ngProcess
-                excelData["Process 3 Regular/Contractual"] = ngProcess
-                excelData["Process 3 Frame Gasket"] = ngProcess
-                excelData["Process 3 Frame Gasket Lot No"] = ngProcess
-                excelData["Process 3 Casing Block"] = ngProcess
-                excelData["Process 3 Casing Block Lot No"] = ngProcess
-                excelData["Process 3 Casing Block Inspection 1 Average Data"] = ngProcess
-                excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = ngProcess
-                excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = ngProcess
-                excelData["Process 3 Casing Gasket"] = ngProcess
-                excelData["Process 3 Casing Gasket Lot No"] = ngProcess
-                excelData["Process 3 M4x16 Screw 1"] = ngProcess
-                excelData["Process 3 M4x16 Screw 1 Lot No"] = ngProcess
-                excelData["Process 3 M4x16 Screw 2"] = ngProcess
-                excelData["Process 3 M4x16 Screw 2 Lot No"] = ngProcess
-                excelData["Process 3 Ball Cushion"] = ngProcess
-                excelData["Process 3 Ball Cushion Lot No"] = ngProcess
-                excelData["Process 3 Frame Cover"] = ngProcess
-                excelData["Process 3 Frame Cover Lot No"] = ngProcess
-                excelData["Process 3 Partition Board"] = ngProcess
-                excelData["Process 3 Partition Board Lot No"] = ngProcess
-                excelData["Process 3 Built In Tube 1"] = ngProcess
-                excelData["Process 3 Built In Tube 1 Lot No"] = ngProcess
-                excelData["Process 3 Built In Tube 2"] = ngProcess
-                excelData["Process 3 Built In Tube 2 Lot No"] = ngProcess
-                excelData["Process 3 Head Cover"] = ngProcess
-                excelData["Process 3 Head Cover Lot No"] = ngProcess
-                excelData["Process 3 Casing Packing"] = ngProcess
-                excelData["Process 3 Casing Packing Lot No"] = ngProcess
-                excelData["Process 3 M4x12 Screw"] = ngProcess
-                excelData["Process 3 M4x12 Screw Lot No"] = ngProcess
-                excelData["Process 3 Csb L"] = ngProcess
-                excelData["Process 3 Csb L Lot No"] = ngProcess
-                excelData["Process 3 Csb R"] = ngProcess
-                excelData["Process 3 Csb R Lot No"] = ngProcess
-                excelData["Process 3 Head Packing"] = ngProcess
-                excelData["Process 3 Head Packing Lot No"] = ngProcess
-                excelData["Process 3 ST"] = ngProcess
-                excelData["Process 3 Actual Time"] = ngProcess
-                excelData["Process 3 NG Cause"] = ngProcess
-                excelData["Process 3 Repaired Action"] = ngProcess
-
-                excelData["Process 6 Model Code"] = ngProcess
-                excelData["Process 6 S/N"] = ngProcess
-                excelData["Process 6 ID"] = ngProcess
-                excelData["Process 6 NAME"] = ngProcess
-                excelData["Process 6 Regular/Contractual"] = ngProcess
-                excelData["Process 6 Vinyl"] = ngProcess
-                excelData["Process 6 Vinyl Lot No"] = ngProcess
-                excelData["Process 6 ST"] = ngProcess
-                excelData["Process 6 Actual Time"] = ngProcess
-                excelData["Process 6 NG Cause"] = ngProcess
-                excelData["Process 6 Repaired Action"] = ngProcess
-                
-            elif process6Status == "NG":
-                repairedProcess = "REPAIRED AT PROCESS4"
-                process4Row += 1
-                process5Row += 1
-                process6Row += 1
-                piRow += 1
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-                excelData["Process 2 Model Code"] = repairedProcess
-                excelData["Process 2 S/N"] = repairedProcess
-                excelData["Process 2 ID"] = repairedProcess
-                excelData["Process 2 NAME"] = repairedProcess
-                excelData["Process 2 Regular/Contractual"] = repairedProcess
-                excelData["Process 2 M4x40 Screw"] = repairedProcess
-                excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-                excelData["Process 2 Rod Blk"] = repairedProcess
-                excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Blk"] = repairedProcess
-                excelData["Process 2 Df Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Ring"] = repairedProcess
-                excelData["Process 2 Df Ring Lot No"] = repairedProcess
-                excelData["Process 2 Washer"] = repairedProcess
-                excelData["Process 2 Washer Lot No"] = repairedProcess
-                excelData["Process 2 Lock Nut"] = repairedProcess
-                excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-                excelData["Process 2 ST"] = repairedProcess
-                excelData["Process 2 Actual Time"] = repairedProcess
-                excelData["Process 2 NG Cause"] = repairedProcess
-                excelData["Process 2 Repaired Action"] = repairedProcess
-
-                excelData["Process 3 Model Code"] = repairedProcess
-                excelData["Process 3 S/N"] = repairedProcess
-                excelData["Process 3 ID"] = repairedProcess
-                excelData["Process 3 NAME"] = repairedProcess
-                excelData["Process 3 Regular/Contractual"] = repairedProcess
-                excelData["Process 3 Frame Gasket"] = repairedProcess
-                excelData["Process 3 Frame Gasket Lot No"] = repairedProcess
-                excelData["Process 3 Casing Block"] = repairedProcess
-                excelData["Process 3 Casing Block Lot No"] = repairedProcess
-                excelData["Process 3 Casing Block Inspection 1 Average Data"] = repairedProcess
-                excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = repairedProcess
-                excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = repairedProcess
-                excelData["Process 3 Casing Gasket"] = repairedProcess
-                excelData["Process 3 Casing Gasket Lot No"] = repairedProcess
-                excelData["Process 3 M4x16 Screw 1"] = repairedProcess
-                excelData["Process 3 M4x16 Screw 1 Lot No"] = repairedProcess
-                excelData["Process 3 M4x16 Screw 2"] = repairedProcess
-                excelData["Process 3 M4x16 Screw 2 Lot No"] = repairedProcess
-                excelData["Process 3 Ball Cushion"] = repairedProcess
-                excelData["Process 3 Ball Cushion Lot No"] = repairedProcess
-                excelData["Process 3 Frame Cover"] = repairedProcess
-                excelData["Process 3 Frame Cover Lot No"] = repairedProcess
-                excelData["Process 3 Partition Board"] = repairedProcess
-                excelData["Process 3 Partition Board Lot No"] = repairedProcess
-                excelData["Process 3 Built In Tube 1"] = repairedProcess
-                excelData["Process 3 Built In Tube 1 Lot No"] = repairedProcess
-                excelData["Process 3 Built In Tube 2"] = repairedProcess
-                excelData["Process 3 Built In Tube 2 Lot No"] = repairedProcess
-                excelData["Process 3 Head Cover"] = repairedProcess
-                excelData["Process 3 Head Cover Lot No"] = repairedProcess
-                excelData["Process 3 Casing Packing"] = repairedProcess
-                excelData["Process 3 Casing Packing Lot No"] = repairedProcess
-                excelData["Process 3 M4x12 Screw"] = repairedProcess
-                excelData["Process 3 M4x12 Screw Lot No"] = repairedProcess
-                excelData["Process 3 Csb L"] = repairedProcess
-                excelData["Process 3 Csb L Lot No"] = repairedProcess
-                excelData["Process 3 Csb R"] = repairedProcess
-                excelData["Process 3 Csb R Lot No"] = repairedProcess
-                excelData["Process 3 Head Packing"] = repairedProcess
-                excelData["Process 3 Head Packing Lot No"] = repairedProcess
-                excelData["Process 3 ST"] = repairedProcess
-                excelData["Process 3 Actual Time"] = repairedProcess
-                excelData["Process 3 NG Cause"] = repairedProcess
-                excelData["Process 3 Repaired Action"] = repairedProcess
-                
-        elif process5Status == "Repaired":
-            if process6Status == "NG":
-                repairedProcess = "REPAIRED AT PROCESS5"
-                process5Row += 1
-                process6Row += 1
-                piRow += 1
-
-                excelData["Process 1 Model Code"] = repairedProcess
-                excelData["Process 1 S/N"] = repairedProcess
-                excelData["Process 1 ID"] = repairedProcess
-                excelData["Process 1 NAME"] = repairedProcess
-                excelData["Process 1 Regular/Contractual"] = repairedProcess
-                excelData["Process 1 Em2p"] = repairedProcess
-                excelData["Process 1 Em2p Lot No"] = repairedProcess
-                excelData["Process 1 Em3p"] = repairedProcess
-                excelData["Process 1 Em3p Lot No"] = repairedProcess
-                excelData["Process 1 Harness"] = repairedProcess
-                excelData["Process 1 Harness Lot No"] = repairedProcess
-                excelData["Process 1 Frame"] = repairedProcess
-                excelData["Process 1 Frame Lot No"] = repairedProcess 
-                excelData["Process 1 Bushing"] = repairedProcess
-                excelData["Process 1 Bushing Lot No"] = repairedProcess
-                excelData["Process 1 ST"] = repairedProcess
-                excelData["Process 1 Actual Time"] = repairedProcess
-                excelData["Process 1 NG Cause"] = repairedProcess
-                excelData["Process 1 Repaired Action"] = repairedProcess  
-
-                excelData["Process 2 Model Code"] = repairedProcess
-                excelData["Process 2 S/N"] = repairedProcess
-                excelData["Process 2 ID"] = repairedProcess
-                excelData["Process 2 NAME"] = repairedProcess
-                excelData["Process 2 Regular/Contractual"] = repairedProcess
-                excelData["Process 2 M4x40 Screw"] = repairedProcess
-                excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-                excelData["Process 2 Rod Blk"] = repairedProcess
-                excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Blk"] = repairedProcess
-                excelData["Process 2 Df Blk Lot No"] = repairedProcess
-                excelData["Process 2 Df Ring"] = repairedProcess
-                excelData["Process 2 Df Ring Lot No"] = repairedProcess
-                excelData["Process 2 Washer"] = repairedProcess
-                excelData["Process 2 Washer Lot No"] = repairedProcess
-                excelData["Process 2 Lock Nut"] = repairedProcess
-                excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-                excelData["Process 2 ST"] = repairedProcess
-                excelData["Process 2 Actual Time"] = repairedProcess
-                excelData["Process 2 NG Cause"] = repairedProcess
-                excelData["Process 2 Repaired Action"] = repairedProcess
-
-                excelData["Process 3 Model Code"] = repairedProcess
-                excelData["Process 3 S/N"] = repairedProcess
-                excelData["Process 3 ID"] = repairedProcess
-                excelData["Process 3 NAME"] = repairedProcess
-                excelData["Process 3 Regular/Contractual"] = repairedProcess
-                excelData["Process 3 Frame Gasket"] = repairedProcess
-                excelData["Process 3 Frame Gasket Lot No"] = repairedProcess
-                excelData["Process 3 Casing Block"] = repairedProcess
-                excelData["Process 3 Casing Block Lot No"] = repairedProcess
-                excelData["Process 3 Casing Block Inspection 1 Average Data"] = repairedProcess
-                excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = repairedProcess
-                excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = repairedProcess
-                excelData["Process 3 Casing Gasket"] = repairedProcess
-                excelData["Process 3 Casing Gasket Lot No"] = repairedProcess
-                excelData["Process 3 M4x16 Screw 1"] = repairedProcess
-                excelData["Process 3 M4x16 Screw 1 Lot No"] = repairedProcess
-                excelData["Process 3 M4x16 Screw 2"] = repairedProcess
-                excelData["Process 3 M4x16 Screw 2 Lot No"] = repairedProcess
-                excelData["Process 3 Ball Cushion"] = repairedProcess
-                excelData["Process 3 Ball Cushion Lot No"] = repairedProcess
-                excelData["Process 3 Frame Cover"] = repairedProcess
-                excelData["Process 3 Frame Cover Lot No"] = repairedProcess
-                excelData["Process 3 Partition Board"] = repairedProcess
-                excelData["Process 3 Partition Board Lot No"] = repairedProcess
-                excelData["Process 3 Built In Tube 1"] = repairedProcess
-                excelData["Process 3 Built In Tube 1 Lot No"] = repairedProcess
-                excelData["Process 3 Built In Tube 2"] = repairedProcess
-                excelData["Process 3 Built In Tube 2 Lot No"] = repairedProcess
-                excelData["Process 3 Head Cover"] = repairedProcess
-                excelData["Process 3 Head Cover Lot No"] = repairedProcess
-                excelData["Process 3 Casing Packing"] = repairedProcess
-                excelData["Process 3 Casing Packing Lot No"] = repairedProcess
-                excelData["Process 3 M4x12 Screw"] = repairedProcess
-                excelData["Process 3 M4x12 Screw Lot No"] = repairedProcess
-                excelData["Process 3 Csb L"] = repairedProcess
-                excelData["Process 3 Csb L Lot No"] = repairedProcess
-                excelData["Process 3 Csb R"] = repairedProcess
-                excelData["Process 3 Csb R Lot No"] = repairedProcess
-                excelData["Process 3 Head Packing"] = repairedProcess
-                excelData["Process 3 Head Packing Lot No"] = repairedProcess
-                excelData["Process 3 ST"] = repairedProcess
-                excelData["Process 3 Actual Time"] = repairedProcess
-                excelData["Process 3 NG Cause"] = repairedProcess
-                excelData["Process 3 Repaired Action"] = repairedProcess
-
-                excelData["Process 4 Model Code"] = repairedProcess
-                excelData["Process 4 S/N"] = repairedProcess
-                excelData["Process 4 ID"] = repairedProcess
-                excelData["Process 4 NAME"] = repairedProcess
-                excelData["Process 4 Regular/Contractual"] = repairedProcess
-                excelData["Process 4 Tank"] = repairedProcess
-                excelData["Process 4 Tank Lot No"] = repairedProcess
-                excelData["Process 4 Upper Housing"] = repairedProcess
-                excelData["Process 4 Upper Housing Lot No"] = repairedProcess
-                excelData["Process 4 Cord Hook" ] = repairedProcess
-                excelData["Process 4 Cord Hook Lot No"] = repairedProcess
-                excelData["Process 4 M4x16 Screw"] = repairedProcess
-                excelData["Process 4 M4x16 Screw Lot No"] = repairedProcess
-                excelData["Process 4 Tank Gasket"] = repairedProcess
-                excelData["Process 4 Tank Gasket Lot No"] = repairedProcess
-                excelData["Process 4 Tank Cover"] = repairedProcess
-                excelData["Process 4 Tank Cover Lot No"] = repairedProcess
-                excelData["Process 4 Housing Gasket"] = repairedProcess
-                excelData["Process 4 Housing Gasket Lot No"] = repairedProcess
-                excelData["Process 4 M4x40 Screw"] = repairedProcess
-                excelData["Process 4 M4x40 Screw Lot No"] = repairedProcess
-                excelData["Process 4 PartitionGasket"] = repairedProcess
-                excelData["Process 4 PartitionGasket Lot No"] = repairedProcess
-                excelData["Process 4 M4x12 Screw"] = repairedProcess
-                excelData["Process 4 M4x12 Screw Lot No"] = repairedProcess
-                excelData["Process 4 Muffler"] = repairedProcess
-                excelData["Process 4 Muffler Lot No"] = repairedProcess
-                excelData["Process 4 Muffler Gasket"] = repairedProcess
-                excelData["Process 4 Muffler Gasket Lot No"] = repairedProcess
-                excelData["Process 4 VCR"] = repairedProcess
-                excelData["Process 4 VCR Lot No"] = repairedProcess
-                excelData["Process 4 ST"] = repairedProcess
-                excelData["Process 4 Actual Time"] = repairedProcess
-                excelData["Process 4 NG Cause"] = repairedProcess
-                excelData["Process 4 Repaired Action"] = repairedProcess
+            excelData["Process 6 Model Code"] = ngProcess
+            excelData["Process 6 S/N"] = ngProcess
+            excelData["Process 6 ID"] = ngProcess
+            excelData["Process 6 NAME"] = ngProcess
+            excelData["Process 6 Regular/Contractual"] = ngProcess
+            excelData["Process 6 Vinyl"] = ngProcess
+            excelData["Process 6 Vinyl Lot No"] = ngProcess
+            excelData["Process 6 ST"] = ngProcess
+            excelData["Process 6 Actual Time"] = ngProcess
+            excelData["Process 6 NG Cause"] = ngProcess
+            excelData["Process 6 Repaired Action"] = ngProcess 
             
-        # elif process6Status == "Repaired":
-        #     pass
+        if process2Status == "NG":
+            print("ng")
+            ngProcess = "NG AT PROCESS2"
+            process2Row += 1
+            excelData["DATE"] = ngProcess
+            excelData["TIME"] = ngProcess
+            excelData["MODEL CODE"] = ngProcess
+            excelData["PROCESS S/N"] = ngProcess
+            excelData["S/N"] = ngProcess
+            excelData["PASS/NG"] = ngProcess
+            excelData["VOLTAGE MAX (V)"] = ngProcess
+            excelData["WATTAGE MAX (W)"] = ngProcess
+            excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+            excelData["VOLTAGE Middle (V)"] = ngProcess
+            excelData["WATTAGE Middle (W)"] = ngProcess
+            excelData["AMPERAGE Middle (A)"] = ngProcess
+            excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+            excelData["dB(A) 1"] = ngProcess
+            excelData["dB(A) 2"] = ngProcess
+            excelData["dB(A) 3"] = ngProcess
+            excelData["VOLTAGE MIN (V)"] = ngProcess
+            excelData["WATTAGE MIN (W)"] = ngProcess
+            excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+    
+            excelData["Process 3 Model Code"] = ngProcess
+            excelData["Process 3 S/N"] = ngProcess
+            excelData["Process 3 ID"] = ngProcess
+            excelData["Process 3 NAME"] = ngProcess
+            excelData["Process 3 Regular/Contractual"] = ngProcess
+            excelData["Process 3 Frame Gasket"] = ngProcess
+            excelData["Process 3 Frame Gasket Lot No"] = ngProcess
+            excelData["Process 3 Casing Block"] = ngProcess
+            excelData["Process 3 Casing Block Lot No"] = ngProcess
+            excelData["Process 3 Casing Block Inspection 1 Average Data"] = ngProcess
+            excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = ngProcess
+            excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = ngProcess
+            excelData["Process 3 Casing Gasket"] = ngProcess
+            excelData["Process 3 Casing Gasket Lot No"] = ngProcess
+            excelData["Process 3 M4x16 Screw 1"] = ngProcess
+            excelData["Process 3 M4x16 Screw 1 Lot No"] = ngProcess
+            excelData["Process 3 M4x16 Screw 2"] = ngProcess
+            excelData["Process 3 M4x16 Screw 2 Lot No"] = ngProcess
+            excelData["Process 3 Ball Cushion"] = ngProcess
+            excelData["Process 3 Ball Cushion Lot No"] = ngProcess
+            excelData["Process 3 Frame Cover"] = ngProcess
+            excelData["Process 3 Frame Cover Lot No"] = ngProcess
+            excelData["Process 3 Partition Board"] = ngProcess
+            excelData["Process 3 Partition Board Lot No"] = ngProcess
+            excelData["Process 3 Built In Tube 1"] = ngProcess
+            excelData["Process 3 Built In Tube 1 Lot No"] = ngProcess
+            excelData["Process 3 Built In Tube 2"] = ngProcess
+            excelData["Process 3 Built In Tube 2 Lot No"] = ngProcess
+            excelData["Process 3 Head Cover"] = ngProcess
+            excelData["Process 3 Head Cover Lot No"] = ngProcess
+            excelData["Process 3 Casing Packing"] = ngProcess
+            excelData["Process 3 Casing Packing Lot No"] = ngProcess
+            excelData["Process 3 M4x12 Screw"] = ngProcess
+            excelData["Process 3 M4x12 Screw Lot No"] = ngProcess
+            excelData["Process 3 Csb L"] = ngProcess
+            excelData["Process 3 Csb L Lot No"] = ngProcess
+            excelData["Process 3 Csb R"] = ngProcess
+            excelData["Process 3 Csb R Lot No"] = ngProcess
+            excelData["Process 3 Head Packing"] = ngProcess
+            excelData["Process 3 Head Packing Lot No"] = ngProcess
+            excelData["Process 3 ST"] = ngProcess
+            excelData["Process 3 Actual Time"] = ngProcess
+            excelData["Process 3 NG Cause"] = ngProcess
+            excelData["Process 3 Repaired Action"] = ngProcess
 
-        process1Status = ""
-        process2Status = ""
-        process3Status = ""
-        process4Status = ""
-        process5Status = ""
-        process6Status = ""
+            excelData["Process 4 Model Code"] = ngProcess
+            excelData["Process 4 S/N"] = ngProcess
+            excelData["Process 4 ID"] = ngProcess
+            excelData["Process 4 NAME"] = ngProcess
+            excelData["Process 4 Regular/Contractual"] = ngProcess
+            excelData["Process 4 Tank"] = ngProcess
+            excelData["Process 4 Tank Lot No"] = ngProcess
+            excelData["Process 4 Upper Housing"] = ngProcess
+            excelData["Process 4 Upper Housing Lot No"] = ngProcess
+            excelData["Process 4 Cord Hook" ] = ngProcess
+            excelData["Process 4 Cord Hook Lot No"] = ngProcess
+            excelData["Process 4 M4x16 Screw"] = ngProcess
+            excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
+            excelData["Process 4 Tank Gasket"] = ngProcess
+            excelData["Process 4 Tank Gasket Lot No"] = ngProcess
+            excelData["Process 4 Tank Cover"] = ngProcess
+            excelData["Process 4 Tank Cover Lot No"] = ngProcess
+            excelData["Process 4 Housing Gasket"] = ngProcess
+            excelData["Process 4 Housing Gasket Lot No"] = ngProcess
+            excelData["Process 4 M4x40 Screw"] = ngProcess
+            excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
+            excelData["Process 4 PartitionGasket"] = ngProcess
+            excelData["Process 4 PartitionGasket Lot No"] = ngProcess
+            excelData["Process 4 M4x12 Screw"] = ngProcess
+            excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
+            excelData["Process 4 Muffler"] = ngProcess
+            excelData["Process 4 Muffler Lot No"] = ngProcess
+            excelData["Process 4 Muffler Gasket"] = ngProcess
+            excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
+            excelData["Process 4 VCR"] = ngProcess
+            excelData["Process 4 VCR Lot No"] = ngProcess
+            excelData["Process 4 ST"] = ngProcess
+            excelData["Process 4 Actual Time"] = ngProcess
+            excelData["Process 4 NG Cause"] = ngProcess
+            excelData["Process 4 Repaired Action"] = ngProcess
 
-    if process1Status == "NG":
-        ngProcess = "NG AT PROCESS1"
-        process1Row += 1
+            excelData["Process 5 Model Code"] = ngProcess
+            excelData["Process 5 S/N"] = ngProcess
+            excelData["Process 5 ID"] = ngProcess
+            excelData["Process 5 NAME"] = ngProcess
+            excelData["Process 5 Regular/Contractual"] = ngProcess
+            excelData["Process 5 Rating Label"] = ngProcess
+            excelData["Process 5 Rating Label Lot No"] = ngProcess
+            excelData["Process 5 ST"] = ngProcess
+            excelData["Process 5 Actual Time"] = ngProcess
+            excelData["Process 5 NG Cause"] = ngProcess
+            excelData["Process 5 Repaired Action"] = ngProcess
 
-        excelData["DATE"] = ngProcess
-        excelData["TIME"] = ngProcess
-        excelData["MODEL CODE"] = ngProcess
-        excelData["PROCESS S/N"] = ngProcess
-        excelData["S/N"] = ngProcess
-        excelData["PASS/NG"] = ngProcess
-        excelData["VOLTAGE MAX (V)"] = ngProcess
-        excelData["WATTAGE MAX (W)"] = ngProcess
-        excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-        excelData["VOLTAGE Middle (V)"] = ngProcess
-        excelData["WATTAGE Middle (W)"] = ngProcess
-        excelData["AMPERAGE Middle (A)"] = ngProcess
-        excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-        excelData["dB(A) 1"] = ngProcess
-        excelData["dB(A) 2"] = ngProcess
-        excelData["dB(A) 3"] = ngProcess
-        excelData["VOLTAGE MIN (V)"] = ngProcess
-        excelData["WATTAGE MIN (W)"] = ngProcess
-        excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+            excelData["Process 6 Model Code"] = ngProcess
+            excelData["Process 6 S/N"] = ngProcess
+            excelData["Process 6 ID"] = ngProcess
+            excelData["Process 6 NAME"] = ngProcess
+            excelData["Process 6 Regular/Contractual"] = ngProcess
+            excelData["Process 6 Vinyl"] = ngProcess
+            excelData["Process 6 Vinyl Lot No"] = ngProcess
+            excelData["Process 6 ST"] = ngProcess
+            excelData["Process 6 Actual Time"] = ngProcess
+            excelData["Process 6 NG Cause"] = ngProcess
+            excelData["Process 6 Repaired Action"] = ngProcess
 
-        excelData["Process 2 Model Code"] = ngProcess
-        excelData["Process 2 S/N"] = ngProcess
-        excelData["Process 2 ID"] = ngProcess
-        excelData["Process 2 NAME"] = ngProcess
-        excelData["Process 2 Regular/Contractual"] = ngProcess
-        excelData["Process 2 M4x40 Screw"] = ngProcess
-        excelData["Process 2 M4x40 Screw Lot No"] = ngProcess
-        excelData["Process 2 Rod Blk"] = ngProcess
-        excelData["Process 2 Rod Blk Lot No"] = ngProcess
-        excelData["Process 2 Df Blk"] = ngProcess
-        excelData["Process 2 Df Blk Lot No"] = ngProcess
-        excelData["Process 2 Df Ring"] = ngProcess
-        excelData["Process 2 Df Ring Lot No"] = ngProcess
-        excelData["Process 2 Washer"] = ngProcess
-        excelData["Process 2 Washer Lot No"] = ngProcess
-        excelData["Process 2 Lock Nut"] = ngProcess
-        excelData["Process 2 Lock Nut Lot No"] = ngProcess
-        excelData["Process 2 ST"] = ngProcess
-        excelData["Process 2 Actual Time"] = ngProcess
-        excelData["Process 2 NG Cause"] = ngProcess
-        excelData["Process 2 Repaired Action"] = ngProcess
+        if process3Status == "NG":
+            ngProcess = "NG AT PROCESS3"
+            process3Row += 1
+            excelData["DATE"] = ngProcess
+            excelData["TIME"] = ngProcess
+            excelData["MODEL CODE"] = ngProcess
+            excelData["PROCESS S/N"] = ngProcess
+            excelData["S/N"] = ngProcess
+            excelData["PASS/NG"] = ngProcess
+            excelData["VOLTAGE MAX (V)"] = ngProcess
+            excelData["WATTAGE MAX (W)"] = ngProcess
+            excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+            excelData["VOLTAGE Middle (V)"] = ngProcess
+            excelData["WATTAGE Middle (W)"] = ngProcess
+            excelData["AMPERAGE Middle (A)"] = ngProcess
+            excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+            excelData["dB(A) 1"] = ngProcess
+            excelData["dB(A) 2"] = ngProcess
+            excelData["dB(A) 3"] = ngProcess
+            excelData["VOLTAGE MIN (V)"] = ngProcess
+            excelData["WATTAGE MIN (W)"] = ngProcess
+            excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
 
-        excelData["Process 3 Model Code"] = ngProcess
-        excelData["Process 3 S/N"] = ngProcess
-        excelData["Process 3 ID"] = ngProcess
-        excelData["Process 3 NAME"] = ngProcess
-        excelData["Process 3 Regular/Contractual"] = ngProcess
-        excelData["Process 3 Frame Gasket"] = ngProcess
-        excelData["Process 3 Frame Gasket Lot No"] = ngProcess
-        excelData["Process 3 Casing Block"] = ngProcess
-        excelData["Process 3 Casing Block Lot No"] = ngProcess
-        excelData["Process 3 Casing Block Inspection 1 Average Data"] = ngProcess
-        excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = ngProcess
-        excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = ngProcess
-        excelData["Process 3 Casing Gasket"] = ngProcess
-        excelData["Process 3 Casing Gasket Lot No"] = ngProcess
-        excelData["Process 3 M4x16 Screw 1"] = ngProcess
-        excelData["Process 3 M4x16 Screw 1 Lot No"] = ngProcess
-        excelData["Process 3 M4x16 Screw 2"] = ngProcess
-        excelData["Process 3 M4x16 Screw 2 Lot No"] = ngProcess
-        excelData["Process 3 Ball Cushion"] = ngProcess
-        excelData["Process 3 Ball Cushion Lot No"] = ngProcess
-        excelData["Process 3 Frame Cover"] = ngProcess
-        excelData["Process 3 Frame Cover Lot No"] = ngProcess
-        excelData["Process 3 Partition Board"] = ngProcess
-        excelData["Process 3 Partition Board Lot No"] = ngProcess
-        excelData["Process 3 Built In Tube 1"] = ngProcess
-        excelData["Process 3 Built In Tube 1 Lot No"] = ngProcess
-        excelData["Process 3 Built In Tube 2"] = ngProcess
-        excelData["Process 3 Built In Tube 2 Lot No"] = ngProcess
-        excelData["Process 3 Head Cover"] = ngProcess
-        excelData["Process 3 Head Cover Lot No"] = ngProcess
-        excelData["Process 3 Casing Packing"] = ngProcess
-        excelData["Process 3 Casing Packing Lot No"] = ngProcess
-        excelData["Process 3 M4x12 Screw"] = ngProcess
-        excelData["Process 3 M4x12 Screw Lot No"] = ngProcess
-        excelData["Process 3 Csb L"] = ngProcess
-        excelData["Process 3 Csb L Lot No"] = ngProcess
-        excelData["Process 3 Csb R"] = ngProcess
-        excelData["Process 3 Csb R Lot No"] = ngProcess
-        excelData["Process 3 Head Packing"] = ngProcess
-        excelData["Process 3 Head Packing Lot No"] = ngProcess
-        excelData["Process 3 ST"] = ngProcess
-        excelData["Process 3 Actual Time"] = ngProcess
-        excelData["Process 3 NG Cause"] = ngProcess
-        excelData["Process 3 Repaired Action"] = ngProcess
+            excelData["Process 4 Model Code"] = ngProcess
+            excelData["Process 4 S/N"] = ngProcess
+            excelData["Process 4 ID"] = ngProcess
+            excelData["Process 4 NAME"] = ngProcess
+            excelData["Process 4 Regular/Contractual"] = ngProcess
+            excelData["Process 4 Tank"] = ngProcess
+            excelData["Process 4 Tank Lot No"] = ngProcess
+            excelData["Process 4 Upper Housing"] = ngProcess
+            excelData["Process 4 Upper Housing Lot No"] = ngProcess
+            excelData["Process 4 Cord Hook" ] = ngProcess
+            excelData["Process 4 Cord Hook Lot No"] = ngProcess
+            excelData["Process 4 M4x16 Screw"] = ngProcess
+            excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
+            excelData["Process 4 Tank Gasket"] = ngProcess
+            excelData["Process 4 Tank Gasket Lot No"] = ngProcess
+            excelData["Process 4 Tank Cover"] = ngProcess
+            excelData["Process 4 Tank Cover Lot No"] = ngProcess
+            excelData["Process 4 Housing Gasket"] = ngProcess
+            excelData["Process 4 Housing Gasket Lot No"] = ngProcess
+            excelData["Process 4 M4x40 Screw"] = ngProcess
+            excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
+            excelData["Process 4 PartitionGasket"] = ngProcess
+            excelData["Process 4 PartitionGasket Lot No"] = ngProcess
+            excelData["Process 4 M4x12 Screw"] = ngProcess
+            excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
+            excelData["Process 4 Muffler"] = ngProcess
+            excelData["Process 4 Muffler Lot No"] = ngProcess
+            excelData["Process 4 Muffler Gasket"] = ngProcess
+            excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
+            excelData["Process 4 VCR"] = ngProcess
+            excelData["Process 4 VCR Lot No"] = ngProcess
+            excelData["Process 4 ST"] = ngProcess
+            excelData["Process 4 Actual Time"] = ngProcess
+            excelData["Process 4 NG Cause"] = ngProcess
+            excelData["Process 4 Repaired Action"] = ngProcess
 
-        excelData["Process 4 Model Code"] = ngProcess
-        excelData["Process 4 S/N"] = ngProcess
-        excelData["Process 4 ID"] = ngProcess
-        excelData["Process 4 NAME"] = ngProcess
-        excelData["Process 4 Regular/Contractual"] = ngProcess
-        excelData["Process 4 Tank"] = ngProcess
-        excelData["Process 4 Tank Lot No"] = ngProcess
-        excelData["Process 4 Upper Housing"] = ngProcess
-        excelData["Process 4 Upper Housing Lot No"] = ngProcess
-        excelData["Process 4 Cord Hook" ] = ngProcess
-        excelData["Process 4 Cord Hook Lot No"] = ngProcess
-        excelData["Process 4 M4x16 Screw"] = ngProcess
-        excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
-        excelData["Process 4 Tank Gasket"] = ngProcess
-        excelData["Process 4 Tank Gasket Lot No"] = ngProcess
-        excelData["Process 4 Tank Cover"] = ngProcess
-        excelData["Process 4 Tank Cover Lot No"] = ngProcess
-        excelData["Process 4 Housing Gasket"] = ngProcess
-        excelData["Process 4 Housing Gasket Lot No"] = ngProcess
-        excelData["Process 4 M4x40 Screw"] = ngProcess
-        excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
-        excelData["Process 4 PartitionGasket"] = ngProcess
-        excelData["Process 4 PartitionGasket Lot No"] = ngProcess
-        excelData["Process 4 M4x12 Screw"] = ngProcess
-        excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
-        excelData["Process 4 Muffler"] = ngProcess
-        excelData["Process 4 Muffler Lot No"] = ngProcess
-        excelData["Process 4 Muffler Gasket"] = ngProcess
-        excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
-        excelData["Process 4 VCR"] = ngProcess
-        excelData["Process 4 VCR Lot No"] = ngProcess
-        excelData["Process 4 ST"] = ngProcess
-        excelData["Process 4 Actual Time"] = ngProcess
-        excelData["Process 4 NG Cause"] = ngProcess
-        excelData["Process 4 Repaired Action"] = ngProcess
+            excelData["Process 5 Model Code"] = ngProcess
+            excelData["Process 5 S/N"] = ngProcess
+            excelData["Process 5 ID"] = ngProcess
+            excelData["Process 5 NAME"] = ngProcess
+            excelData["Process 5 Regular/Contractual"] = ngProcess
+            excelData["Process 5 Rating Label"] = ngProcess
+            excelData["Process 5 Rating Label Lot No"] = ngProcess
+            excelData["Process 5 ST"] = ngProcess
+            excelData["Process 5 Actual Time"] = ngProcess
+            excelData["Process 5 NG Cause"] = ngProcess
+            excelData["Process 5 Repaired Action"] = ngProcess
 
-        excelData["Process 5 Model Code"] = ngProcess
-        excelData["Process 5 S/N"] = ngProcess
-        excelData["Process 5 ID"] = ngProcess
-        excelData["Process 5 NAME"] = ngProcess
-        excelData["Process 5 Regular/Contractual"] = ngProcess
-        excelData["Process 5 Rating Label"] = ngProcess
-        excelData["Process 5 Rating Label Lot No"] = ngProcess
-        excelData["Process 5 ST"] = ngProcess
-        excelData["Process 5 Actual Time"] = ngProcess
-        excelData["Process 5 NG Cause"] = ngProcess
-        excelData["Process 5 Repaired Action"] = ngProcess
+            excelData["Process 6 Model Code"] = ngProcess
+            excelData["Process 6 S/N"] = ngProcess
+            excelData["Process 6 ID"] = ngProcess
+            excelData["Process 6 NAME"] = ngProcess
+            excelData["Process 6 Regular/Contractual"] = ngProcess
+            excelData["Process 6 Vinyl"] = ngProcess
+            excelData["Process 6 Vinyl Lot No"] = ngProcess
+            excelData["Process 6 ST"] = ngProcess
+            excelData["Process 6 Actual Time"] = ngProcess
+            excelData["Process 6 NG Cause"] = ngProcess
+            excelData["Process 6 Repaired Action"] = ngProcess
 
-        excelData["Process 6 Model Code"] = ngProcess
-        excelData["Process 6 S/N"] = ngProcess
-        excelData["Process 6 ID"] = ngProcess
-        excelData["Process 6 NAME"] = ngProcess
-        excelData["Process 6 Regular/Contractual"] = ngProcess
-        excelData["Process 6 Vinyl"] = ngProcess
-        excelData["Process 6 Vinyl Lot No"] = ngProcess
-        excelData["Process 6 ST"] = ngProcess
-        excelData["Process 6 Actual Time"] = ngProcess
-        excelData["Process 6 NG Cause"] = ngProcess
-        excelData["Process 6 Repaired Action"] = ngProcess 
-        
-    if process2Status == "NG":
-        print("ng")
-        ngProcess = "NG AT PROCESS2"
-        process2Row += 1
-        excelData["DATE"] = ngProcess
-        excelData["TIME"] = ngProcess
-        excelData["MODEL CODE"] = ngProcess
-        excelData["PROCESS S/N"] = ngProcess
-        excelData["S/N"] = ngProcess
-        excelData["PASS/NG"] = ngProcess
-        excelData["VOLTAGE MAX (V)"] = ngProcess
-        excelData["WATTAGE MAX (W)"] = ngProcess
-        excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-        excelData["VOLTAGE Middle (V)"] = ngProcess
-        excelData["WATTAGE Middle (W)"] = ngProcess
-        excelData["AMPERAGE Middle (A)"] = ngProcess
-        excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-        excelData["dB(A) 1"] = ngProcess
-        excelData["dB(A) 2"] = ngProcess
-        excelData["dB(A) 3"] = ngProcess
-        excelData["VOLTAGE MIN (V)"] = ngProcess
-        excelData["WATTAGE MIN (W)"] = ngProcess
-        excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
- 
-        excelData["Process 3 Model Code"] = ngProcess
-        excelData["Process 3 S/N"] = ngProcess
-        excelData["Process 3 ID"] = ngProcess
-        excelData["Process 3 NAME"] = ngProcess
-        excelData["Process 3 Regular/Contractual"] = ngProcess
-        excelData["Process 3 Frame Gasket"] = ngProcess
-        excelData["Process 3 Frame Gasket Lot No"] = ngProcess
-        excelData["Process 3 Casing Block"] = ngProcess
-        excelData["Process 3 Casing Block Lot No"] = ngProcess
-        excelData["Process 3 Casing Block Inspection 1 Average Data"] = ngProcess
-        excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = ngProcess
-        excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = ngProcess
-        excelData["Process 3 Casing Gasket"] = ngProcess
-        excelData["Process 3 Casing Gasket Lot No"] = ngProcess
-        excelData["Process 3 M4x16 Screw 1"] = ngProcess
-        excelData["Process 3 M4x16 Screw 1 Lot No"] = ngProcess
-        excelData["Process 3 M4x16 Screw 2"] = ngProcess
-        excelData["Process 3 M4x16 Screw 2 Lot No"] = ngProcess
-        excelData["Process 3 Ball Cushion"] = ngProcess
-        excelData["Process 3 Ball Cushion Lot No"] = ngProcess
-        excelData["Process 3 Frame Cover"] = ngProcess
-        excelData["Process 3 Frame Cover Lot No"] = ngProcess
-        excelData["Process 3 Partition Board"] = ngProcess
-        excelData["Process 3 Partition Board Lot No"] = ngProcess
-        excelData["Process 3 Built In Tube 1"] = ngProcess
-        excelData["Process 3 Built In Tube 1 Lot No"] = ngProcess
-        excelData["Process 3 Built In Tube 2"] = ngProcess
-        excelData["Process 3 Built In Tube 2 Lot No"] = ngProcess
-        excelData["Process 3 Head Cover"] = ngProcess
-        excelData["Process 3 Head Cover Lot No"] = ngProcess
-        excelData["Process 3 Casing Packing"] = ngProcess
-        excelData["Process 3 Casing Packing Lot No"] = ngProcess
-        excelData["Process 3 M4x12 Screw"] = ngProcess
-        excelData["Process 3 M4x12 Screw Lot No"] = ngProcess
-        excelData["Process 3 Csb L"] = ngProcess
-        excelData["Process 3 Csb L Lot No"] = ngProcess
-        excelData["Process 3 Csb R"] = ngProcess
-        excelData["Process 3 Csb R Lot No"] = ngProcess
-        excelData["Process 3 Head Packing"] = ngProcess
-        excelData["Process 3 Head Packing Lot No"] = ngProcess
-        excelData["Process 3 ST"] = ngProcess
-        excelData["Process 3 Actual Time"] = ngProcess
-        excelData["Process 3 NG Cause"] = ngProcess
-        excelData["Process 3 Repaired Action"] = ngProcess
+        if process4Status == "NG":
+            ngProcess = "NG AT PROCESS4"
+            process4Row += 1
+            excelData["DATE"] = ngProcess
+            excelData["TIME"] = ngProcess
+            excelData["MODEL CODE"] = ngProcess
+            excelData["PROCESS S/N"] = ngProcess
+            excelData["S/N"] = ngProcess
+            excelData["PASS/NG"] = ngProcess
+            excelData["VOLTAGE MAX (V)"] = ngProcess
+            excelData["WATTAGE MAX (W)"] = ngProcess
+            excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+            excelData["VOLTAGE Middle (V)"] = ngProcess
+            excelData["WATTAGE Middle (W)"] = ngProcess
+            excelData["AMPERAGE Middle (A)"] = ngProcess
+            excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+            excelData["dB(A) 1"] = ngProcess
+            excelData["dB(A) 2"] = ngProcess
+            excelData["dB(A) 3"] = ngProcess
+            excelData["VOLTAGE MIN (V)"] = ngProcess
+            excelData["WATTAGE MIN (W)"] = ngProcess
+            excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
 
-        excelData["Process 4 Model Code"] = ngProcess
-        excelData["Process 4 S/N"] = ngProcess
-        excelData["Process 4 ID"] = ngProcess
-        excelData["Process 4 NAME"] = ngProcess
-        excelData["Process 4 Regular/Contractual"] = ngProcess
-        excelData["Process 4 Tank"] = ngProcess
-        excelData["Process 4 Tank Lot No"] = ngProcess
-        excelData["Process 4 Upper Housing"] = ngProcess
-        excelData["Process 4 Upper Housing Lot No"] = ngProcess
-        excelData["Process 4 Cord Hook" ] = ngProcess
-        excelData["Process 4 Cord Hook Lot No"] = ngProcess
-        excelData["Process 4 M4x16 Screw"] = ngProcess
-        excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
-        excelData["Process 4 Tank Gasket"] = ngProcess
-        excelData["Process 4 Tank Gasket Lot No"] = ngProcess
-        excelData["Process 4 Tank Cover"] = ngProcess
-        excelData["Process 4 Tank Cover Lot No"] = ngProcess
-        excelData["Process 4 Housing Gasket"] = ngProcess
-        excelData["Process 4 Housing Gasket Lot No"] = ngProcess
-        excelData["Process 4 M4x40 Screw"] = ngProcess
-        excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
-        excelData["Process 4 PartitionGasket"] = ngProcess
-        excelData["Process 4 PartitionGasket Lot No"] = ngProcess
-        excelData["Process 4 M4x12 Screw"] = ngProcess
-        excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
-        excelData["Process 4 Muffler"] = ngProcess
-        excelData["Process 4 Muffler Lot No"] = ngProcess
-        excelData["Process 4 Muffler Gasket"] = ngProcess
-        excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
-        excelData["Process 4 VCR"] = ngProcess
-        excelData["Process 4 VCR Lot No"] = ngProcess
-        excelData["Process 4 ST"] = ngProcess
-        excelData["Process 4 Actual Time"] = ngProcess
-        excelData["Process 4 NG Cause"] = ngProcess
-        excelData["Process 4 Repaired Action"] = ngProcess
+            excelData["Process 5 Model Code"] = ngProcess
+            excelData["Process 5 S/N"] = ngProcess
+            excelData["Process 5 ID"] = ngProcess
+            excelData["Process 5 NAME"] = ngProcess
+            excelData["Process 5 Regular/Contractual"] = ngProcess
+            excelData["Process 5 Rating Label"] = ngProcess
+            excelData["Process 5 Rating Label Lot No"] = ngProcess
+            excelData["Process 5 ST"] = ngProcess
+            excelData["Process 5 Actual Time"] = ngProcess
+            excelData["Process 5 NG Cause"] = ngProcess
+            excelData["Process 5 Repaired Action"] = ngProcess
 
-        excelData["Process 5 Model Code"] = ngProcess
-        excelData["Process 5 S/N"] = ngProcess
-        excelData["Process 5 ID"] = ngProcess
-        excelData["Process 5 NAME"] = ngProcess
-        excelData["Process 5 Regular/Contractual"] = ngProcess
-        excelData["Process 5 Rating Label"] = ngProcess
-        excelData["Process 5 Rating Label Lot No"] = ngProcess
-        excelData["Process 5 ST"] = ngProcess
-        excelData["Process 5 Actual Time"] = ngProcess
-        excelData["Process 5 NG Cause"] = ngProcess
-        excelData["Process 5 Repaired Action"] = ngProcess
+            excelData["Process 6 Model Code"] = ngProcess
+            excelData["Process 6 S/N"] = ngProcess
+            excelData["Process 6 ID"] = ngProcess
+            excelData["Process 6 NAME"] = ngProcess
+            excelData["Process 6 Regular/Contractual"] = ngProcess
+            excelData["Process 6 Vinyl"] = ngProcess
+            excelData["Process 6 Vinyl Lot No"] = ngProcess
+            excelData["Process 6 ST"] = ngProcess
+            excelData["Process 6 Actual Time"] = ngProcess
+            excelData["Process 6 NG Cause"] = ngProcess
+            excelData["Process 6 Repaired Action"] = ngProcess
 
-        excelData["Process 6 Model Code"] = ngProcess
-        excelData["Process 6 S/N"] = ngProcess
-        excelData["Process 6 ID"] = ngProcess
-        excelData["Process 6 NAME"] = ngProcess
-        excelData["Process 6 Regular/Contractual"] = ngProcess
-        excelData["Process 6 Vinyl"] = ngProcess
-        excelData["Process 6 Vinyl Lot No"] = ngProcess
-        excelData["Process 6 ST"] = ngProcess
-        excelData["Process 6 Actual Time"] = ngProcess
-        excelData["Process 6 NG Cause"] = ngProcess
-        excelData["Process 6 Repaired Action"] = ngProcess
+        if process5Status == "NG PRESSURE":
+            ngProcess = "NG PRESSURE AT PROCESS5"
+            process5Row += 1
+            piRow += 1
 
-    if process3Status == "NG":
-        ngProcess = "NG AT PROCESS3"
-        process3Row += 1
-        excelData["DATE"] = ngProcess
-        excelData["TIME"] = ngProcess
-        excelData["MODEL CODE"] = ngProcess
-        excelData["PROCESS S/N"] = ngProcess
-        excelData["S/N"] = ngProcess
-        excelData["PASS/NG"] = ngProcess
-        excelData["VOLTAGE MAX (V)"] = ngProcess
-        excelData["WATTAGE MAX (W)"] = ngProcess
-        excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-        excelData["VOLTAGE Middle (V)"] = ngProcess
-        excelData["WATTAGE Middle (W)"] = ngProcess
-        excelData["AMPERAGE Middle (A)"] = ngProcess
-        excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-        excelData["dB(A) 1"] = ngProcess
-        excelData["dB(A) 2"] = ngProcess
-        excelData["dB(A) 3"] = ngProcess
-        excelData["VOLTAGE MIN (V)"] = ngProcess
-        excelData["WATTAGE MIN (W)"] = ngProcess
-        excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+            excelData["DATE"] = ngProcess
+            excelData["TIME"] = ngProcess
+            excelData["MODEL CODE"] = ngProcess
+            excelData["PROCESS S/N"] = ngProcess
+            excelData["S/N"] = ngProcess
+            excelData["PASS/NG"] = ngProcess
+            excelData["VOLTAGE MAX (V)"] = ngProcess
+            excelData["WATTAGE MAX (W)"] = ngProcess
+            excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+            excelData["VOLTAGE Middle (V)"] = ngProcess
+            excelData["WATTAGE Middle (W)"] = ngProcess
+            excelData["AMPERAGE Middle (A)"] = ngProcess
+            excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+            excelData["dB(A) 1"] = ngProcess
+            excelData["dB(A) 2"] = ngProcess
+            excelData["dB(A) 3"] = ngProcess
+            excelData["VOLTAGE MIN (V)"] = ngProcess
+            excelData["WATTAGE MIN (W)"] = ngProcess
+            excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
 
-        excelData["Process 4 Model Code"] = ngProcess
-        excelData["Process 4 S/N"] = ngProcess
-        excelData["Process 4 ID"] = ngProcess
-        excelData["Process 4 NAME"] = ngProcess
-        excelData["Process 4 Regular/Contractual"] = ngProcess
-        excelData["Process 4 Tank"] = ngProcess
-        excelData["Process 4 Tank Lot No"] = ngProcess
-        excelData["Process 4 Upper Housing"] = ngProcess
-        excelData["Process 4 Upper Housing Lot No"] = ngProcess
-        excelData["Process 4 Cord Hook" ] = ngProcess
-        excelData["Process 4 Cord Hook Lot No"] = ngProcess
-        excelData["Process 4 M4x16 Screw"] = ngProcess
-        excelData["Process 4 M4x16 Screw Lot No"] = ngProcess
-        excelData["Process 4 Tank Gasket"] = ngProcess
-        excelData["Process 4 Tank Gasket Lot No"] = ngProcess
-        excelData["Process 4 Tank Cover"] = ngProcess
-        excelData["Process 4 Tank Cover Lot No"] = ngProcess
-        excelData["Process 4 Housing Gasket"] = ngProcess
-        excelData["Process 4 Housing Gasket Lot No"] = ngProcess
-        excelData["Process 4 M4x40 Screw"] = ngProcess
-        excelData["Process 4 M4x40 Screw Lot No"] = ngProcess
-        excelData["Process 4 PartitionGasket"] = ngProcess
-        excelData["Process 4 PartitionGasket Lot No"] = ngProcess
-        excelData["Process 4 M4x12 Screw"] = ngProcess
-        excelData["Process 4 M4x12 Screw Lot No"] = ngProcess
-        excelData["Process 4 Muffler"] = ngProcess
-        excelData["Process 4 Muffler Lot No"] = ngProcess
-        excelData["Process 4 Muffler Gasket"] = ngProcess
-        excelData["Process 4 Muffler Gasket Lot No"] = ngProcess
-        excelData["Process 4 VCR"] = ngProcess
-        excelData["Process 4 VCR Lot No"] = ngProcess
-        excelData["Process 4 ST"] = ngProcess
-        excelData["Process 4 Actual Time"] = ngProcess
-        excelData["Process 4 NG Cause"] = ngProcess
-        excelData["Process 4 Repaired Action"] = ngProcess
+            excelData["Process 6 Model Code"] = ngProcess
+            excelData["Process 6 S/N"] = ngProcess
+            excelData["Process 6 ID"] = ngProcess
+            excelData["Process 6 NAME"] = ngProcess
+            excelData["Process 6 Regular/Contractual"] = ngProcess
+            excelData["Process 6 Vinyl"] = ngProcess
+            excelData["Process 6 Vinyl Lot No"] = ngProcess
+            excelData["Process 6 ST"] = ngProcess
+            excelData["Process 6 Actual Time"] = ngProcess
+            excelData["Process 6 NG Cause"] = ngProcess
+            excelData["Process 6 Repaired Action"] = ngProcess
 
-        excelData["Process 5 Model Code"] = ngProcess
-        excelData["Process 5 S/N"] = ngProcess
-        excelData["Process 5 ID"] = ngProcess
-        excelData["Process 5 NAME"] = ngProcess
-        excelData["Process 5 Regular/Contractual"] = ngProcess
-        excelData["Process 5 Rating Label"] = ngProcess
-        excelData["Process 5 Rating Label Lot No"] = ngProcess
-        excelData["Process 5 ST"] = ngProcess
-        excelData["Process 5 Actual Time"] = ngProcess
-        excelData["Process 5 NG Cause"] = ngProcess
-        excelData["Process 5 Repaired Action"] = ngProcess
+        if process5Status == "NG":
+            ngProcess = "NG AT PROCESS5"
+            process5Row += 1
+            piRow += 1
 
-        excelData["Process 6 Model Code"] = ngProcess
-        excelData["Process 6 S/N"] = ngProcess
-        excelData["Process 6 ID"] = ngProcess
-        excelData["Process 6 NAME"] = ngProcess
-        excelData["Process 6 Regular/Contractual"] = ngProcess
-        excelData["Process 6 Vinyl"] = ngProcess
-        excelData["Process 6 Vinyl Lot No"] = ngProcess
-        excelData["Process 6 ST"] = ngProcess
-        excelData["Process 6 Actual Time"] = ngProcess
-        excelData["Process 6 NG Cause"] = ngProcess
-        excelData["Process 6 Repaired Action"] = ngProcess
+            # excelData["DATE"] = ngProcess
+            # excelData["TIME"] = ngProcess
+            # excelData["MODEL CODE"] = ngProcess
+            # excelData["PROCESS S/N"] = ngProcess
+            # excelData["S/N"] = ngProcess
+            # excelData["PASS/NG"] = ngProcess
+            # excelData["VOLTAGE MAX (V)"] = ngProcess
+            # excelData["WATTAGE MAX (W)"] = ngProcess
+            # excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+            # excelData["VOLTAGE Middle (V)"] = ngProcess
+            # excelData["WATTAGE Middle (W)"] = ngProcess
+            # excelData["AMPERAGE Middle (A)"] = ngProcess
+            # excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+            # excelData["dB(A) 1"] = ngProcess
+            # excelData["dB(A) 2"] = ngProcess
+            # excelData["dB(A) 3"] = ngProcess
+            # excelData["VOLTAGE MIN (V)"] = ngProcess
+            # excelData["WATTAGE MIN (W)"] = ngProcess
+            # excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
 
-    if process4Status == "NG":
-        ngProcess = "NG AT PROCESS4"
-        process4Row += 1
-        excelData["DATE"] = ngProcess
-        excelData["TIME"] = ngProcess
-        excelData["MODEL CODE"] = ngProcess
-        excelData["PROCESS S/N"] = ngProcess
-        excelData["S/N"] = ngProcess
-        excelData["PASS/NG"] = ngProcess
-        excelData["VOLTAGE MAX (V)"] = ngProcess
-        excelData["WATTAGE MAX (W)"] = ngProcess
-        excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-        excelData["VOLTAGE Middle (V)"] = ngProcess
-        excelData["WATTAGE Middle (W)"] = ngProcess
-        excelData["AMPERAGE Middle (A)"] = ngProcess
-        excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-        excelData["dB(A) 1"] = ngProcess
-        excelData["dB(A) 2"] = ngProcess
-        excelData["dB(A) 3"] = ngProcess
-        excelData["VOLTAGE MIN (V)"] = ngProcess
-        excelData["WATTAGE MIN (W)"] = ngProcess
-        excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+            excelData["Process 6 Model Code"] = ngProcess
+            excelData["Process 6 S/N"] = ngProcess
+            excelData["Process 6 ID"] = ngProcess
+            excelData["Process 6 NAME"] = ngProcess
+            excelData["Process 6 Regular/Contractual"] = ngProcess
+            excelData["Process 6 Vinyl"] = ngProcess
+            excelData["Process 6 Vinyl Lot No"] = ngProcess
+            excelData["Process 6 ST"] = ngProcess
+            excelData["Process 6 Actual Time"] = ngProcess
+            excelData["Process 6 NG Cause"] = ngProcess
+            excelData["Process 6 Repaired Action"] = ngProcess
 
-        excelData["Process 5 Model Code"] = ngProcess
-        excelData["Process 5 S/N"] = ngProcess
-        excelData["Process 5 ID"] = ngProcess
-        excelData["Process 5 NAME"] = ngProcess
-        excelData["Process 5 Regular/Contractual"] = ngProcess
-        excelData["Process 5 Rating Label"] = ngProcess
-        excelData["Process 5 Rating Label Lot No"] = ngProcess
-        excelData["Process 5 ST"] = ngProcess
-        excelData["Process 5 Actual Time"] = ngProcess
-        excelData["Process 5 NG Cause"] = ngProcess
-        excelData["Process 5 Repaired Action"] = ngProcess
+        if process6Status == "NG":
+            ngProcess = "NG AT PROCESS6"
+            process6Row += 1
+            excelData["DATE"] = ngProcess
+            excelData["TIME"] = ngProcess
+            excelData["MODEL CODE"] = ngProcess
+            excelData["PROCESS S/N"] = ngProcess
+            excelData["S/N"] = ngProcess
+            excelData["PASS/NG"] = ngProcess
+            excelData["VOLTAGE MAX (V)"] = ngProcess
+            excelData["WATTAGE MAX (W)"] = ngProcess
+            excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
+            excelData["VOLTAGE Middle (V)"] = ngProcess
+            excelData["WATTAGE Middle (W)"] = ngProcess
+            excelData["AMPERAGE Middle (A)"] = ngProcess
+            excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
+            excelData["dB(A) 1"] = ngProcess
+            excelData["dB(A) 2"] = ngProcess
+            excelData["dB(A) 3"] = ngProcess
+            excelData["VOLTAGE MIN (V)"] = ngProcess
+            excelData["WATTAGE MIN (W)"] = ngProcess
+            excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
 
-        excelData["Process 6 Model Code"] = ngProcess
-        excelData["Process 6 S/N"] = ngProcess
-        excelData["Process 6 ID"] = ngProcess
-        excelData["Process 6 NAME"] = ngProcess
-        excelData["Process 6 Regular/Contractual"] = ngProcess
-        excelData["Process 6 Vinyl"] = ngProcess
-        excelData["Process 6 Vinyl Lot No"] = ngProcess
-        excelData["Process 6 ST"] = ngProcess
-        excelData["Process 6 Actual Time"] = ngProcess
-        excelData["Process 6 NG Cause"] = ngProcess
-        excelData["Process 6 Repaired Action"] = ngProcess
+        if process1Status == "Repaired":
+            repairedProcess = "REPAIRED AT PROCESS1"
+            process1Row += 1
+            process2Row += 1
+            process3Row += 1
+            process4Row += 1
+            process5Row += 1
+            process6Row += 1
+            piRow += 1
 
-    if process5Status == "NG PRESSURE":
-        ngProcess = "NG PRESSURE AT PROCESS5"
-        process5Row += 1
-        piRow += 1
+            # excelData["DATE"] = repairedProcess
+            # excelData["TIME"] = repairedProcess
+            # excelData["MODEL CODE"] = repairedProcess
+            # excelData["PROCESS S/N"] = repairedProcess
+            # excelData["S/N"] = repairedProcess
+            # excelData["PASS/NG"] = repairedProcess
+            # excelData["VOLTAGE MAX (V)"] = repairedProcess
+            # excelData["WATTAGE MAX (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
+            # excelData["VOLTAGE Middle (V)"] = repairedProcess
+            # excelData["WATTAGE Middle (W)"] = repairedProcess
+            # excelData["AMPERAGE Middle (A)"] = repairedProcess
+            # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
+            # excelData["dB(A) 1"] = repairedProcess
+            # excelData["dB(A) 2"] = repairedProcess
+            # excelData["dB(A) 3"] = repairedProcess
+            # excelData["VOLTAGE MIN (V)"] = repairedProcess
+            # excelData["WATTAGE MIN (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
 
-        excelData["DATE"] = ngProcess
-        excelData["TIME"] = ngProcess
-        excelData["MODEL CODE"] = ngProcess
-        excelData["PROCESS S/N"] = ngProcess
-        excelData["S/N"] = ngProcess
-        excelData["PASS/NG"] = ngProcess
-        excelData["VOLTAGE MAX (V)"] = ngProcess
-        excelData["WATTAGE MAX (W)"] = ngProcess
-        excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-        excelData["VOLTAGE Middle (V)"] = ngProcess
-        excelData["WATTAGE Middle (W)"] = ngProcess
-        excelData["AMPERAGE Middle (A)"] = ngProcess
-        excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-        excelData["dB(A) 1"] = ngProcess
-        excelData["dB(A) 2"] = ngProcess
-        excelData["dB(A) 3"] = ngProcess
-        excelData["VOLTAGE MIN (V)"] = ngProcess
-        excelData["WATTAGE MIN (W)"] = ngProcess
-        excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+        if process2Status == "Repaired":
+            repairedProcess = "REPAIRED AT PROCESS2"
+            process2Row += 1
+            process3Row += 1
+            process4Row += 1
+            process5Row += 1
+            process6Row += 1
+            piRow += 1
 
-        excelData["Process 6 Model Code"] = ngProcess
-        excelData["Process 6 S/N"] = ngProcess
-        excelData["Process 6 ID"] = ngProcess
-        excelData["Process 6 NAME"] = ngProcess
-        excelData["Process 6 Regular/Contractual"] = ngProcess
-        excelData["Process 6 Vinyl"] = ngProcess
-        excelData["Process 6 Vinyl Lot No"] = ngProcess
-        excelData["Process 6 ST"] = ngProcess
-        excelData["Process 6 Actual Time"] = ngProcess
-        excelData["Process 6 NG Cause"] = ngProcess
-        excelData["Process 6 Repaired Action"] = ngProcess
+            # excelData["DATE"] = repairedProcess
+            # excelData["TIME"] = repairedProcess
+            # excelData["MODEL CODE"] = repairedProcess
+            # excelData["PROCESS S/N"] = repairedProcess
+            # excelData["S/N"] = repairedProcess
+            # excelData["PASS/NG"] = repairedProcess
+            # excelData["VOLTAGE MAX (V)"] = repairedProcess
+            # excelData["WATTAGE MAX (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
+            # excelData["VOLTAGE Middle (V)"] = repairedProcess
+            # excelData["WATTAGE Middle (W)"] = repairedProcess
+            # excelData["AMPERAGE Middle (A)"] = repairedProcess
+            # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
+            # excelData["dB(A) 1"] = repairedProcess
+            # excelData["dB(A) 2"] = repairedProcess
+            # excelData["dB(A) 3"] = repairedProcess
+            # excelData["VOLTAGE MIN (V)"] = repairedProcess
+            # excelData["WATTAGE MIN (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
 
-    if process5Status == "NG":
-        ngProcess = "NG AT PROCESS5"
-        process5Row += 1
-        piRow += 1
+            excelData["Process 1 Model Code"] = repairedProcess
+            excelData["Process 1 S/N"] = repairedProcess
+            excelData["Process 1 ID"] = repairedProcess
+            excelData["Process 1 NAME"] = repairedProcess
+            excelData["Process 1 Regular/Contractual"] = repairedProcess
+            excelData["Process 1 Em2p"] = repairedProcess
+            excelData["Process 1 Em2p Lot No"] = repairedProcess
+            excelData["Process 1 Em3p"] = repairedProcess
+            excelData["Process 1 Em3p Lot No"] = repairedProcess
+            excelData["Process 1 Harness"] = repairedProcess
+            excelData["Process 1 Harness Lot No"] = repairedProcess
+            excelData["Process 1 Frame"] = repairedProcess
+            excelData["Process 1 Frame Lot No"] = repairedProcess 
+            excelData["Process 1 Bushing"] = repairedProcess
+            excelData["Process 1 Bushing Lot No"] = repairedProcess
+            excelData["Process 1 ST"] = repairedProcess
+            excelData["Process 1 Actual Time"] = repairedProcess
+            excelData["Process 1 NG Cause"] = repairedProcess
+            excelData["Process 1 Repaired Action"] = repairedProcess  
 
-        # excelData["DATE"] = ngProcess
-        # excelData["TIME"] = ngProcess
-        # excelData["MODEL CODE"] = ngProcess
-        # excelData["PROCESS S/N"] = ngProcess
-        # excelData["S/N"] = ngProcess
-        # excelData["PASS/NG"] = ngProcess
-        # excelData["VOLTAGE MAX (V)"] = ngProcess
-        # excelData["WATTAGE MAX (W)"] = ngProcess
-        # excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-        # excelData["VOLTAGE Middle (V)"] = ngProcess
-        # excelData["WATTAGE Middle (W)"] = ngProcess
-        # excelData["AMPERAGE Middle (A)"] = ngProcess
-        # excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-        # excelData["dB(A) 1"] = ngProcess
-        # excelData["dB(A) 2"] = ngProcess
-        # excelData["dB(A) 3"] = ngProcess
-        # excelData["VOLTAGE MIN (V)"] = ngProcess
-        # excelData["WATTAGE MIN (W)"] = ngProcess
-        # excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+        if process3Status == "Repaired":
+            repairedProcess = "REPAIRED AT PROCESS3"
+            process3Row += 1
+            process4Row += 1
+            process5Row += 1
+            process6Row += 1
+            piRow += 1
 
-        excelData["Process 6 Model Code"] = ngProcess
-        excelData["Process 6 S/N"] = ngProcess
-        excelData["Process 6 ID"] = ngProcess
-        excelData["Process 6 NAME"] = ngProcess
-        excelData["Process 6 Regular/Contractual"] = ngProcess
-        excelData["Process 6 Vinyl"] = ngProcess
-        excelData["Process 6 Vinyl Lot No"] = ngProcess
-        excelData["Process 6 ST"] = ngProcess
-        excelData["Process 6 Actual Time"] = ngProcess
-        excelData["Process 6 NG Cause"] = ngProcess
-        excelData["Process 6 Repaired Action"] = ngProcess
+            # excelData["DATE"] = repairedProcess
+            # excelData["TIME"] = repairedProcess
+            # excelData["MODEL CODE"] = repairedProcess
+            # excelData["PROCESS S/N"] = repairedProcess
+            # excelData["S/N"] = repairedProcess
+            # excelData["PASS/NG"] = repairedProcess
+            # excelData["VOLTAGE MAX (V)"] = repairedProcess
+            # excelData["WATTAGE MAX (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
+            # excelData["VOLTAGE Middle (V)"] = repairedProcess
+            # excelData["WATTAGE Middle (W)"] = repairedProcess
+            # excelData["AMPERAGE Middle (A)"] = repairedProcess
+            # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
+            # excelData["dB(A) 1"] = repairedProcess
+            # excelData["dB(A) 2"] = repairedProcess
+            # excelData["dB(A) 3"] = repairedProcess
+            # excelData["VOLTAGE MIN (V)"] = repairedProcess
+            # excelData["WATTAGE MIN (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
 
-    if process6Status == "NG":
-        ngProcess = "NG AT PROCESS6"
-        process6Row += 1
-        excelData["DATE"] = ngProcess
-        excelData["TIME"] = ngProcess
-        excelData["MODEL CODE"] = ngProcess
-        excelData["PROCESS S/N"] = ngProcess
-        excelData["S/N"] = ngProcess
-        excelData["PASS/NG"] = ngProcess
-        excelData["VOLTAGE MAX (V)"] = ngProcess
-        excelData["WATTAGE MAX (W)"] = ngProcess
-        excelData["CLOSED PRESSURE_MAX (kPa)"] = ngProcess
-        excelData["VOLTAGE Middle (V)"] = ngProcess
-        excelData["WATTAGE Middle (W)"] = ngProcess
-        excelData["AMPERAGE Middle (A)"] = ngProcess
-        excelData["CLOSED PRESSURE Middle (kPa)"] = ngProcess
-        excelData["dB(A) 1"] = ngProcess
-        excelData["dB(A) 2"] = ngProcess
-        excelData["dB(A) 3"] = ngProcess
-        excelData["VOLTAGE MIN (V)"] = ngProcess
-        excelData["WATTAGE MIN (W)"] = ngProcess
-        excelData["CLOSED PRESSURE MIN (kPa)"] = ngProcess
+            excelData["Process 1 Model Code"] = repairedProcess
+            excelData["Process 1 S/N"] = repairedProcess
+            excelData["Process 1 ID"] = repairedProcess
+            excelData["Process 1 NAME"] = repairedProcess
+            excelData["Process 1 Regular/Contractual"] = repairedProcess
+            excelData["Process 1 Em2p"] = repairedProcess
+            excelData["Process 1 Em2p Lot No"] = repairedProcess
+            excelData["Process 1 Em3p"] = repairedProcess
+            excelData["Process 1 Em3p Lot No"] = repairedProcess
+            excelData["Process 1 Harness"] = repairedProcess
+            excelData["Process 1 Harness Lot No"] = repairedProcess
+            excelData["Process 1 Frame"] = repairedProcess
+            excelData["Process 1 Frame Lot No"] = repairedProcess 
+            excelData["Process 1 Bushing"] = repairedProcess
+            excelData["Process 1 Bushing Lot No"] = repairedProcess
+            excelData["Process 1 ST"] = repairedProcess
+            excelData["Process 1 Actual Time"] = repairedProcess
+            excelData["Process 1 NG Cause"] = repairedProcess
+            excelData["Process 1 Repaired Action"] = repairedProcess  
 
-    if process1Status == "Repaired":
-        repairedProcess = "REPAIRED AT PROCESS1"
-        process1Row += 1
-        process2Row += 1
-        process3Row += 1
-        process4Row += 1
-        process5Row += 1
-        process6Row += 1
-        piRow += 1
+            excelData["Process 2 Model Code"] = repairedProcess
+            excelData["Process 2 S/N"] = repairedProcess
+            excelData["Process 2 ID"] = repairedProcess
+            excelData["Process 2 NAME"] = repairedProcess
+            excelData["Process 2 Regular/Contractual"] = repairedProcess
+            excelData["Process 2 M4x40 Screw"] = repairedProcess
+            excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+            excelData["Process 2 Rod Blk"] = repairedProcess
+            excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+            excelData["Process 2 Df Blk"] = repairedProcess
+            excelData["Process 2 Df Blk Lot No"] = repairedProcess
+            excelData["Process 2 Df Ring"] = repairedProcess
+            excelData["Process 2 Df Ring Lot No"] = repairedProcess
+            excelData["Process 2 Washer"] = repairedProcess
+            excelData["Process 2 Washer Lot No"] = repairedProcess
+            excelData["Process 2 Lock Nut"] = repairedProcess
+            excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+            excelData["Process 2 ST"] = repairedProcess
+            excelData["Process 2 Actual Time"] = repairedProcess
+            excelData["Process 2 NG Cause"] = repairedProcess
+            excelData["Process 2 Repaired Action"] = repairedProcess
 
-        # excelData["DATE"] = repairedProcess
-        # excelData["TIME"] = repairedProcess
-        # excelData["MODEL CODE"] = repairedProcess
-        # excelData["PROCESS S/N"] = repairedProcess
-        # excelData["S/N"] = repairedProcess
-        # excelData["PASS/NG"] = repairedProcess
-        # excelData["VOLTAGE MAX (V)"] = repairedProcess
-        # excelData["WATTAGE MAX (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
-        # excelData["VOLTAGE Middle (V)"] = repairedProcess
-        # excelData["WATTAGE Middle (W)"] = repairedProcess
-        # excelData["AMPERAGE Middle (A)"] = repairedProcess
-        # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
-        # excelData["dB(A) 1"] = repairedProcess
-        # excelData["dB(A) 2"] = repairedProcess
-        # excelData["dB(A) 3"] = repairedProcess
-        # excelData["VOLTAGE MIN (V)"] = repairedProcess
-        # excelData["WATTAGE MIN (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
+        if process4Status == "Repaired":
+            repairedProcess = "REPAIRED AT PROCESS4"
+            process4Row += 1
+            process5Row += 1
+            process6Row += 1
+            piRow += 1
 
-    if process2Status == "Repaired":
-        repairedProcess = "REPAIRED AT PROCESS2"
-        process2Row += 1
-        process3Row += 1
-        process4Row += 1
-        process5Row += 1
-        process6Row += 1
-        piRow += 1
+            # excelData["DATE"] = repairedProcess
+            # excelData["TIME"] = repairedProcess
+            # excelData["MODEL CODE"] = repairedProcess
+            # excelData["PROCESS S/N"] = repairedProcess
+            # excelData["S/N"] = repairedProcess
+            # excelData["PASS/NG"] = repairedProcess
+            # excelData["VOLTAGE MAX (V)"] = repairedProcess
+            # excelData["WATTAGE MAX (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
+            # excelData["VOLTAGE Middle (V)"] = repairedProcess
+            # excelData["WATTAGE Middle (W)"] = repairedProcess
+            # excelData["AMPERAGE Middle (A)"] = repairedProcess
+            # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
+            # excelData["dB(A) 1"] = repairedProcess
+            # excelData["dB(A) 2"] = repairedProcess
+            # excelData["dB(A) 3"] = repairedProcess
+            # excelData["VOLTAGE MIN (V)"] = repairedProcess
+            # excelData["WATTAGE MIN (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
 
-        # excelData["DATE"] = repairedProcess
-        # excelData["TIME"] = repairedProcess
-        # excelData["MODEL CODE"] = repairedProcess
-        # excelData["PROCESS S/N"] = repairedProcess
-        # excelData["S/N"] = repairedProcess
-        # excelData["PASS/NG"] = repairedProcess
-        # excelData["VOLTAGE MAX (V)"] = repairedProcess
-        # excelData["WATTAGE MAX (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
-        # excelData["VOLTAGE Middle (V)"] = repairedProcess
-        # excelData["WATTAGE Middle (W)"] = repairedProcess
-        # excelData["AMPERAGE Middle (A)"] = repairedProcess
-        # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
-        # excelData["dB(A) 1"] = repairedProcess
-        # excelData["dB(A) 2"] = repairedProcess
-        # excelData["dB(A) 3"] = repairedProcess
-        # excelData["VOLTAGE MIN (V)"] = repairedProcess
-        # excelData["WATTAGE MIN (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
+            excelData["Process 1 Model Code"] = repairedProcess
+            excelData["Process 1 S/N"] = repairedProcess
+            excelData["Process 1 ID"] = repairedProcess
+            excelData["Process 1 NAME"] = repairedProcess
+            excelData["Process 1 Regular/Contractual"] = repairedProcess
+            excelData["Process 1 Em2p"] = repairedProcess
+            excelData["Process 1 Em2p Lot No"] = repairedProcess
+            excelData["Process 1 Em3p"] = repairedProcess
+            excelData["Process 1 Em3p Lot No"] = repairedProcess
+            excelData["Process 1 Harness"] = repairedProcess
+            excelData["Process 1 Harness Lot No"] = repairedProcess
+            excelData["Process 1 Frame"] = repairedProcess
+            excelData["Process 1 Frame Lot No"] = repairedProcess 
+            excelData["Process 1 Bushing"] = repairedProcess
+            excelData["Process 1 Bushing Lot No"] = repairedProcess
+            excelData["Process 1 ST"] = repairedProcess
+            excelData["Process 1 Actual Time"] = repairedProcess
+            excelData["Process 1 NG Cause"] = repairedProcess
+            excelData["Process 1 Repaired Action"] = repairedProcess  
 
-        excelData["Process 1 Model Code"] = repairedProcess
-        excelData["Process 1 S/N"] = repairedProcess
-        excelData["Process 1 ID"] = repairedProcess
-        excelData["Process 1 NAME"] = repairedProcess
-        excelData["Process 1 Regular/Contractual"] = repairedProcess
-        excelData["Process 1 Em2p"] = repairedProcess
-        excelData["Process 1 Em2p Lot No"] = repairedProcess
-        excelData["Process 1 Em3p"] = repairedProcess
-        excelData["Process 1 Em3p Lot No"] = repairedProcess
-        excelData["Process 1 Harness"] = repairedProcess
-        excelData["Process 1 Harness Lot No"] = repairedProcess
-        excelData["Process 1 Frame"] = repairedProcess
-        excelData["Process 1 Frame Lot No"] = repairedProcess 
-        excelData["Process 1 Bushing"] = repairedProcess
-        excelData["Process 1 Bushing Lot No"] = repairedProcess
-        excelData["Process 1 ST"] = repairedProcess
-        excelData["Process 1 Actual Time"] = repairedProcess
-        excelData["Process 1 NG Cause"] = repairedProcess
-        excelData["Process 1 Repaired Action"] = repairedProcess  
+            excelData["Process 2 Model Code"] = repairedProcess
+            excelData["Process 2 S/N"] = repairedProcess
+            excelData["Process 2 ID"] = repairedProcess
+            excelData["Process 2 NAME"] = repairedProcess
+            excelData["Process 2 Regular/Contractual"] = repairedProcess
+            excelData["Process 2 M4x40 Screw"] = repairedProcess
+            excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+            excelData["Process 2 Rod Blk"] = repairedProcess
+            excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+            excelData["Process 2 Df Blk"] = repairedProcess
+            excelData["Process 2 Df Blk Lot No"] = repairedProcess
+            excelData["Process 2 Df Ring"] = repairedProcess
+            excelData["Process 2 Df Ring Lot No"] = repairedProcess
+            excelData["Process 2 Washer"] = repairedProcess
+            excelData["Process 2 Washer Lot No"] = repairedProcess
+            excelData["Process 2 Lock Nut"] = repairedProcess
+            excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+            excelData["Process 2 ST"] = repairedProcess
+            excelData["Process 2 Actual Time"] = repairedProcess
+            excelData["Process 2 NG Cause"] = repairedProcess
+            excelData["Process 2 Repaired Action"] = repairedProcess
 
-    if process3Status == "Repaired":
-        repairedProcess = "REPAIRED AT PROCESS3"
-        process3Row += 1
-        process4Row += 1
-        process5Row += 1
-        process6Row += 1
-        piRow += 1
+            excelData["Process 3 Model Code"] = repairedProcess
+            excelData["Process 3 S/N"] = repairedProcess
+            excelData["Process 3 ID"] = repairedProcess
+            excelData["Process 3 NAME"] = repairedProcess
+            excelData["Process 3 Regular/Contractual"] = repairedProcess
+            excelData["Process 3 Frame Gasket"] = repairedProcess
+            excelData["Process 3 Frame Gasket Lot No"] = repairedProcess
+            excelData["Process 3 Casing Block"] = repairedProcess
+            excelData["Process 3 Casing Block Lot No"] = repairedProcess
+            excelData["Process 3 Casing Block Inspection 1 Average Data"] = repairedProcess
+            excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = repairedProcess
+            excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = repairedProcess
+            excelData["Process 3 Casing Gasket"] = repairedProcess
+            excelData["Process 3 Casing Gasket Lot No"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 1"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 1 Lot No"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 2"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 2 Lot No"] = repairedProcess
+            excelData["Process 3 Ball Cushion"] = repairedProcess
+            excelData["Process 3 Ball Cushion Lot No"] = repairedProcess
+            excelData["Process 3 Frame Cover"] = repairedProcess
+            excelData["Process 3 Frame Cover Lot No"] = repairedProcess
+            excelData["Process 3 Partition Board"] = repairedProcess
+            excelData["Process 3 Partition Board Lot No"] = repairedProcess
+            excelData["Process 3 Built In Tube 1"] = repairedProcess
+            excelData["Process 3 Built In Tube 1 Lot No"] = repairedProcess
+            excelData["Process 3 Built In Tube 2"] = repairedProcess
+            excelData["Process 3 Built In Tube 2 Lot No"] = repairedProcess
+            excelData["Process 3 Head Cover"] = repairedProcess
+            excelData["Process 3 Head Cover Lot No"] = repairedProcess
+            excelData["Process 3 Casing Packing"] = repairedProcess
+            excelData["Process 3 Casing Packing Lot No"] = repairedProcess
+            excelData["Process 3 M4x12 Screw"] = repairedProcess
+            excelData["Process 3 M4x12 Screw Lot No"] = repairedProcess
+            excelData["Process 3 Csb L"] = repairedProcess
+            excelData["Process 3 Csb L Lot No"] = repairedProcess
+            excelData["Process 3 Csb R"] = repairedProcess
+            excelData["Process 3 Csb R Lot No"] = repairedProcess
+            excelData["Process 3 Head Packing"] = repairedProcess
+            excelData["Process 3 Head Packing Lot No"] = repairedProcess
+            excelData["Process 3 ST"] = repairedProcess
+            excelData["Process 3 Actual Time"] = repairedProcess
+            excelData["Process 3 NG Cause"] = repairedProcess
+            excelData["Process 3 Repaired Action"] = repairedProcess
 
-        # excelData["DATE"] = repairedProcess
-        # excelData["TIME"] = repairedProcess
-        # excelData["MODEL CODE"] = repairedProcess
-        # excelData["PROCESS S/N"] = repairedProcess
-        # excelData["S/N"] = repairedProcess
-        # excelData["PASS/NG"] = repairedProcess
-        # excelData["VOLTAGE MAX (V)"] = repairedProcess
-        # excelData["WATTAGE MAX (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
-        # excelData["VOLTAGE Middle (V)"] = repairedProcess
-        # excelData["WATTAGE Middle (W)"] = repairedProcess
-        # excelData["AMPERAGE Middle (A)"] = repairedProcess
-        # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
-        # excelData["dB(A) 1"] = repairedProcess
-        # excelData["dB(A) 2"] = repairedProcess
-        # excelData["dB(A) 3"] = repairedProcess
-        # excelData["VOLTAGE MIN (V)"] = repairedProcess
-        # excelData["WATTAGE MIN (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
+        if process5Status == "Repaired":
+            repairedProcess = "RE PI"
+            process5Row += 1
+            process6Row += 1
+            piRow += 1
 
-        excelData["Process 1 Model Code"] = repairedProcess
-        excelData["Process 1 S/N"] = repairedProcess
-        excelData["Process 1 ID"] = repairedProcess
-        excelData["Process 1 NAME"] = repairedProcess
-        excelData["Process 1 Regular/Contractual"] = repairedProcess
-        excelData["Process 1 Em2p"] = repairedProcess
-        excelData["Process 1 Em2p Lot No"] = repairedProcess
-        excelData["Process 1 Em3p"] = repairedProcess
-        excelData["Process 1 Em3p Lot No"] = repairedProcess
-        excelData["Process 1 Harness"] = repairedProcess
-        excelData["Process 1 Harness Lot No"] = repairedProcess
-        excelData["Process 1 Frame"] = repairedProcess
-        excelData["Process 1 Frame Lot No"] = repairedProcess 
-        excelData["Process 1 Bushing"] = repairedProcess
-        excelData["Process 1 Bushing Lot No"] = repairedProcess
-        excelData["Process 1 ST"] = repairedProcess
-        excelData["Process 1 Actual Time"] = repairedProcess
-        excelData["Process 1 NG Cause"] = repairedProcess
-        excelData["Process 1 Repaired Action"] = repairedProcess  
+            # excelData["DATE"] = repairedProcess
+            # excelData["TIME"] = repairedProcess
+            # excelData["MODEL CODE"] = repairedProcess
+            # excelData["PROCESS S/N"] = repairedProcess
+            # excelData["S/N"] = repairedProcess
+            # excelData["PASS/NG"] = repairedProcess
+            # excelData["VOLTAGE MAX (V)"] = repairedProcess
+            # excelData["WATTAGE MAX (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
+            # excelData["VOLTAGE Middle (V)"] = repairedProcess
+            # excelData["WATTAGE Middle (W)"] = repairedProcess
+            # excelData["AMPERAGE Middle (A)"] = repairedProcess
+            # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
+            # excelData["dB(A) 1"] = repairedProcess
+            # excelData["dB(A) 2"] = repairedProcess
+            # excelData["dB(A) 3"] = repairedProcess
+            # excelData["VOLTAGE MIN (V)"] = repairedProcess
+            # excelData["WATTAGE MIN (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
 
-        excelData["Process 2 Model Code"] = repairedProcess
-        excelData["Process 2 S/N"] = repairedProcess
-        excelData["Process 2 ID"] = repairedProcess
-        excelData["Process 2 NAME"] = repairedProcess
-        excelData["Process 2 Regular/Contractual"] = repairedProcess
-        excelData["Process 2 M4x40 Screw"] = repairedProcess
-        excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-        excelData["Process 2 Rod Blk"] = repairedProcess
-        excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-        excelData["Process 2 Df Blk"] = repairedProcess
-        excelData["Process 2 Df Blk Lot No"] = repairedProcess
-        excelData["Process 2 Df Ring"] = repairedProcess
-        excelData["Process 2 Df Ring Lot No"] = repairedProcess
-        excelData["Process 2 Washer"] = repairedProcess
-        excelData["Process 2 Washer Lot No"] = repairedProcess
-        excelData["Process 2 Lock Nut"] = repairedProcess
-        excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-        excelData["Process 2 ST"] = repairedProcess
-        excelData["Process 2 Actual Time"] = repairedProcess
-        excelData["Process 2 NG Cause"] = repairedProcess
-        excelData["Process 2 Repaired Action"] = repairedProcess
+            excelData["Process 1 Model Code"] = repairedProcess
+            excelData["Process 1 S/N"] = repairedProcess
+            excelData["Process 1 ID"] = repairedProcess
+            excelData["Process 1 NAME"] = repairedProcess
+            excelData["Process 1 Regular/Contractual"] = repairedProcess
+            excelData["Process 1 Em2p"] = repairedProcess
+            excelData["Process 1 Em2p Lot No"] = repairedProcess
+            excelData["Process 1 Em3p"] = repairedProcess
+            excelData["Process 1 Em3p Lot No"] = repairedProcess
+            excelData["Process 1 Harness"] = repairedProcess
+            excelData["Process 1 Harness Lot No"] = repairedProcess
+            excelData["Process 1 Frame"] = repairedProcess
+            excelData["Process 1 Frame Lot No"] = repairedProcess 
+            excelData["Process 1 Bushing"] = repairedProcess
+            excelData["Process 1 Bushing Lot No"] = repairedProcess
+            excelData["Process 1 ST"] = repairedProcess
+            excelData["Process 1 Actual Time"] = repairedProcess
+            excelData["Process 1 NG Cause"] = repairedProcess
+            excelData["Process 1 Repaired Action"] = repairedProcess  
 
-    if process4Status == "Repaired":
-        repairedProcess = "REPAIRED AT PROCESS4"
-        process4Row += 1
-        process5Row += 1
-        process6Row += 1
-        piRow += 1
+            excelData["Process 2 Model Code"] = repairedProcess
+            excelData["Process 2 S/N"] = repairedProcess
+            excelData["Process 2 ID"] = repairedProcess
+            excelData["Process 2 NAME"] = repairedProcess
+            excelData["Process 2 Regular/Contractual"] = repairedProcess
+            excelData["Process 2 M4x40 Screw"] = repairedProcess
+            excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+            excelData["Process 2 Rod Blk"] = repairedProcess
+            excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+            excelData["Process 2 Df Blk"] = repairedProcess
+            excelData["Process 2 Df Blk Lot No"] = repairedProcess
+            excelData["Process 2 Df Ring"] = repairedProcess
+            excelData["Process 2 Df Ring Lot No"] = repairedProcess
+            excelData["Process 2 Washer"] = repairedProcess
+            excelData["Process 2 Washer Lot No"] = repairedProcess
+            excelData["Process 2 Lock Nut"] = repairedProcess
+            excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+            excelData["Process 2 ST"] = repairedProcess
+            excelData["Process 2 Actual Time"] = repairedProcess
+            excelData["Process 2 NG Cause"] = repairedProcess
+            excelData["Process 2 Repaired Action"] = repairedProcess
 
-        # excelData["DATE"] = repairedProcess
-        # excelData["TIME"] = repairedProcess
-        # excelData["MODEL CODE"] = repairedProcess
-        # excelData["PROCESS S/N"] = repairedProcess
-        # excelData["S/N"] = repairedProcess
-        # excelData["PASS/NG"] = repairedProcess
-        # excelData["VOLTAGE MAX (V)"] = repairedProcess
-        # excelData["WATTAGE MAX (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
-        # excelData["VOLTAGE Middle (V)"] = repairedProcess
-        # excelData["WATTAGE Middle (W)"] = repairedProcess
-        # excelData["AMPERAGE Middle (A)"] = repairedProcess
-        # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
-        # excelData["dB(A) 1"] = repairedProcess
-        # excelData["dB(A) 2"] = repairedProcess
-        # excelData["dB(A) 3"] = repairedProcess
-        # excelData["VOLTAGE MIN (V)"] = repairedProcess
-        # excelData["WATTAGE MIN (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
+            excelData["Process 3 Model Code"] = repairedProcess
+            excelData["Process 3 S/N"] = repairedProcess
+            excelData["Process 3 ID"] = repairedProcess
+            excelData["Process 3 NAME"] = repairedProcess
+            excelData["Process 3 Regular/Contractual"] = repairedProcess
+            excelData["Process 3 Frame Gasket"] = repairedProcess
+            excelData["Process 3 Frame Gasket Lot No"] = repairedProcess
+            excelData["Process 3 Casing Block"] = repairedProcess
+            excelData["Process 3 Casing Block Lot No"] = repairedProcess
+            excelData["Process 3 Casing Block Inspection 1 Average Data"] = repairedProcess
+            excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = repairedProcess
+            excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = repairedProcess
+            excelData["Process 3 Casing Gasket"] = repairedProcess
+            excelData["Process 3 Casing Gasket Lot No"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 1"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 1 Lot No"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 2"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 2 Lot No"] = repairedProcess
+            excelData["Process 3 Ball Cushion"] = repairedProcess
+            excelData["Process 3 Ball Cushion Lot No"] = repairedProcess
+            excelData["Process 3 Frame Cover"] = repairedProcess
+            excelData["Process 3 Frame Cover Lot No"] = repairedProcess
+            excelData["Process 3 Partition Board"] = repairedProcess
+            excelData["Process 3 Partition Board Lot No"] = repairedProcess
+            excelData["Process 3 Built In Tube 1"] = repairedProcess
+            excelData["Process 3 Built In Tube 1 Lot No"] = repairedProcess
+            excelData["Process 3 Built In Tube 2"] = repairedProcess
+            excelData["Process 3 Built In Tube 2 Lot No"] = repairedProcess
+            excelData["Process 3 Head Cover"] = repairedProcess
+            excelData["Process 3 Head Cover Lot No"] = repairedProcess
+            excelData["Process 3 Casing Packing"] = repairedProcess
+            excelData["Process 3 Casing Packing Lot No"] = repairedProcess
+            excelData["Process 3 M4x12 Screw"] = repairedProcess
+            excelData["Process 3 M4x12 Screw Lot No"] = repairedProcess
+            excelData["Process 3 Csb L"] = repairedProcess
+            excelData["Process 3 Csb L Lot No"] = repairedProcess
+            excelData["Process 3 Csb R"] = repairedProcess
+            excelData["Process 3 Csb R Lot No"] = repairedProcess
+            excelData["Process 3 Head Packing"] = repairedProcess
+            excelData["Process 3 Head Packing Lot No"] = repairedProcess
+            excelData["Process 3 ST"] = repairedProcess
+            excelData["Process 3 Actual Time"] = repairedProcess
+            excelData["Process 3 NG Cause"] = repairedProcess
+            excelData["Process 3 Repaired Action"] = repairedProcess
+            
+            excelData["Process 4 Model Code"] = repairedProcess
+            excelData["Process 4 S/N"] = repairedProcess
+            excelData["Process 4 ID"] = repairedProcess
+            excelData["Process 4 NAME"] = repairedProcess
+            excelData["Process 4 Regular/Contractual"] = repairedProcess
+            excelData["Process 4 Tank"] = repairedProcess
+            excelData["Process 4 Tank Lot No"] = repairedProcess
+            excelData["Process 4 Upper Housing"] = repairedProcess
+            excelData["Process 4 Upper Housing Lot No"] = repairedProcess
+            excelData["Process 4 Cord Hook" ] = repairedProcess
+            excelData["Process 4 Cord Hook Lot No"] = repairedProcess
+            excelData["Process 4 M4x16 Screw"] = repairedProcess
+            excelData["Process 4 M4x16 Screw Lot No"] = repairedProcess
+            excelData["Process 4 Tank Gasket"] = repairedProcess
+            excelData["Process 4 Tank Gasket Lot No"] = repairedProcess
+            excelData["Process 4 Tank Cover"] = repairedProcess
+            excelData["Process 4 Tank Cover Lot No"] = repairedProcess
+            excelData["Process 4 Housing Gasket"] = repairedProcess
+            excelData["Process 4 Housing Gasket Lot No"] = repairedProcess
+            excelData["Process 4 M4x40 Screw"] = repairedProcess
+            excelData["Process 4 M4x40 Screw Lot No"] = repairedProcess
+            excelData["Process 4 PartitionGasket"] = repairedProcess
+            excelData["Process 4 PartitionGasket Lot No"] = repairedProcess
+            excelData["Process 4 M4x12 Screw"] = repairedProcess
+            excelData["Process 4 M4x12 Screw Lot No"] = repairedProcess
+            excelData["Process 4 Muffler"] = repairedProcess
+            excelData["Process 4 Muffler Lot No"] = repairedProcess
+            excelData["Process 4 Muffler Gasket"] = repairedProcess
+            excelData["Process 4 Muffler Gasket Lot No"] = repairedProcess
+            excelData["Process 4 VCR"] = repairedProcess
+            excelData["Process 4 VCR Lot No"] = repairedProcess
+            excelData["Process 4 ST"] = repairedProcess
+            excelData["Process 4 Actual Time"] = repairedProcess
+            excelData["Process 4 NG Cause"] = repairedProcess
+            excelData["Process 4 Repaired Action"] = repairedProcess
 
-        excelData["Process 1 Model Code"] = repairedProcess
-        excelData["Process 1 S/N"] = repairedProcess
-        excelData["Process 1 ID"] = repairedProcess
-        excelData["Process 1 NAME"] = repairedProcess
-        excelData["Process 1 Regular/Contractual"] = repairedProcess
-        excelData["Process 1 Em2p"] = repairedProcess
-        excelData["Process 1 Em2p Lot No"] = repairedProcess
-        excelData["Process 1 Em3p"] = repairedProcess
-        excelData["Process 1 Em3p Lot No"] = repairedProcess
-        excelData["Process 1 Harness"] = repairedProcess
-        excelData["Process 1 Harness Lot No"] = repairedProcess
-        excelData["Process 1 Frame"] = repairedProcess
-        excelData["Process 1 Frame Lot No"] = repairedProcess 
-        excelData["Process 1 Bushing"] = repairedProcess
-        excelData["Process 1 Bushing Lot No"] = repairedProcess
-        excelData["Process 1 ST"] = repairedProcess
-        excelData["Process 1 Actual Time"] = repairedProcess
-        excelData["Process 1 NG Cause"] = repairedProcess
-        excelData["Process 1 Repaired Action"] = repairedProcess  
+        if process6Status == "Repaired":
+            repairedProcess = "REPAIRED AT PROCESS6"
+            process6Row += 1
+            piRow += 1
 
-        excelData["Process 2 Model Code"] = repairedProcess
-        excelData["Process 2 S/N"] = repairedProcess
-        excelData["Process 2 ID"] = repairedProcess
-        excelData["Process 2 NAME"] = repairedProcess
-        excelData["Process 2 Regular/Contractual"] = repairedProcess
-        excelData["Process 2 M4x40 Screw"] = repairedProcess
-        excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-        excelData["Process 2 Rod Blk"] = repairedProcess
-        excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-        excelData["Process 2 Df Blk"] = repairedProcess
-        excelData["Process 2 Df Blk Lot No"] = repairedProcess
-        excelData["Process 2 Df Ring"] = repairedProcess
-        excelData["Process 2 Df Ring Lot No"] = repairedProcess
-        excelData["Process 2 Washer"] = repairedProcess
-        excelData["Process 2 Washer Lot No"] = repairedProcess
-        excelData["Process 2 Lock Nut"] = repairedProcess
-        excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-        excelData["Process 2 ST"] = repairedProcess
-        excelData["Process 2 Actual Time"] = repairedProcess
-        excelData["Process 2 NG Cause"] = repairedProcess
-        excelData["Process 2 Repaired Action"] = repairedProcess
+            # excelData["DATE"] = repairedProcess
+            # excelData["TIME"] = repairedProcess
+            # excelData["MODEL CODE"] = repairedProcess
+            # excelData["PROCESS S/N"] = repairedProcess
+            # excelData["S/N"] = repairedProcess
+            # excelData["PASS/NG"] = repairedProcess
+            # excelData["VOLTAGE MAX (V)"] = repairedProcess
+            # excelData["WATTAGE MAX (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
+            # excelData["VOLTAGE Middle (V)"] = repairedProcess
+            # excelData["WATTAGE Middle (W)"] = repairedProcess
+            # excelData["AMPERAGE Middle (A)"] = repairedProcess
+            # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
+            # excelData["dB(A) 1"] = repairedProcess
+            # excelData["dB(A) 2"] = repairedProcess
+            # excelData["dB(A) 3"] = repairedProcess
+            # excelData["VOLTAGE MIN (V)"] = repairedProcess
+            # excelData["WATTAGE MIN (W)"] = repairedProcess
+            # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
 
-        excelData["Process 3 Model Code"] = repairedProcess
-        excelData["Process 3 S/N"] = repairedProcess
-        excelData["Process 3 ID"] = repairedProcess
-        excelData["Process 3 NAME"] = repairedProcess
-        excelData["Process 3 Regular/Contractual"] = repairedProcess
-        excelData["Process 3 Frame Gasket"] = repairedProcess
-        excelData["Process 3 Frame Gasket Lot No"] = repairedProcess
-        excelData["Process 3 Casing Block"] = repairedProcess
-        excelData["Process 3 Casing Block Lot No"] = repairedProcess
-        excelData["Process 3 Casing Block Inspection 1 Average Data"] = repairedProcess
-        excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = repairedProcess
-        excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = repairedProcess
-        excelData["Process 3 Casing Gasket"] = repairedProcess
-        excelData["Process 3 Casing Gasket Lot No"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 1"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 1 Lot No"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 2"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 2 Lot No"] = repairedProcess
-        excelData["Process 3 Ball Cushion"] = repairedProcess
-        excelData["Process 3 Ball Cushion Lot No"] = repairedProcess
-        excelData["Process 3 Frame Cover"] = repairedProcess
-        excelData["Process 3 Frame Cover Lot No"] = repairedProcess
-        excelData["Process 3 Partition Board"] = repairedProcess
-        excelData["Process 3 Partition Board Lot No"] = repairedProcess
-        excelData["Process 3 Built In Tube 1"] = repairedProcess
-        excelData["Process 3 Built In Tube 1 Lot No"] = repairedProcess
-        excelData["Process 3 Built In Tube 2"] = repairedProcess
-        excelData["Process 3 Built In Tube 2 Lot No"] = repairedProcess
-        excelData["Process 3 Head Cover"] = repairedProcess
-        excelData["Process 3 Head Cover Lot No"] = repairedProcess
-        excelData["Process 3 Casing Packing"] = repairedProcess
-        excelData["Process 3 Casing Packing Lot No"] = repairedProcess
-        excelData["Process 3 M4x12 Screw"] = repairedProcess
-        excelData["Process 3 M4x12 Screw Lot No"] = repairedProcess
-        excelData["Process 3 Csb L"] = repairedProcess
-        excelData["Process 3 Csb L Lot No"] = repairedProcess
-        excelData["Process 3 Csb R"] = repairedProcess
-        excelData["Process 3 Csb R Lot No"] = repairedProcess
-        excelData["Process 3 Head Packing"] = repairedProcess
-        excelData["Process 3 Head Packing Lot No"] = repairedProcess
-        excelData["Process 3 ST"] = repairedProcess
-        excelData["Process 3 Actual Time"] = repairedProcess
-        excelData["Process 3 NG Cause"] = repairedProcess
-        excelData["Process 3 Repaired Action"] = repairedProcess
+            excelData["Process 1 Model Code"] = repairedProcess
+            excelData["Process 1 S/N"] = repairedProcess
+            excelData["Process 1 ID"] = repairedProcess
+            excelData["Process 1 NAME"] = repairedProcess
+            excelData["Process 1 Regular/Contractual"] = repairedProcess
+            excelData["Process 1 Em2p"] = repairedProcess
+            excelData["Process 1 Em2p Lot No"] = repairedProcess
+            excelData["Process 1 Em3p"] = repairedProcess
+            excelData["Process 1 Em3p Lot No"] = repairedProcess
+            excelData["Process 1 Harness"] = repairedProcess
+            excelData["Process 1 Harness Lot No"] = repairedProcess
+            excelData["Process 1 Frame"] = repairedProcess
+            excelData["Process 1 Frame Lot No"] = repairedProcess 
+            excelData["Process 1 Bushing"] = repairedProcess
+            excelData["Process 1 Bushing Lot No"] = repairedProcess
+            excelData["Process 1 ST"] = repairedProcess
+            excelData["Process 1 Actual Time"] = repairedProcess
+            excelData["Process 1 NG Cause"] = repairedProcess
+            excelData["Process 1 Repaired Action"] = repairedProcess  
 
-    if process5Status == "Repaired":
-        repairedProcess = "RE PI"
-        process5Row += 1
-        process6Row += 1
-        piRow += 1
+            excelData["Process 2 Model Code"] = repairedProcess
+            excelData["Process 2 S/N"] = repairedProcess
+            excelData["Process 2 ID"] = repairedProcess
+            excelData["Process 2 NAME"] = repairedProcess
+            excelData["Process 2 Regular/Contractual"] = repairedProcess
+            excelData["Process 2 M4x40 Screw"] = repairedProcess
+            excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
+            excelData["Process 2 Rod Blk"] = repairedProcess
+            excelData["Process 2 Rod Blk Lot No"] = repairedProcess
+            excelData["Process 2 Df Blk"] = repairedProcess
+            excelData["Process 2 Df Blk Lot No"] = repairedProcess
+            excelData["Process 2 Df Ring"] = repairedProcess
+            excelData["Process 2 Df Ring Lot No"] = repairedProcess
+            excelData["Process 2 Washer"] = repairedProcess
+            excelData["Process 2 Washer Lot No"] = repairedProcess
+            excelData["Process 2 Lock Nut"] = repairedProcess
+            excelData["Process 2 Lock Nut Lot No"] = repairedProcess
+            excelData["Process 2 ST"] = repairedProcess
+            excelData["Process 2 Actual Time"] = repairedProcess
+            excelData["Process 2 NG Cause"] = repairedProcess
+            excelData["Process 2 Repaired Action"] = repairedProcess
 
-        # excelData["DATE"] = repairedProcess
-        # excelData["TIME"] = repairedProcess
-        # excelData["MODEL CODE"] = repairedProcess
-        # excelData["PROCESS S/N"] = repairedProcess
-        # excelData["S/N"] = repairedProcess
-        # excelData["PASS/NG"] = repairedProcess
-        # excelData["VOLTAGE MAX (V)"] = repairedProcess
-        # excelData["WATTAGE MAX (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
-        # excelData["VOLTAGE Middle (V)"] = repairedProcess
-        # excelData["WATTAGE Middle (W)"] = repairedProcess
-        # excelData["AMPERAGE Middle (A)"] = repairedProcess
-        # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
-        # excelData["dB(A) 1"] = repairedProcess
-        # excelData["dB(A) 2"] = repairedProcess
-        # excelData["dB(A) 3"] = repairedProcess
-        # excelData["VOLTAGE MIN (V)"] = repairedProcess
-        # excelData["WATTAGE MIN (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
+            excelData["Process 3 Model Code"] = repairedProcess
+            excelData["Process 3 S/N"] = repairedProcess
+            excelData["Process 3 ID"] = repairedProcess
+            excelData["Process 3 NAME"] = repairedProcess
+            excelData["Process 3 Regular/Contractual"] = repairedProcess
+            excelData["Process 3 Frame Gasket"] = repairedProcess
+            excelData["Process 3 Frame Gasket Lot No"] = repairedProcess
+            excelData["Process 3 Casing Block"] = repairedProcess
+            excelData["Process 3 Casing Block Lot No"] = repairedProcess
+            excelData["Process 3 Casing Block Inspection 1 Average Data"] = repairedProcess
+            excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = repairedProcess
+            excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = repairedProcess
+            excelData["Process 3 Casing Gasket"] = repairedProcess
+            excelData["Process 3 Casing Gasket Lot No"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 1"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 1 Lot No"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 2"] = repairedProcess
+            excelData["Process 3 M4x16 Screw 2 Lot No"] = repairedProcess
+            excelData["Process 3 Ball Cushion"] = repairedProcess
+            excelData["Process 3 Ball Cushion Lot No"] = repairedProcess
+            excelData["Process 3 Frame Cover"] = repairedProcess
+            excelData["Process 3 Frame Cover Lot No"] = repairedProcess
+            excelData["Process 3 Partition Board"] = repairedProcess
+            excelData["Process 3 Partition Board Lot No"] = repairedProcess
+            excelData["Process 3 Built In Tube 1"] = repairedProcess
+            excelData["Process 3 Built In Tube 1 Lot No"] = repairedProcess
+            excelData["Process 3 Built In Tube 2"] = repairedProcess
+            excelData["Process 3 Built In Tube 2 Lot No"] = repairedProcess
+            excelData["Process 3 Head Cover"] = repairedProcess
+            excelData["Process 3 Head Cover Lot No"] = repairedProcess
+            excelData["Process 3 Casing Packing"] = repairedProcess
+            excelData["Process 3 Casing Packing Lot No"] = repairedProcess
+            excelData["Process 3 M4x12 Screw"] = repairedProcess
+            excelData["Process 3 M4x12 Screw Lot No"] = repairedProcess
+            excelData["Process 3 Csb L"] = repairedProcess
+            excelData["Process 3 Csb L Lot No"] = repairedProcess
+            excelData["Process 3 Csb R"] = repairedProcess
+            excelData["Process 3 Csb R Lot No"] = repairedProcess
+            excelData["Process 3 Head Packing"] = repairedProcess
+            excelData["Process 3 Head Packing Lot No"] = repairedProcess
+            excelData["Process 3 ST"] = repairedProcess
+            excelData["Process 3 Actual Time"] = repairedProcess
+            excelData["Process 3 NG Cause"] = repairedProcess
+            excelData["Process 3 Repaired Action"] = repairedProcess
+            
+            excelData["Process 4 Model Code"] = repairedProcess
+            excelData["Process 4 S/N"] = repairedProcess
+            excelData["Process 4 ID"] = repairedProcess
+            excelData["Process 4 NAME"] = repairedProcess
+            excelData["Process 4 Regular/Contractual"] = repairedProcess
+            excelData["Process 4 Tank"] = repairedProcess
+            excelData["Process 4 Tank Lot No"] = repairedProcess
+            excelData["Process 4 Upper Housing"] = repairedProcess
+            excelData["Process 4 Upper Housing Lot No"] = repairedProcess
+            excelData["Process 4 Cord Hook" ] = repairedProcess
+            excelData["Process 4 Cord Hook Lot No"] = repairedProcess
+            excelData["Process 4 M4x16 Screw"] = repairedProcess
+            excelData["Process 4 M4x16 Screw Lot No"] = repairedProcess
+            excelData["Process 4 Tank Gasket"] = repairedProcess
+            excelData["Process 4 Tank Gasket Lot No"] = repairedProcess
+            excelData["Process 4 Tank Cover"] = repairedProcess
+            excelData["Process 4 Tank Cover Lot No"] = repairedProcess
+            excelData["Process 4 Housing Gasket"] = repairedProcess
+            excelData["Process 4 Housing Gasket Lot No"] = repairedProcess
+            excelData["Process 4 M4x40 Screw"] = repairedProcess
+            excelData["Process 4 M4x40 Screw Lot No"] = repairedProcess
+            excelData["Process 4 PartitionGasket"] = repairedProcess
+            excelData["Process 4 PartitionGasket Lot No"] = repairedProcess
+            excelData["Process 4 M4x12 Screw"] = repairedProcess
+            excelData["Process 4 M4x12 Screw Lot No"] = repairedProcess
+            excelData["Process 4 Muffler"] = repairedProcess
+            excelData["Process 4 Muffler Lot No"] = repairedProcess
+            excelData["Process 4 Muffler Gasket"] = repairedProcess
+            excelData["Process 4 Muffler Gasket Lot No"] = repairedProcess
+            excelData["Process 4 VCR"] = repairedProcess
+            excelData["Process 4 VCR Lot No"] = repairedProcess
+            excelData["Process 4 ST"] = repairedProcess
+            excelData["Process 4 Actual Time"] = repairedProcess
+            excelData["Process 4 NG Cause"] = repairedProcess
+            excelData["Process 4 Repaired Action"] = repairedProcess
 
-        excelData["Process 1 Model Code"] = repairedProcess
-        excelData["Process 1 S/N"] = repairedProcess
-        excelData["Process 1 ID"] = repairedProcess
-        excelData["Process 1 NAME"] = repairedProcess
-        excelData["Process 1 Regular/Contractual"] = repairedProcess
-        excelData["Process 1 Em2p"] = repairedProcess
-        excelData["Process 1 Em2p Lot No"] = repairedProcess
-        excelData["Process 1 Em3p"] = repairedProcess
-        excelData["Process 1 Em3p Lot No"] = repairedProcess
-        excelData["Process 1 Harness"] = repairedProcess
-        excelData["Process 1 Harness Lot No"] = repairedProcess
-        excelData["Process 1 Frame"] = repairedProcess
-        excelData["Process 1 Frame Lot No"] = repairedProcess 
-        excelData["Process 1 Bushing"] = repairedProcess
-        excelData["Process 1 Bushing Lot No"] = repairedProcess
-        excelData["Process 1 ST"] = repairedProcess
-        excelData["Process 1 Actual Time"] = repairedProcess
-        excelData["Process 1 NG Cause"] = repairedProcess
-        excelData["Process 1 Repaired Action"] = repairedProcess  
-
-        excelData["Process 2 Model Code"] = repairedProcess
-        excelData["Process 2 S/N"] = repairedProcess
-        excelData["Process 2 ID"] = repairedProcess
-        excelData["Process 2 NAME"] = repairedProcess
-        excelData["Process 2 Regular/Contractual"] = repairedProcess
-        excelData["Process 2 M4x40 Screw"] = repairedProcess
-        excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-        excelData["Process 2 Rod Blk"] = repairedProcess
-        excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-        excelData["Process 2 Df Blk"] = repairedProcess
-        excelData["Process 2 Df Blk Lot No"] = repairedProcess
-        excelData["Process 2 Df Ring"] = repairedProcess
-        excelData["Process 2 Df Ring Lot No"] = repairedProcess
-        excelData["Process 2 Washer"] = repairedProcess
-        excelData["Process 2 Washer Lot No"] = repairedProcess
-        excelData["Process 2 Lock Nut"] = repairedProcess
-        excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-        excelData["Process 2 ST"] = repairedProcess
-        excelData["Process 2 Actual Time"] = repairedProcess
-        excelData["Process 2 NG Cause"] = repairedProcess
-        excelData["Process 2 Repaired Action"] = repairedProcess
-
-        excelData["Process 3 Model Code"] = repairedProcess
-        excelData["Process 3 S/N"] = repairedProcess
-        excelData["Process 3 ID"] = repairedProcess
-        excelData["Process 3 NAME"] = repairedProcess
-        excelData["Process 3 Regular/Contractual"] = repairedProcess
-        excelData["Process 3 Frame Gasket"] = repairedProcess
-        excelData["Process 3 Frame Gasket Lot No"] = repairedProcess
-        excelData["Process 3 Casing Block"] = repairedProcess
-        excelData["Process 3 Casing Block Lot No"] = repairedProcess
-        excelData["Process 3 Casing Block Inspection 1 Average Data"] = repairedProcess
-        excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = repairedProcess
-        excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = repairedProcess
-        excelData["Process 3 Casing Gasket"] = repairedProcess
-        excelData["Process 3 Casing Gasket Lot No"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 1"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 1 Lot No"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 2"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 2 Lot No"] = repairedProcess
-        excelData["Process 3 Ball Cushion"] = repairedProcess
-        excelData["Process 3 Ball Cushion Lot No"] = repairedProcess
-        excelData["Process 3 Frame Cover"] = repairedProcess
-        excelData["Process 3 Frame Cover Lot No"] = repairedProcess
-        excelData["Process 3 Partition Board"] = repairedProcess
-        excelData["Process 3 Partition Board Lot No"] = repairedProcess
-        excelData["Process 3 Built In Tube 1"] = repairedProcess
-        excelData["Process 3 Built In Tube 1 Lot No"] = repairedProcess
-        excelData["Process 3 Built In Tube 2"] = repairedProcess
-        excelData["Process 3 Built In Tube 2 Lot No"] = repairedProcess
-        excelData["Process 3 Head Cover"] = repairedProcess
-        excelData["Process 3 Head Cover Lot No"] = repairedProcess
-        excelData["Process 3 Casing Packing"] = repairedProcess
-        excelData["Process 3 Casing Packing Lot No"] = repairedProcess
-        excelData["Process 3 M4x12 Screw"] = repairedProcess
-        excelData["Process 3 M4x12 Screw Lot No"] = repairedProcess
-        excelData["Process 3 Csb L"] = repairedProcess
-        excelData["Process 3 Csb L Lot No"] = repairedProcess
-        excelData["Process 3 Csb R"] = repairedProcess
-        excelData["Process 3 Csb R Lot No"] = repairedProcess
-        excelData["Process 3 Head Packing"] = repairedProcess
-        excelData["Process 3 Head Packing Lot No"] = repairedProcess
-        excelData["Process 3 ST"] = repairedProcess
-        excelData["Process 3 Actual Time"] = repairedProcess
-        excelData["Process 3 NG Cause"] = repairedProcess
-        excelData["Process 3 Repaired Action"] = repairedProcess
-        
-        excelData["Process 4 Model Code"] = repairedProcess
-        excelData["Process 4 S/N"] = repairedProcess
-        excelData["Process 4 ID"] = repairedProcess
-        excelData["Process 4 NAME"] = repairedProcess
-        excelData["Process 4 Regular/Contractual"] = repairedProcess
-        excelData["Process 4 Tank"] = repairedProcess
-        excelData["Process 4 Tank Lot No"] = repairedProcess
-        excelData["Process 4 Upper Housing"] = repairedProcess
-        excelData["Process 4 Upper Housing Lot No"] = repairedProcess
-        excelData["Process 4 Cord Hook" ] = repairedProcess
-        excelData["Process 4 Cord Hook Lot No"] = repairedProcess
-        excelData["Process 4 M4x16 Screw"] = repairedProcess
-        excelData["Process 4 M4x16 Screw Lot No"] = repairedProcess
-        excelData["Process 4 Tank Gasket"] = repairedProcess
-        excelData["Process 4 Tank Gasket Lot No"] = repairedProcess
-        excelData["Process 4 Tank Cover"] = repairedProcess
-        excelData["Process 4 Tank Cover Lot No"] = repairedProcess
-        excelData["Process 4 Housing Gasket"] = repairedProcess
-        excelData["Process 4 Housing Gasket Lot No"] = repairedProcess
-        excelData["Process 4 M4x40 Screw"] = repairedProcess
-        excelData["Process 4 M4x40 Screw Lot No"] = repairedProcess
-        excelData["Process 4 PartitionGasket"] = repairedProcess
-        excelData["Process 4 PartitionGasket Lot No"] = repairedProcess
-        excelData["Process 4 M4x12 Screw"] = repairedProcess
-        excelData["Process 4 M4x12 Screw Lot No"] = repairedProcess
-        excelData["Process 4 Muffler"] = repairedProcess
-        excelData["Process 4 Muffler Lot No"] = repairedProcess
-        excelData["Process 4 Muffler Gasket"] = repairedProcess
-        excelData["Process 4 Muffler Gasket Lot No"] = repairedProcess
-        excelData["Process 4 VCR"] = repairedProcess
-        excelData["Process 4 VCR Lot No"] = repairedProcess
-        excelData["Process 4 ST"] = repairedProcess
-        excelData["Process 4 Actual Time"] = repairedProcess
-        excelData["Process 4 NG Cause"] = repairedProcess
-        excelData["Process 4 Repaired Action"] = repairedProcess
-
-    if process6Status == "Repaired":
-        repairedProcess = "REPAIRED AT PROCESS6"
-        process6Row += 1
-        piRow += 1
-
-        # excelData["DATE"] = repairedProcess
-        # excelData["TIME"] = repairedProcess
-        # excelData["MODEL CODE"] = repairedProcess
-        # excelData["PROCESS S/N"] = repairedProcess
-        # excelData["S/N"] = repairedProcess
-        # excelData["PASS/NG"] = repairedProcess
-        # excelData["VOLTAGE MAX (V)"] = repairedProcess
-        # excelData["WATTAGE MAX (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE_MAX (kPa)"] = repairedProcess
-        # excelData["VOLTAGE Middle (V)"] = repairedProcess
-        # excelData["WATTAGE Middle (W)"] = repairedProcess
-        # excelData["AMPERAGE Middle (A)"] = repairedProcess
-        # excelData["CLOSED PRESSURE Middle (kPa)"] = repairedProcess
-        # excelData["dB(A) 1"] = repairedProcess
-        # excelData["dB(A) 2"] = repairedProcess
-        # excelData["dB(A) 3"] = repairedProcess
-        # excelData["VOLTAGE MIN (V)"] = repairedProcess
-        # excelData["WATTAGE MIN (W)"] = repairedProcess
-        # excelData["CLOSED PRESSURE MIN (kPa)"] = repairedProcess
-
-        excelData["Process 1 Model Code"] = repairedProcess
-        excelData["Process 1 S/N"] = repairedProcess
-        excelData["Process 1 ID"] = repairedProcess
-        excelData["Process 1 NAME"] = repairedProcess
-        excelData["Process 1 Regular/Contractual"] = repairedProcess
-        excelData["Process 1 Em2p"] = repairedProcess
-        excelData["Process 1 Em2p Lot No"] = repairedProcess
-        excelData["Process 1 Em3p"] = repairedProcess
-        excelData["Process 1 Em3p Lot No"] = repairedProcess
-        excelData["Process 1 Harness"] = repairedProcess
-        excelData["Process 1 Harness Lot No"] = repairedProcess
-        excelData["Process 1 Frame"] = repairedProcess
-        excelData["Process 1 Frame Lot No"] = repairedProcess 
-        excelData["Process 1 Bushing"] = repairedProcess
-        excelData["Process 1 Bushing Lot No"] = repairedProcess
-        excelData["Process 1 ST"] = repairedProcess
-        excelData["Process 1 Actual Time"] = repairedProcess
-        excelData["Process 1 NG Cause"] = repairedProcess
-        excelData["Process 1 Repaired Action"] = repairedProcess  
-
-        excelData["Process 2 Model Code"] = repairedProcess
-        excelData["Process 2 S/N"] = repairedProcess
-        excelData["Process 2 ID"] = repairedProcess
-        excelData["Process 2 NAME"] = repairedProcess
-        excelData["Process 2 Regular/Contractual"] = repairedProcess
-        excelData["Process 2 M4x40 Screw"] = repairedProcess
-        excelData["Process 2 M4x40 Screw Lot No"] = repairedProcess
-        excelData["Process 2 Rod Blk"] = repairedProcess
-        excelData["Process 2 Rod Blk Lot No"] = repairedProcess
-        excelData["Process 2 Df Blk"] = repairedProcess
-        excelData["Process 2 Df Blk Lot No"] = repairedProcess
-        excelData["Process 2 Df Ring"] = repairedProcess
-        excelData["Process 2 Df Ring Lot No"] = repairedProcess
-        excelData["Process 2 Washer"] = repairedProcess
-        excelData["Process 2 Washer Lot No"] = repairedProcess
-        excelData["Process 2 Lock Nut"] = repairedProcess
-        excelData["Process 2 Lock Nut Lot No"] = repairedProcess
-        excelData["Process 2 ST"] = repairedProcess
-        excelData["Process 2 Actual Time"] = repairedProcess
-        excelData["Process 2 NG Cause"] = repairedProcess
-        excelData["Process 2 Repaired Action"] = repairedProcess
-
-        excelData["Process 3 Model Code"] = repairedProcess
-        excelData["Process 3 S/N"] = repairedProcess
-        excelData["Process 3 ID"] = repairedProcess
-        excelData["Process 3 NAME"] = repairedProcess
-        excelData["Process 3 Regular/Contractual"] = repairedProcess
-        excelData["Process 3 Frame Gasket"] = repairedProcess
-        excelData["Process 3 Frame Gasket Lot No"] = repairedProcess
-        excelData["Process 3 Casing Block"] = repairedProcess
-        excelData["Process 3 Casing Block Lot No"] = repairedProcess
-        excelData["Process 3 Casing Block Inspection 1 Average Data"] = repairedProcess
-        excelData["Process 3 Casing Block Inspection 1 Minimum Data"] = repairedProcess
-        excelData["Process 3 Casing Block Inspection 1 Maximum Data"] = repairedProcess
-        excelData["Process 3 Casing Gasket"] = repairedProcess
-        excelData["Process 3 Casing Gasket Lot No"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 1"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 1 Lot No"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 2"] = repairedProcess
-        excelData["Process 3 M4x16 Screw 2 Lot No"] = repairedProcess
-        excelData["Process 3 Ball Cushion"] = repairedProcess
-        excelData["Process 3 Ball Cushion Lot No"] = repairedProcess
-        excelData["Process 3 Frame Cover"] = repairedProcess
-        excelData["Process 3 Frame Cover Lot No"] = repairedProcess
-        excelData["Process 3 Partition Board"] = repairedProcess
-        excelData["Process 3 Partition Board Lot No"] = repairedProcess
-        excelData["Process 3 Built In Tube 1"] = repairedProcess
-        excelData["Process 3 Built In Tube 1 Lot No"] = repairedProcess
-        excelData["Process 3 Built In Tube 2"] = repairedProcess
-        excelData["Process 3 Built In Tube 2 Lot No"] = repairedProcess
-        excelData["Process 3 Head Cover"] = repairedProcess
-        excelData["Process 3 Head Cover Lot No"] = repairedProcess
-        excelData["Process 3 Casing Packing"] = repairedProcess
-        excelData["Process 3 Casing Packing Lot No"] = repairedProcess
-        excelData["Process 3 M4x12 Screw"] = repairedProcess
-        excelData["Process 3 M4x12 Screw Lot No"] = repairedProcess
-        excelData["Process 3 Csb L"] = repairedProcess
-        excelData["Process 3 Csb L Lot No"] = repairedProcess
-        excelData["Process 3 Csb R"] = repairedProcess
-        excelData["Process 3 Csb R Lot No"] = repairedProcess
-        excelData["Process 3 Head Packing"] = repairedProcess
-        excelData["Process 3 Head Packing Lot No"] = repairedProcess
-        excelData["Process 3 ST"] = repairedProcess
-        excelData["Process 3 Actual Time"] = repairedProcess
-        excelData["Process 3 NG Cause"] = repairedProcess
-        excelData["Process 3 Repaired Action"] = repairedProcess
-        
-        excelData["Process 4 Model Code"] = repairedProcess
-        excelData["Process 4 S/N"] = repairedProcess
-        excelData["Process 4 ID"] = repairedProcess
-        excelData["Process 4 NAME"] = repairedProcess
-        excelData["Process 4 Regular/Contractual"] = repairedProcess
-        excelData["Process 4 Tank"] = repairedProcess
-        excelData["Process 4 Tank Lot No"] = repairedProcess
-        excelData["Process 4 Upper Housing"] = repairedProcess
-        excelData["Process 4 Upper Housing Lot No"] = repairedProcess
-        excelData["Process 4 Cord Hook" ] = repairedProcess
-        excelData["Process 4 Cord Hook Lot No"] = repairedProcess
-        excelData["Process 4 M4x16 Screw"] = repairedProcess
-        excelData["Process 4 M4x16 Screw Lot No"] = repairedProcess
-        excelData["Process 4 Tank Gasket"] = repairedProcess
-        excelData["Process 4 Tank Gasket Lot No"] = repairedProcess
-        excelData["Process 4 Tank Cover"] = repairedProcess
-        excelData["Process 4 Tank Cover Lot No"] = repairedProcess
-        excelData["Process 4 Housing Gasket"] = repairedProcess
-        excelData["Process 4 Housing Gasket Lot No"] = repairedProcess
-        excelData["Process 4 M4x40 Screw"] = repairedProcess
-        excelData["Process 4 M4x40 Screw Lot No"] = repairedProcess
-        excelData["Process 4 PartitionGasket"] = repairedProcess
-        excelData["Process 4 PartitionGasket Lot No"] = repairedProcess
-        excelData["Process 4 M4x12 Screw"] = repairedProcess
-        excelData["Process 4 M4x12 Screw Lot No"] = repairedProcess
-        excelData["Process 4 Muffler"] = repairedProcess
-        excelData["Process 4 Muffler Lot No"] = repairedProcess
-        excelData["Process 4 Muffler Gasket"] = repairedProcess
-        excelData["Process 4 Muffler Gasket Lot No"] = repairedProcess
-        excelData["Process 4 VCR"] = repairedProcess
-        excelData["Process 4 VCR Lot No"] = repairedProcess
-        excelData["Process 4 ST"] = repairedProcess
-        excelData["Process 4 Actual Time"] = repairedProcess
-        excelData["Process 4 NG Cause"] = repairedProcess
-        excelData["Process 4 Repaired Action"] = repairedProcess
-
-        excelData["Process 5 Model Code"] = repairedProcess
-        excelData["Process 5 S/N"] = repairedProcess
-        excelData["Process 5 ID"] = repairedProcess
-        excelData["Process 5 NAME"] = repairedProcess
-        excelData["Process 5 Regular/Contractual"] = repairedProcess
-        excelData["Process 5 Rating Label"] = repairedProcess
-        excelData["Process 5 Rating Label Lot No"] = repairedProcess
-        excelData["Process 5 ST"] = repairedProcess
-        excelData["Process 5 Actual Time"] = repairedProcess
-        excelData["Process 5 NG Cause"] = repairedProcess
-        excelData["Process 5 Repaired Action"] = repairedProcess
+            excelData["Process 5 Model Code"] = repairedProcess
+            excelData["Process 5 S/N"] = repairedProcess
+            excelData["Process 5 ID"] = repairedProcess
+            excelData["Process 5 NAME"] = repairedProcess
+            excelData["Process 5 Regular/Contractual"] = repairedProcess
+            excelData["Process 5 Rating Label"] = repairedProcess
+            excelData["Process 5 Rating Label Lot No"] = repairedProcess
+            excelData["Process 5 ST"] = repairedProcess
+            excelData["Process 5 Actual Time"] = repairedProcess
+            excelData["Process 5 NG Cause"] = repairedProcess
+            excelData["Process 5 Repaired Action"] = repairedProcess
         
     compiledFrame = pd.concat([compiledFrame, excelData], ignore_index=True)
 

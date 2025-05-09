@@ -86,6 +86,10 @@ class em3P():
                         average5 = inspectionData.iloc[7].mean()
                         average10 = inspectionData.iloc[12, 0]
 
+                        print(f"Inspection 10: {average10}")
+                        # if not average10 is np.nan:
+                            
+
                         minimum3 = inspectionData.iloc[5].min()
                         minimum4 = inspectionData.iloc[6].min()
                         minimum5 = inspectionData.iloc[7].min()

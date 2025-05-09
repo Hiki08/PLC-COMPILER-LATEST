@@ -3,14 +3,8 @@ from Imports import *
 import DateAndTimeManager
 from FilesReader import *
 
-DFBMAINLotNo = ""
-
 #%%
 class dFB():
-    global DFBMAINLotNo
-
-    DFBMAINLotNo = ""
-
     dfbSnapData = ""
     dfbLetterCode = ""
     dfbLotNumber = ""
@@ -85,8 +79,6 @@ class dFB():
                 tempDfbSnapData = self.dfbSnapData[(self.dfbSnapData[0].isin([f"{self.dfbLotNumber} 00:00:00"])) & (self.dfbSnapData[2].isin([self.dfbLetterCode]))]
 
                 self.dfbLotNumber2 = tempDfbSnapData.iloc[:,3].values[0]
-
-                DFBMAINLotNo = self.dfbLotNumber2
 
                 print(f"Dfb Code {self.dfbCode}")
                 print(f"Dfb Lot Number {self.dfbLotNumber2}")
@@ -282,10 +274,10 @@ class Tensile():
         # self.terminatingForceTotalMaximum = []
 
         #Skipping 4 Rows
-        self.fileList[0] = self.fileList[0].iloc[4:]
+        data = self.fileList[0].iloc[4:]
 
         #Filtering Lot Number Row With Lot Number Input
-        tensileLotNoFiltered = self.fileList[0][(self.fileList[0].iloc[:, 3].isin([lotNo]))]
+        tensileLotNoFiltered = data[(data.iloc[:, 3].isin([lotNo]))]
 
         #Averaging The Rate Of Change Column
         rateOfChangeAverage = round(tensileLotNoFiltered.iloc[:, 6].mean() * 100, 1)
